@@ -78,6 +78,59 @@ def here_i_am():
     return jsonify(response)
 
 
+@bp.route('/my_health')
+def my_health():
+    response = get_response_template()
+
+    drone_id        = request.values.get('drone_id')
+    health          = request.values.get('health')
+    battery_soc     = request.values.get('battery_soc')
+    rem_flight_time = request.values.get('rem_flight_time')
+    
+    # Check if all required values were given
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, health, 'health')
+    response = check_argument_not_null(response, battery_soc, 'battery_soc')
+    
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+    
+    # Check if active drone with given id exists
+    tmp_db_drone_id = db.execute('SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if tmp_db_drone_id is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'No active drone with id "{drone_id}" found',
+            False
+        )
+    
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    try:
+        db.execute("""
+        UPDATE drones
+        SET health = ?,
+            battery_soc = ?,
+            rem_flight_time = ?
+        WHERE id = ?
+        """, (health, battery_soc, rem_flight_time, drone_id,))
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database',
+            False
+        )
+
+    return jsonify(response)
+
+
 @bp.route('/activate')
 def activate_drone():
     response = get_response_template()

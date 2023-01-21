@@ -132,9 +132,26 @@
         <hr>
 
         <h4>/tell/my_health</h4>
-        <p style="color: orange">to be implemented</p>
         <form action="/ask/my_health" method="get" target="_blank">
             <table>
+                <tr>
+                    <td><b>drone_id:</b></td>
+                    <td><input type="text" name="drone_id"></td>
+                </tr>
+                <tr>
+                    <td><b>health:</b></td>
+                    <td><input type="text" name="health"></td>
+                </tr>
+                <tr>
+                    <td><b>battery_soc:</b></td>
+                    <td><input type="text" name="battery_soc"></td>
+                </tr>
+
+                <tr>
+                    <td><i>rem_flight_time:</i></td>
+                    <td><input type="text" name="rem_flight_time"></td>
+                </tr>
+
                 <tr>
                     <td colspan="2"><input type="submit" value="Send request"></td>
                 </tr>
@@ -208,9 +225,21 @@
         <hr>
 
         <h4>/ask/request_clearance</h4>
-        <p style="color: orange">to be implemented</p>
         <form action="/ask/request_clearance" method="get" target="_blank">
             <table>
+                <tr>
+                    <td><b>drone_id:</b></td>
+                    <td><input type="text" name="drone_id"></td>
+                </tr>
+                <tr>
+                    <td><b>intersection_a:</b></td>
+                    <td><input type="text" name="intersection_a"></td>
+                </tr>
+                <tr>
+                    <td><b>intersection_b:</b></td>
+                    <td><input type="text" name="intersection_b"></td>
+                </tr>
+
                 <tr>
                     <td colspan="2"><input type="submit" value="Send request"></td>
                 </tr>

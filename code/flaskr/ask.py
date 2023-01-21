@@ -58,3 +58,46 @@ def get_drone_info():
     }
 
     return jsonify(response)
+
+
+@bp.route('/request_flightplan')
+def request_flightplan():
+    response = get_response_template()
+
+    drone_id = request.values.get('drone_id')
+
+    return jsonify(response)
+
+
+@bp.route('/request_clearance')
+def request_clearance():
+    response = get_response_template(response_data=True)
+
+    drone_id = request.values.get('drone_id')
+    intersection_a = request.values.get('intersection_a')
+    intersection_b = request.values.get('intersection_b')
+
+    # Check if all required values were given
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, intersection_a, 'intersection_a')
+    response = check_argument_not_null(response, intersection_b, 'intersection_b')
+    
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if active drone with given id exists
+    db_drone_info = db.execute('SELECT * FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if db_drone_info is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'No active drone with id "{drone_id}" found.',
+            False
+        )
+    
+    response['response_data']['clearance'] = True
+
+    return jsonify(response)

@@ -24,7 +24,7 @@ flask --app flaskr/ --debug run
 
 - [x] /api/tell/here_i_am
 - [ ] /api/tell/here_i_go
-- [ ] /api/tell/my_health
+- [x] /api/tell/my_health
 - [x] /api/tell/register
 - [x] /api/tell/deregister
 
@@ -34,7 +34,7 @@ flask --app flaskr/ --debug run
 
 - [x] /api/ask/get_drone_info
 - [ ] /api/ask/request_flight_plan
-- [ ] /api/ask/request_clearance
+- [x] /api/ask/request_clearance
 
 **INFRASTRUCTURE**
 
