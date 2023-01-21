@@ -40,13 +40,13 @@ def here_i_am():
 
     db = get_db()
 
-    # Check if active drone with given id exists
+    # Check if drone with given id exists
     tmp_db_drone_id = db.execute('SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
     if tmp_db_drone_id is None:
         response = add_error_to_response(
             response,
             1,
-            f'No active drone with id "{drone_id}" found',
+            f'No drone with id "{drone_id}" found',
             False
         )
     
@@ -96,13 +96,13 @@ def my_health():
     if not response['executed']:
         return jsonify(response)
     
-    # Check if active drone with given id exists
+    # Check if drone with given id exists
     tmp_db_drone_id = db.execute('SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
     if tmp_db_drone_id is None:
         response = add_error_to_response(
             response,
             1,
-            f'No active drone with id "{drone_id}" found',
+            f'Drone with id "{drone_id}" does not exist.',
             False
         )
     
@@ -131,7 +131,78 @@ def my_health():
     return jsonify(response)
 
 
-@bp.route('/activate')
+@bp.route('register_drone')
+def register_drone():
+    response = get_response_template()
+
+    drone_id = request.values.get('drone_id')
+    
+    # Check if all required values were given
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if drone with this id already exists
+    db_drone = db.execute('SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if db_drone is None:
+        db.execute('INSERT INTO drones(id) VALUES(?)', (drone_id,))
+        
+        db.commit()
+    else:
+        response = add_warning_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" already exists.'
+        )
+
+    return jsonify(response)
+
+
+@bp.route('deregister_drone')
+def deregister_drone():
+    response = get_response_template()
+
+    drone_id = request.values.get('drone_id')
+    
+    # Check if all required values were given
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    db_drone = db.execute('SELECT id, active FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    
+    # Check if drone with this id exists
+    if not db_drone is None:
+        if not db_drone['active']:
+            db.execute('DELETE FROM drones WHERE id = ?', (drone_id,))
+            
+            db.commit()
+        else:
+            response = add_error_to_response(
+                response,
+                1,
+                f'Drone with id "{drone_id}" is still active.',
+                False
+            )
+    else:
+        response = add_warning_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" does not exist.'
+        )
+
+    return jsonify(response)
+
+
+@bp.route('/activate_drone')
 def activate_drone():
     response = get_response_template()
 
@@ -146,11 +217,24 @@ def activate_drone():
 
     db = get_db()
 
-    # Check if active drone with given id already exists
-    tmp_db_drone_id = db.execute('SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
-    if tmp_db_drone_id is None:
+    db_drone = db.execute('SELECT id, active FROM drones WHERE id = ?', (drone_id,)).fetchone()
+
+    # Check if drone with given id exists
+    if db_drone is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" does not exist.',
+            False
+        )
+    
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not db_drone['active']:
         try:
-            db.execute('INSERT INTO drones(id) VALUES(?)', (drone_id,))
+            db.execute('UPDATE drones SET active = TRUE WHERE id = ?', (drone_id,))
             db.commit()
         except db.IntegrityError:
             response = add_error_to_response(
@@ -169,7 +253,7 @@ def activate_drone():
     return jsonify(response)
 
 
-@bp.route('/deactivate')
+@bp.route('/deactivate_drone')
 def deactivate_drone():
     response = get_response_template()
 
@@ -184,17 +268,24 @@ def deactivate_drone():
 
     db = get_db()
 
-    # Check if active drone with given id exists
-    tmp_db_drone_id = db.execute('SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
-    if tmp_db_drone_id is None:
-        response = add_warning_to_response(
+    db_drone = db.execute('SELECT id, active FROM drones WHERE id = ?', (drone_id,)).fetchone()
+
+    # Check if drone with given id exists
+    if db_drone is None:
+        response = add_error_to_response(
             response,
             1,
-            f'Drone with id "{drone_id}" not active.'
+            f'Drone with id "{drone_id}" does not exist.',
+            False
         )
-    else:
+    
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if db_drone['active']:
         try:
-            db.execute('DELETE FROM drones where id = ?', (drone_id,))
+            db.execute('UPDATE drones SET active = FALSE WHERE id = ?', (drone_id,))
             db.commit()
         except db.IntegrityError:
             response = add_error_to_response(
@@ -203,5 +294,11 @@ def deactivate_drone():
                 'Internal server error: IntegrityError while accessing the database',
                 False
             )
+    else:
+        response = add_warning_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" not active.'
+        )
 
     return jsonify(response)

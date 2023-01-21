@@ -160,9 +160,8 @@
 
         <hr>
 
-        <h4>/tell/register</h4>
-        <p style="color: orange">to be implemented</p>
-        <form action="/tell/register" method="get" target="_blank">
+        <h4>/tell/register_drone</h4>
+        <form action="/tell/register_drone" method="get" target="_blank">
             <table>
                 <tr>
                     <td><b>drone_id:</b></td>
@@ -177,9 +176,40 @@
 
         <hr>
 
-        <h4>/tell/deregister</h4>
-        <p style="color: orange">to be implemented</p>
-        <form action="/tell/deregister" method="get" target="_blank">
+        <h4>/tell/deregister_drone</h4>
+        <form action="/tell/deregister_drone" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>drone_id:</b></td>
+                    <td><input type="text" name="drone_id"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/tell/activate_drone</h4>
+        <form action="/tell/activate_drone" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>drone_id:</b></td>
+                    <td><input type="text" name="drone_id"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/tell/deactivate_drone</h4>
+        <form action="/tell/deactivate_drone" method="get" target="_blank">
             <table>
                 <tr>
                     <td><b>drone_id:</b></td>

@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS corridors;
 
 CREATE TABLE drones (
     id              TEXT    PRIMARY KEY,
+    active          INT     NOT NULL    DEFAULT 0,
     coordinates_lat TEXT,
     coordinates_lon TEXT,
     height          INTEGER,
@@ -28,6 +29,8 @@ CREATE TABLE corridors (
     intersection_a  TEXT    NOT NULL,
     intersection_b  TEXT    NOT NULL
 );
+
+INSERT INTO drones(id, active) VALUES("test_drone", 0);
 
 INSERT INTO intersections VALUES("EDMR-Landeplatz", "48.048121", "11.653678", 0);
 INSERT INTO intersections VALUES("int_1", "48.047705", "11.653841", 0);
