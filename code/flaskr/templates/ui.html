@@ -37,6 +37,7 @@
 </head>
 <body>
     <div id="main">
+
         <h2>Ressources</h2>
 
         <h3>Github Repositories</h3>
@@ -324,6 +325,22 @@
 
         <hr>
 
+        <h4>/infrastructure/get_intersection_info</h4>
+        <form action="/infrastructure/get_intersection_info" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>intersection_id:</b></td>
+                    <td><input type="text" name="intersection_id"></td>
+                </tr>
+
+                <tr>
+                    <td><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
         <h4>/infrastructure/add_corridor</h4>
         <form action="/infrastructure/add_corridor" method="get" target="_blank">
             <table>
@@ -361,6 +378,23 @@
                 </tr>
             </table>
         </form>
+
+        <hr>
+
+        <h4>/infrastructure/get_corridor_info</h4>
+        <form action="/infrastructure/get_corridor_info" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>corridor_id:</b></td>
+                    <td><input type="text" name="corridor_id"></td>
+                </tr>
+
+                <tr>
+                    <td><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
     </div>
 </body>
 </html>

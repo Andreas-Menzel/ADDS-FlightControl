@@ -40,8 +40,10 @@ flask --app flaskr/ --debug run
 
 - [x] /api/infrastructure/add_intersection
 - [x] /api/infrastructure/remove_intersection
+- [x] /api/infrastructute/get_intersection_info
 - [x] /api/infrastructure/add_corridor
 - [x] /api/infrastructure/remove_corridor
+- [x] /api/infrastructure/get_corridor_info
 
 ### Structure of return message
 
@@ -214,6 +216,14 @@ A system administrator can delete an intersection
 |-----------------|-----------|
 | intersection_id | required  |
 
+#### /api/infrastructure/get_intersection_info
+
+Get information about a / all intersection(s).
+
+| FIELD           | REQ / OPT | INFO                                                    |
+|-----------------|-----------|---------------------------------------------------------|
+| intersection_id | required  | Set to `all` to get information about all intersections |
+
 #### /api/infrastructure/add_corridor
 
 A system administrator can add a new corridor.
@@ -231,3 +241,11 @@ A system administrator can delete a corridor.
 | FIELD       | REQ / OPT |
 |-------------|-----------|
 | corridor_id | required  |
+
+#### /api/infrastructure/get_corridor_info
+
+Get information about a / all corridor(s).
+
+| FIELD       | REQ / OPT | INFO                                                |
+|-------------|-----------|-----------------------------------------------------|
+| corridor_id | required  | Set to `all` to get information about all corridors |

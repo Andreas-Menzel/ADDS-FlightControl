@@ -125,6 +125,55 @@ def remove_intersection():
     return jsonify(response)
 
 
+@bp.route('/get_intersection_info')
+def get_intersection_info():
+    response = get_response_template(response_data=True)
+
+    intersection_id = request.values.get('intersection_id')
+    
+    # Check if all required values were given
+    response = check_argument_not_null(response, intersection_id, 'intersection_id')
+    
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    if intersection_id == 'all':
+        db_intersections_info = db.execute('SELECT * FROM intersections').fetchall()
+
+        intersections = {}
+        for intersection in db_intersections_info:
+            intersections[intersection['id']] = {
+                'intersection_id': intersection['id'],
+                'coordinates_lat': intersection['coordinates_lat'],
+                'coordinates_lon': intersection['coordinates_lon'],
+                'height': intersection['height']
+            }
+        
+        response['response_data'] = intersections
+    else:
+        # Check if intersection exists
+        db_intersection_info = db.execute('SELECT * FROM intersections WHERE id = ?', (intersection_id,)).fetchone()
+        if db_intersection_info is None:
+            response = add_error_to_response(
+                response,
+                1,
+                f'Intersection with id "{intersection_id}" does not exist.',
+                False
+            )
+        else:
+            response['response_data'] = {
+                'intersection_id': intersection_id,
+                'coordinates_lat': db_intersection_info['coordinates_lat'],
+                'coordinates_lon': db_intersection_info['coordinates_lon'],
+                'height': db_intersection_info['height']
+            }
+
+    return response
+
+
 @bp.route('/add_corridor')
 def add_corridor():
     response = get_response_template()
@@ -248,3 +297,50 @@ def remove_corridor():
         )
 
     return jsonify(response)
+
+
+@bp.route('/get_corridor_info')
+def get_corridor_info():
+    response = get_response_template(response_data=True)
+
+    corridor_id = request.values.get('corridor_id')
+    
+    # Check if all required values were given
+    response = check_argument_not_null(response, corridor_id, 'corridor_id')
+    
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    if corridor_id == 'all':
+        db_corridors_info = db.execute('SELECT * FROM corridors').fetchall()
+        
+        corridors = {}
+        for corridor in db_corridors_info:
+            corridors[corridor['id']] = {
+                'corridor_id': corridor['id'],
+                'intersection_a': corridor['intersection_a'],
+                'intersection_b': corridor['intersection_b']
+            }
+        
+        response['response_data'] = corridors
+    else:
+        # Check if corridor exists
+        db_corridor_info = db.execute('SELECT * FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
+        if db_corridor_info is None:
+            response = add_error_to_response(
+                response,
+                1,
+                f'Corridor with id "{corridor_id}" does not exist.',
+                False
+            )
+        else:
+            response['response_data'] = {
+                'corridor_id': corridor_id,
+                'intersection_a': db_corridor_info['intersection_a'],
+                'intersection_b': db_corridor_info['intersection_b']
+            }
+
+    return response
