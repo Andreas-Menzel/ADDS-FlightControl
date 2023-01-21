@@ -30,8 +30,6 @@ flask --app flaskr/ --debug run
 - [x] /api/tell/activate_drone
 - [x] /api/tell/deactivate_drone
 
-- TODO: activate vs register
-
 **ASK**
 
 - [x] /api/ask/get_drone_info
