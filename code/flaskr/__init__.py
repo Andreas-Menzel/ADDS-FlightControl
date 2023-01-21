@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, url_for, redirect
 
 
 def create_app(test_config=None):
@@ -36,5 +36,11 @@ def create_app(test_config=None):
 
     from . import infrastructure
     app.register_blueprint(infrastructure.bp)
+
+    from . import ui
+    app.register_blueprint(ui.bp)
+    @app.route('/')
+    def index():
+        return redirect('/ui')
 
     return app

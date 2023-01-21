@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Commands - ADDS-TrafficSystem-Central</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            background-color: darkslategray;
+        }
+        #main {
+            background-color: aliceblue;
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            margin-top: 30px;
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+        table {
+            width: 100%;
+        }
+        table tr td {
+            padding: 3px 5px;
+        }
+        table tr td:first-of-type {
+            width: 0;
+        }
+        input {
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <h2>Ressources</h2>
+
+        <h3>Github Repositories</h3>
+        <ul>
+            <li>
+                <a href="https://github.com/Andreas-Menzel/AutonomousDroneDeliverySystem">
+                    Main Github repository (AutonomousDroneDeliverySystem)
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/Andreas-Menzel/ADDS-TrafficSystem-Central">
+                    This projects' repository (ADDS-TrafficSystem-Central)
+                </a>
+            </li>
+        </ul>
+
+        <h3>Other</h3>
+        <ul>
+            <li>
+                <a href="/ui/show_infrastructure" target="_blank">
+                    Show infrastructure (/ui/show_infrastructure)
+                </a>
+            </li>
+        </ul>
+
+        <h2>Send Commands</h2>
+
+        <p>
+            This site can be used to send commands to the api.
+        </p>
+        <p>
+            <b>Bold arguments</b> are required, <i>italic arguments</i> are
+            optional.
+        </p>
+
+        <h3>TELL</h3>
+
+        <h4>/tell/here_i_am</h4>
+        <form action="/tell/here_i_am" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>drone_id:</b></td>
+                    <td><input type="text" name="drone_id"></td>
+                </tr>
+                <tr>
+                    <td><b>coordinates_lat:</b></td>
+                    <td><input type="text" name="coordinates_lat"></td>
+                </tr>
+                <tr>
+                    <td><b>coordinates_lon:</b></td>
+                    <td><input type="text" name="coordinates_lon"></td>
+                </tr>
+                <tr>
+                    <td><b>height:</b></td>
+                    <td><input type="text" name="height"></td>
+                </tr>
+                <tr>
+                    <td><b>heading:</b></td>
+                    <td><input type="text" name="heading"></td>
+                </tr>
+
+                <tr>
+                    <td><i>air_speed:</i></td>
+                    <td><input type="text" name="air_speed"></td>
+                </tr>
+                <tr>
+                    <td><i>ground_speed:</i></td>
+                    <td><input type="text" name="ground_speed"></td>
+                </tr>
+                <tr>
+                    <td><i>vertical_speed:</i></td>
+                    <td><input type="text" name="vertical_speed"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/tell/here_i_go</h4>
+        <p style="color: orange">to be implemented</p>
+        <form action="/ask/here_i_go" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/tell/my_health</h4>
+        <p style="color: orange">to be implemented</p>
+        <form action="/ask/my_health" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/tell/register</h4>
+        <p style="color: orange">to be implemented</p>
+        <form action="/tell/register" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>drone_id:</b></td>
+                    <td><input type="text" name="drone_id"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/tell/deregister</h4>
+        <p style="color: orange">to be implemented</p>
+        <form action="/tell/deregister" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>drone_id:</b></td>
+                    <td><input type="text" name="drone_id"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr style="margin: 50px 0">
+
+        <h3>ASK</h3>
+
+        <h4>/ask/get_drone_info</h4>
+        <form action="/ask/get_drone_info" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>drone_id:</b></td>
+                    <td><input type="text" name="drone_id"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/ask/request_flight_plan</h4>
+        <p style="color: orange">to be implemented</p>
+        <form action="/ask/request_flight_plan" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/ask/request_clearance</h4>
+        <p style="color: orange">to be implemented</p>
+        <form action="/ask/request_clearance" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr style="margin: 50px 0">
+
+        <h3>INFRASTRUCTURE</h3>
+
+        <h4>/infrastructure/add_intersection</h4>
+        <form action="/infrastructure/add_intersection" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>intersection_id:</b></td>
+                    <td><input type="text" name="intersection_id"></td>
+                </tr>
+                <tr>
+                    <td><b>coordinates_lat:</b></td>
+                    <td><input type="text" name="coordinates_lat"></td>
+                </tr>
+                <tr>
+                    <td><b>coordinates_lon:</b></td>
+                    <td><input type="text" name="coordinates_lon"></td>
+                </tr>
+                <tr>
+                    <td><b>height:</b></td>
+                    <td><input type="text" name="height"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/infrastructure/remove_intersection</h4>
+        <form action="/infrastructure/remove_intersection" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>intersection_id:</b></td>
+                    <td><input type="text" name="intersection_id"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/infrastructure/add_corridor</h4>
+        <form action="/infrastructure/add_corridor" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>corridor_id:</b></td>
+                    <td><input type="text" name="corridor_id"></td>
+                </tr>
+                <tr>
+                    <td><b>intersection_a</b></td>
+                    <td><input type="text" name="intersection_a"></td>
+                </tr>
+                <tr>
+                    <td><b>intersection_b</b></td>
+                    <td><input type="text" name="intersection_b"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+
+        <hr>
+
+        <h4>/infrastructure/remove_corridor</h4>
+        <form action="/infrastructure/remove_corridor" method="get" target="_blank">
+            <table>
+                <tr>
+                    <td><b>corridor_id:</b></td>
+                    <td><input type="text" name="corridor_id"></td>
+                </tr>
+
+                <tr>
+                    <td colspan="2"><input type="submit" value="Send request"></td>
+                </tr>
+            </table>
+        </form>
+    </div>
+</body>
+</html>
