@@ -224,6 +224,27 @@ Get information about a / all intersection(s).
 |-----------------|-----------|---------------------------------------------------------|
 | intersection_id | required  | Set to `all` to get information about all intersections |
 
+The `response_data` field of the response will contain the following elements:
+
+```
+'intersection_id': <id>,
+'coordinates_lat': <coordinates_lat>,
+'coordinates_lon': <coordinates_lon>,
+'height': <height>
+```
+
+or
+
+```
+<intersection_id>: {
+    'intersection_id': <id>,
+    'coordinates_lat': <coordinates_lat>,
+    'coordinates_lon': <coordinates_lon>,
+    'height': <height>
+},
+...
+```
+
 #### /api/infrastructure/add_corridor
 
 A system administrator can add a new corridor.
@@ -249,3 +270,22 @@ Get information about a / all corridor(s).
 | FIELD       | REQ / OPT | INFO                                                |
 |-------------|-----------|-----------------------------------------------------|
 | corridor_id | required  | Set to `all` to get information about all corridors |
+
+The `response_data` field of the response will contain the following elements:
+
+```
+'corridor_id': <corridor_id>,
+'intersection_a': <intersection_a>,
+'intersection_b': <intersection_b>
+```
+
+or
+
+```
+<corridor_id>: {
+    'corridor_id': <corridor_id>,
+    'intersection_a': <intersection_a>,
+    'intersection_b': <intersection_b>
+},
+...
+```
