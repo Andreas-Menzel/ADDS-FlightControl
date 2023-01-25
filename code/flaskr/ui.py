@@ -19,6 +19,7 @@ bp = Blueprint('ui', __name__, url_prefix='/ui')
 def send_commands():
     return render_template('ui.html')
 
+
 @bp.route('/show_infrastructure')
 def show_infrastructure():
     start_coords = (48.047341, 11.654751)
@@ -60,6 +61,39 @@ def show_infrastructure():
             opacity=1,
             popup=f'<b>{corridor["id"]}</b>',
             tooltip=f'<b>{corridor["id"]}</b>'
+        ).add_to(folium_map)
+    
+    # Draw drones
+    db_drones = db.execute('SELECT * FROM drones').fetchall()
+    for drone in db_drones:
+        drone_id = drone["id"]
+        lat = drone['coordinates_lat']
+        lon = drone['coordinates_lon']
+
+        print(f'Drone with id "{drone_id}" is at {lat} / {lon}')
+        print(type(lat))
+        print(type(lon))
+
+        try:
+            lat = float(lat)
+        except:
+            print(f'Could not convert lat: "{lat}"')
+            lat = 0
+        
+        try:
+            print(f'Could not convert lon: "{lon}"')
+            lon = float(lon)
+        except:
+            lon = 0
+
+        print(type(lat))
+        print(type(lon))
+
+        folium.Marker(
+            [lat, lon],
+            popup=f'<b>{drone_id}</b> at {lat} / {lon}',
+            tooltip=f'<b>{drone_id}</b>',
+            color='orange'
         ).add_to(folium_map)
 
     return folium_map._repr_html_()
