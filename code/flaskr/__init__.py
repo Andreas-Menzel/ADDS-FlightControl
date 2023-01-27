@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, url_for, redirect
+from flask import Flask, url_for, redirect, jsonify
 
 
 def create_app(test_config=None):
@@ -26,6 +26,10 @@ def create_app(test_config=None):
     
     from . import db
     db.init_app(app)
+
+    @app.route('/how_are_you')
+    def how_are_you():
+        return jsonify({ 'version': '1.0.0-alpha' })
 
     # register blueprints
     from . import tell
