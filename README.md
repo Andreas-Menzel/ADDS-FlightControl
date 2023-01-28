@@ -24,7 +24,7 @@ flask --app flaskr/ --debug run
 
 - [x] /api/tell/here_i_am
 - [ ] /api/tell/here_i_go
-- [x] /api/tell/my_health
+- [ ] /api/tell/my_health
 - [x] /api/tell/register
 - [x] /api/tell/deregister
 - [x] /api/tell/activate_drone
@@ -32,9 +32,9 @@ flask --app flaskr/ --debug run
 
 **ASK**
 
-- [x] /api/ask/get_drone_info
+- [ ] /api/ask/get_drone_info
 - [ ] /api/ask/request_flight_plan
-- [x] /api/ask/request_clearance
+- [ ] /api/ask/request_clearance
 
 **INFRASTRUCTURE**
 
@@ -106,36 +106,36 @@ The drone can send information about its current health and status.
 A drone can be registered. Once a drone is registered, it can "tell data" and be
 activated.
 
-| FIELD    | REQ / OPT |
-|----------|-----------|
-| drone_id | required  |
+| FIELD        | TYPE       | REQ / OPT    |
+|--------------|------------|--------------|
+| **drone_id** | **string** | **required** |
 
 #### /api/tell/deregister_drone
 
 A drone can be deregistered. Once a drone is deregistered, it cannot be used
 anymore. This will delete a drone from the system.
 
-| FIELD    | REQ / OPT |
-|----------|-----------|
-| drone_id | required  |
+| FIELD        | TYPE       | REQ / OPT    |
+|--------------|------------|--------------|
+| **drone_id** | **string** | **required** |
 
 #### /api/tell/activate_drone
 
 A drone can be activated. Once a drone is active, it is open for jobs and ready
 to be used.
 
-| FIELD    | REQ / OPT |
-|----------|-----------|
-| drone_id | required  |
+| FIELD        | TYPE       | REQ / OPT    |
+|--------------|------------|--------------|
+| **drone_id** | **string** | **required** |
 
 #### /api/tell/deactivate_drone
 
 A drone can be deactivated. Once a drone is deactivated, it is not open for jobs
 and cannot be used anymore.
 
-| FIELD    | REQ / OPT |
-|----------|-----------|
-| drone_id | required  |
+| FIELD        | TYPE       | REQ / OPT    |
+|--------------|------------|--------------|
+| **drone_id** | **string** | **required** |
 
 ### ASK
 
