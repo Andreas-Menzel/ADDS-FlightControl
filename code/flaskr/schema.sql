@@ -18,8 +18,10 @@ CREATE TABLE drones (
     roll                        FLOAT,
     
     health                      TEXT,
-    battery_soc                 INTEGER,
-    rem_flight_time             INTEGER
+    battery_remaining           INTEGER,
+    battery_remaining_percent   INTEGER,
+    remaining_flight_time       INTEGER,
+    remaining_flight_radius     FLOAT
 );
 
 CREATE TABLE intersections (

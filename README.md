@@ -24,7 +24,7 @@ flask --app flaskr/ --debug run
 
 - [x] /api/tell/here_i_am
 - [ ] /api/tell/here_i_go
-- [ ] /api/tell/my_health
+- [x] /api/tell/my_health
 - [x] /api/tell/register
 - [x] /api/tell/deregister
 - [x] /api/tell/activate_drone
@@ -94,12 +94,14 @@ The drone can send information about the planned flight path.
 
 The drone can send information about its current health and status.
 
-| FIELD           | REQ / OPT | VALUES                  |
-|-----------------|-----------|-------------------------|
-| drone_id        | required  |                         |
-| health          | required  | `'ok'` \| `'emergency'` |
-| battery_soc     | required  |                         |
-| rem_flight_time | optional  |                         |
+| FIELD                         | REQ / OPT    | TYPE       | VALUES                              |
+|-------------------------------|--------------|------------|-------------------------------------|
+| **drone_id**                  | **required** | **string** |                                     |
+| **health**                    | **required** | **string** | `'ok'` \| `'emergency'`             |
+| *battery_remaining*           | *optional*   | *int*      | In mAh.                             |
+| **battery_remaining_percent** | **required** | **int**    | In percent.                         |
+| *remaining_flight_time*       | *optional*   | *int*      | In seconds.                         |
+| *remaining_flight_radius*     | *optional*   | *float*    | In meters around the home location. |
 
 #### /api/tell/register_drone
 

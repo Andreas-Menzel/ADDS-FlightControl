@@ -141,24 +141,31 @@
         <hr>
 
         <h4>/tell/my_health</h4>
-        <form action="/ask/my_health" method="get" target="_blank">
+        <form action="/tell/my_health" method="get" target="_blank">
             <table>
                 <tr>
                     <td><b>drone_id:</b></td>
-                    <td><input type="text" name="drone_id"></td>
+                    <td><input type="text" name="drone_id" value="dummy_drone"></td>
                 </tr>
                 <tr>
                     <td><b>health:</b></td>
-                    <td><input type="text" name="health"></td>
+                    <td><input type="text" name="health" value="ok"></td>
                 </tr>
                 <tr>
-                    <td><b>battery_soc:</b></td>
-                    <td><input type="text" name="battery_soc"></td>
+                    <td><i>battery_remaining:</i></td>
+                    <td><input type="number" name="battery_remaining" step="1" min="0" max="1000000"></td>
                 </tr>
-
                 <tr>
-                    <td><i>rem_flight_time:</i></td>
-                    <td><input type="text" name="rem_flight_time"></td>
+                    <td><b>battery_remaining_percent:</b></td>
+                    <td><input type="number" name="battery_remaining_percent" value="75" step="1" min="0" max="100"></td>
+                </tr>
+                <tr>
+                    <td><i>remaining_flight_time:</i></td>
+                    <td><input type="number" name="remaining_flight_time" step="1" min="0" max="36000"></td>
+                </tr>
+                <tr>
+                    <td><i>remaining_flight_radius:</i></td>
+                    <td><input type="number" name="remaining_flight_radius" step="1" min="0" max="100000"></td>
                 </tr>
 
                 <tr>
