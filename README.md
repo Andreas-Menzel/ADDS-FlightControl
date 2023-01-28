@@ -68,16 +68,18 @@ The server returns a json string with the following elements.
 
 The drone can send information about the current location, heading and speed.
 
-| FIELD           | REQ / OPT | INFORMATION                        |
-|-----------------|-----------|------------------------------------|
-| drone_id        | required  |                                    |
-| coordinates_lat | required  |                                    |
-| coordinates_lon | required  |                                    |
-| height          | required  | In m                               |
-| heading         | required  | In deg; 0:north, 90: east          |
-| air_speed       | optional  | In m/s                             |
-| ground_speed    | optional  | In m/s                             |
-| vertical_speed  | optional  | Speed of ascent or descent. In m/s |
+| FIELD                      | TYPE        | REQ / OPT    | INFORMATION        |
+|----------------------------|-------------|--------------|--------------------|
+| **drone_id**               | **string**  | **required** |                    |
+| *gps_signal_level*         | *int*       | *optional*   | DJI drone: 0-5     |
+| *gps_satellites_connected* | *int*       | *optional*   |                    |
+| **gps_valid**              | **boolean** | **required** |                    |
+| **gps_lat**                | **float**   | **required** |                    |
+| **gps_lon**                | **float**   | **required** |                    |
+| **altitude**               | **float**   | **required** | In meters          |
+| *pitch*                    | *float*     | *optional*   | In deg: -180 - 180 |
+| *yaw*                      | *float*     | *optional*   | In deg: -180 - 180 |
+| *roll*                     | *float*     | *optional*   | In deg: -180 - 180 |
 
 #### /api/tell/here_i_go
 

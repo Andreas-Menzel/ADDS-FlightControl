@@ -80,36 +80,44 @@
             <table>
                 <tr>
                     <td><b>drone_id:</b></td>
-                    <td><input type="text" name="drone_id"></td>
+                    <td><input type="text" name="drone_id" value="dummy_drone"></td>
                 </tr>
                 <tr>
-                    <td><b>coordinates_lat:</b></td>
-                    <td><input type="text" name="coordinates_lat"></td>
+                    <td><i>gps_signal_level:</i></td>
+                    <td><input type="number" name="gps_signal_level" step="1" min="0" max="5"></td>
                 </tr>
                 <tr>
-                    <td><b>coordinates_lon:</b></td>
-                    <td><input type="text" name="coordinates_lon"></td>
+                    <td><i>gps_satellites_connected:</i></td>
+                    <td><input type="number" name="gps_satellites_connected" step="1" min="0" max="128"></td>
                 </tr>
                 <tr>
-                    <td><b>height:</b></td>
-                    <td><input type="text" name="height"></td>
+                    <td><b>gps_valid:</b></td>
+                    <td style="display:none"><input type="checkbox" name="gps_valid" value="false" checked="checked"></td>
+                    <td><input type="checkbox" name="gps_valid" value="true" checked="checked"></td>
                 </tr>
                 <tr>
-                    <td><b>heading:</b></td>
-                    <td><input type="text" name="heading"></td>
-                </tr>
-
-                <tr>
-                    <td><i>air_speed:</i></td>
-                    <td><input type="text" name="air_speed"></td>
+                    <td><b>gps_lat:</b></td>
+                    <td><input type="number" name="gps_lat" value="48.047341" step="0.0000001" min="-90" max="90"></td>
                 </tr>
                 <tr>
-                    <td><i>ground_speed:</i></td>
-                    <td><input type="text" name="ground_speed"></td>
+                    <td><b>gps_lon:</b></td>
+                    <td><input type="number" name="gps_lon" value="11.654751" step="0.0000001" min="-180" max="180"></td>
                 </tr>
                 <tr>
-                    <td><i>vertical_speed:</i></td>
-                    <td><input type="text" name="vertical_speed"></td>
+                    <td><b>altitude:</b></td>
+                    <td><input type="number" name="altitude" value="0" step="0.001" min="0" max="256"></td>
+                </tr>
+                <tr>
+                    <td><i>pitch:</i></td>
+                    <td><input type="number" name="pitch" step="0.01" min="-180" max="180"></td>
+                </tr>
+                <tr>
+                    <td><i>yaw:</i></td>
+                    <td><input type="number" name="yaw" step="0.01" min="-180" max="180"></td>
+                </tr>
+                <tr>
+                    <td><i>roll:</i></td>
+                    <td><input type="number" name="roll" step="0.01" min="-180" max="180"></td>
                 </tr>
 
                 <tr>

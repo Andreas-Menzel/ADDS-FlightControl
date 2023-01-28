@@ -18,22 +18,51 @@ bp = Blueprint('tell', __name__, url_prefix='/tell')
 def here_i_am():
     response = get_response_template()
 
-    drone_id        = request.values.get('drone_id')
-    coordinates_lat = request.values.get('coordinates_lat')
-    coordinates_lon = request.values.get('coordinates_lon')
-    height          = request.values.get('height')
-    heading         = request.values.get('heading')
-    air_speed       = request.values.get('air_speed')
-    ground_speed    = request.values.get('ground_speed')
-    vertical_speed  = request.values.get('vertical_speed')
+    # Get values from URL (or POST)
+    drone_id  = request.values.get('drone_id')
+    gps_signal_level = request.values.get('gps_signal_level')
+    gps_satellites_connected = request.values.get('gps_satellites_connected')
+    gps_valid = request.values.get('gps_valid')
+    gps_lat   = request.values.get('gps_lat')
+    gps_lon   = request.values.get('gps_lon')
+    altitude  = request.values.get('altitude')
+    pitch     = request.values.get('pitch')
+    yaw       = request.values.get('yaw')
+    roll      = request.values.get('roll')
 
     # Check if all required values were given
     response = check_argument_not_null(response, drone_id, 'drone_id')
-    response = check_argument_not_null(response, coordinates_lat, 'coordinates_lat')
-    response = check_argument_not_null(response, coordinates_lon, 'coordinates_lon')
-    response = check_argument_not_null(response, height, 'height')
-    response = check_argument_not_null(response, heading, 'heading')
+    response = check_argument_not_null(response, gps_valid, 'gps_valid')
+    response = check_argument_not_null(response, gps_lat, 'gps_lat')
+    response = check_argument_not_null(response, gps_lon, 'gps_lon')
+    response = check_argument_not_null(response, altitude, 'altitude')
     
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+    
+    # Convert variables to correct type
+    if not gps_signal_level == None:
+        response, gps_signal_level = check_argument_type(response, gps_signal_level, 'gps_signal_level', 'int')
+    if not gps_satellites_connected == None:
+        response, gps_satellites_connected = check_argument_type(response, gps_satellites_connected, 'gps_satellites_connected', 'int')
+    if not gps_valid == None:
+        response, gps_valid = check_argument_type(response, gps_valid, 'gps_valid', 'boolean')
+    if not gps_lat == None:
+        response, gps_lat = check_argument_type(response, gps_lat, 'gps_lat', 'float')
+    if not gps_lon == None:
+        response, gps_lat = check_argument_type(response, gps_lon, 'gps_lon', 'float')
+    if not altitude == None:
+        response, altitude = check_argument_type(response, altitude, 'altitude', 'float')
+    if not pitch == None:
+        response, pitch = check_argument_type(response, pitch, 'pitch', 'float')
+    if not yaw == None:
+        response, yaw = check_argument_type(response, yaw, 'yaw', 'float')
+    if not roll == None:
+        response, roll = check_argument_type(response, roll, 'roll', 'float')
+
+    # TODO: Check if value sets are complete (gps_lat & gps_lon, pitch & yaw & roll)
+
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
@@ -46,7 +75,7 @@ def here_i_am():
         response = add_error_to_response(
             response,
             1,
-            f'No drone with id "{drone_id}" found',
+            f'Drone with id "{drone_id}" not found.',
             False
         )
     
@@ -55,23 +84,63 @@ def here_i_am():
         return jsonify(response)
 
     try:
+        # Update all required fields
         db.execute("""
-        UPDATE drones
-        SET coordinates_lat = ?,
-            coordinates_lon = ?,
-            height = ?,
-            heading = ?
-        WHERE id = ?
-        """, (coordinates_lat, coordinates_lon, height, heading, drone_id,))
+            UPDATE drones
+            SET gps_valid = ?,
+                gps_lat = ?,
+                gps_lon = ?,
+                altitude = ?
+            WHERE id = ?
+            """, (gps_valid, gps_lat, gps_lon, altitude, drone_id,)
+        )
 
-        # TODO: air_speed, ground_speed, vertical_speed (calculate & set)
+        # Update gps_signal_level if is set
+        if not gps_signal_level == None:
+            db.execute("""
+            UPDATE drones
+            SET gps_signal_level = ?
+            WHERE id = ?
+            """, (gps_signal_level, drone_id,))
+        
+        # Update gps_satellites_connected if is set
+        if not gps_satellites_connected == None:
+            db.execute("""
+            UPDATE drones
+            SET gps_satellites_connected = ?
+            WHERE id = ?
+            """, (gps_satellites_connected, drone_id,))
+        
+        # Update pitch if is set
+        if not pitch == None:
+            db.execute("""
+            UPDATE drones
+            SET pitch = ?
+            WHERE id = ?
+            """, (pitch, drone_id,))
+        
+        # Update yaw if is set
+        if not yaw == None:
+            db.execute("""
+            UPDATE drones
+            SET yaw = ?
+            WHERE id = ?
+            """, (yaw, drone_id,))
+        
+        # Update roll if is set
+        if not roll == None:
+            db.execute("""
+            UPDATE drones
+            SET roll = ?
+            WHERE id = ?
+            """, (roll, drone_id,))
 
         db.commit()
     except db.IntegrityError:
         response = add_error_to_response(
             response,
             1,
-            'Internal server error: IntegrityError while accessing the database',
+            'Internal server error: IntegrityError while accessing the database.',
             False
         )
 

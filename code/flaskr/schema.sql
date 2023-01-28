@@ -3,18 +3,23 @@ DROP TABLE IF EXISTS intersections;
 DROP TABLE IF EXISTS corridors;
 
 CREATE TABLE drones (
-    id              TEXT    PRIMARY KEY,
-    active          INT     NOT NULL    DEFAULT 0,
-    coordinates_lat TEXT,
-    coordinates_lon TEXT,
-    height          INTEGER,
-    heading         INTEGER,
-    air_speed       INTEGER,
-    ground_speed    INTEGER,
-    vertical_speed  INTEGER,
-    health          TEXT,
-    battery_soc     INTEGER,
-    rem_flight_time INTEGER
+    id                          TEXT    PRIMARY KEY,
+    active                      INTEGER NOT NULL    DEFAULT 0,
+    
+    gps_signal_level            INTEGER,
+    gps_satellites_connected    INTEGER,
+
+    gps_valid                   TEXT,
+    gps_lat                     FLOAT,
+    gps_lon                     FLOAT,
+    altitude                    INTEGER,
+    pitch                       FLOAT,
+    yaw                         FLOAT,
+    roll                        FLOAT,
+    
+    health                      TEXT,
+    battery_soc                 INTEGER,
+    rem_flight_time             INTEGER
 );
 
 CREATE TABLE intersections (
@@ -30,7 +35,7 @@ CREATE TABLE corridors (
     intersection_b  TEXT    NOT NULL
 );
 
-INSERT INTO drones(id, active) VALUES("test_drone", 0);
+INSERT INTO drones(id, active) VALUES("dummy_drone", 0);
 
 INSERT INTO intersections VALUES("EDMR-Landeplatz", "48.048121", "11.653678", 0);
 INSERT INTO intersections VALUES("int_1", "48.047705", "11.653841", 0);
