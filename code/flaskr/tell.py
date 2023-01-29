@@ -26,6 +26,9 @@ def here_i_am():
     gps_lat = request.values.get('gps_lat')
     gps_lon = request.values.get('gps_lon')
     altitude = request.values.get('altitude')
+    velocity_x = request.values.get('velocity_x')
+    velocity_y = request.values.get('velocity_y')
+    velocity_z = request.values.get('velocity_z')
     pitch = request.values.get('pitch')
     yaw = request.values.get('yaw')
     roll = request.values.get('roll')
@@ -60,6 +63,15 @@ def here_i_am():
     if not altitude is None:
         response, altitude = check_argument_type(
             response, altitude, 'altitude', 'float')
+    if not velocity_x is None:
+        response, velocity_x = check_argument_type(
+            response, velocity_x, 'velocity_x', 'float')
+    if not velocity_y is None:
+        response, velocity_y = check_argument_type(
+            response, velocity_y, 'velocity_y', 'float')
+    if not velocity_z is None:
+        response, velocity_z = check_argument_type(
+            response, velocity_z, 'velocity_z', 'float')
     if not pitch is None:
         response, pitch = check_argument_type(
             response, pitch, 'pitch', 'float')
@@ -118,6 +130,30 @@ def here_i_am():
             SET gps_satellites_connected = ?
             WHERE id = ?
             """, (gps_satellites_connected, drone_id,))
+
+        # Update velocity_x if is set
+        if not velocity_x is None:
+            db.execute("""
+            UPDATE drones
+            SET velocity_x = ?
+            WHERE id = ?
+            """, (velocity_x, drone_id,))
+
+        # Update velocity_y if is set
+        if not velocity_y is None:
+            db.execute("""
+            UPDATE drones
+            SET velocity_y = ?
+            WHERE id = ?
+            """, (velocity_y, drone_id,))
+
+        # Update velocity_z if is set
+        if not velocity_z is None:
+            db.execute("""
+            UPDATE drones
+            SET velocity_z = ?
+            WHERE id = ?
+            """, (velocity_z, drone_id,))
 
         # Update pitch if is set
         if not pitch is None:
@@ -195,7 +231,7 @@ def my_health():
         return jsonify(response)
 
     db = get_db()
-    
+
     # Check if drone with given id exists
     tmp_db_drone_id = db.execute(
         'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()

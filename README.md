@@ -77,6 +77,9 @@ The drone can send information about the current location, heading and speed.
 | **gps_lat**                | **float**   | **required** |                    |
 | **gps_lon**                | **float**   | **required** |                    |
 | **altitude**               | **float**   | **required** | In meters          |
+| *velocity_x*               | *float*     | *optional*   | In meters / second |
+| *velocity_y*               | *float*     | *optional*   | In meters / second |
+| *velocity_z*               | *float*     | *optional*   | In meters / second |
 | *pitch*                    | *float*     | *optional*   | In deg: -180 - 180 |
 | *yaw*                      | *float*     | *optional*   | In deg: -180 - 180 |
 | *roll*                     | *float*     | *optional*   | In deg: -180 - 180 |
