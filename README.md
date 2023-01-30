@@ -157,8 +157,8 @@ The `response_data` field of the response will contain the following elements:
 
 ```
 <drone_id>: {
-    'coordinates_lat': { 'age': <age>, 'data': <coordinates> },
-    'coordinates_lon': { 'age': <age>, 'data': <coordinates> },
+    'gps_lat':         { 'age': <age>, 'data': <gps_lat> },
+    'gps_lon':         { 'age': <age>, 'data': <gps_lon> },
     'height':          { 'age': <age>, 'data': <height> },
     'heading':         { 'age': <age>, 'data': <heading> },
     'air_speed':       { 'age': <age>, 'data': <air_speed> },
@@ -211,8 +211,8 @@ A system administrator can add a new intersection
 | FIELD           | REQ / OPT |
 |-----------------|-----------|
 | intersection_id | required  |
-| coordinates_lat | required  |
-| coordinates_lon | required  |
+| gps_lat | required  |
+| gps_lon | required  |
 | height          | required  |
 
 #### /api/infrastructure/remove_intersection
@@ -235,8 +235,8 @@ The `response_data` field of the response will contain the following elements:
 
 ```
 'intersection_id': <id>,
-'coordinates_lat': <coordinates_lat>,
-'coordinates_lon': <coordinates_lon>,
+'gps_lat': <gps_lat>,
+'gps_lon': <gps_lon>,
 'height': <height>
 ```
 
@@ -245,8 +245,8 @@ or
 ```
 <intersection_id>: {
     'intersection_id': <id>,
-    'coordinates_lat': <coordinates_lat>,
-    'coordinates_lon': <coordinates_lon>,
+    'gps_lat': <gps_lat>,
+    'gps_lon': <gps_lon>,
     'height': <height>
 },
 ...

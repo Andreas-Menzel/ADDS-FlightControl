@@ -19,16 +19,17 @@ def add_intersection():
     response = get_response_template()
 
     intersection_id = request.values.get('intersection_id')
-    coordinates_lat = request.values.get('coordinates_lat')
-    coordinates_lon = request.values.get('coordinates_lon')
-    height          = request.values.get('height')
-    
+    gps_lat = request.values.get('gps_lat')
+    gps_lon = request.values.get('gps_lon')
+    height = request.values.get('height')
+
     # Check if all required values were given
-    response = check_argument_not_null(response, intersection_id, 'intersection_id')
-    response = check_argument_not_null(response, coordinates_lat, 'coordinates_lat')
-    response = check_argument_not_null(response, coordinates_lon, 'coordinates_lon')
-    response = check_argument_not_null(response, height, 'height')    
-    
+    response = check_argument_not_null(
+        response, intersection_id, 'intersection_id')
+    response = check_argument_not_null(response, gps_lat, 'gps_lat')
+    response = check_argument_not_null(response, gps_lon, 'gps_lon')
+    response = check_argument_not_null(response, height, 'height')
+
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
@@ -36,7 +37,8 @@ def add_intersection():
     db = get_db()
 
     # Check if intersection with given id already exists
-    db_intersection_info = db.execute('SELECT * FROM intersections WHERE id = ?', (intersection_id,)).fetchone()
+    db_intersection_info = db.execute(
+        'SELECT * FROM intersections WHERE id = ?', (intersection_id,)).fetchone()
     if not db_intersection_info is None:
         response = add_error_to_response(
             response,
@@ -51,9 +53,9 @@ def add_intersection():
 
     try:
         db.execute("""
-            INSERT INTO intersections(id, coordinates_lat, coordinates_lon, height)
+            INSERT INTO intersections(id, gps_lat, gps_lon, height)
             VALUES(?, ?, ?, ?)
-            """, (intersection_id, coordinates_lat, coordinates_lon, height,))
+            """, (intersection_id, gps_lat, gps_lon, height,))
 
         db.commit()
     except db.IntegrityError:
@@ -72,10 +74,11 @@ def remove_intersection():
     response = get_response_template()
 
     intersection_id = request.values.get('intersection_id')
-    
+
     # Check if all required values were given
-    response = check_argument_not_null(response, intersection_id, 'intersection_id')
-    
+    response = check_argument_not_null(
+        response, intersection_id, 'intersection_id')
+
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
@@ -102,10 +105,12 @@ def remove_intersection():
         return jsonify(response)
 
     # Check if intersection with given id exists
-    db_intersection_info = db.execute('SELECT id FROM intersections WHERE id = ?', (intersection_id,)).fetchone()
+    db_intersection_info = db.execute(
+        'SELECT id FROM intersections WHERE id = ?', (intersection_id,)).fetchone()
     if not db_intersection_info is None:
         try:
-            db.execute('DELETE FROM intersections WHERE id = ?', (intersection_id,))
+            db.execute('DELETE FROM intersections WHERE id = ?',
+                       (intersection_id,))
 
             db.commit()
         except db.IntegrityError:
@@ -130,10 +135,11 @@ def get_intersection_info():
     response = get_response_template(response_data=True)
 
     intersection_id = request.values.get('intersection_id')
-    
+
     # Check if all required values were given
-    response = check_argument_not_null(response, intersection_id, 'intersection_id')
-    
+    response = check_argument_not_null(
+        response, intersection_id, 'intersection_id')
+
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
@@ -141,21 +147,23 @@ def get_intersection_info():
     db = get_db()
 
     if intersection_id == 'all':
-        db_intersections_info = db.execute('SELECT * FROM intersections').fetchall()
+        db_intersections_info = db.execute(
+            'SELECT * FROM intersections').fetchall()
 
         intersections = {}
         for intersection in db_intersections_info:
             intersections[intersection['id']] = {
                 'intersection_id': intersection['id'],
-                'coordinates_lat': intersection['coordinates_lat'],
-                'coordinates_lon': intersection['coordinates_lon'],
+                'gps_lat': intersection['gps_lat'],
+                'gps_lon': intersection['gps_lon'],
                 'height': intersection['height']
             }
-        
+
         response['response_data'] = intersections
     else:
         # Check if intersection exists
-        db_intersection_info = db.execute('SELECT * FROM intersections WHERE id = ?', (intersection_id,)).fetchone()
+        db_intersection_info = db.execute(
+            'SELECT * FROM intersections WHERE id = ?', (intersection_id,)).fetchone()
         if db_intersection_info is None:
             response = add_error_to_response(
                 response,
@@ -166,8 +174,8 @@ def get_intersection_info():
         else:
             response['response_data'] = {
                 'intersection_id': intersection_id,
-                'coordinates_lat': db_intersection_info['coordinates_lat'],
-                'coordinates_lon': db_intersection_info['coordinates_lon'],
+                'gps_lat': db_intersection_info['gps_lat'],
+                'gps_lon': db_intersection_info['gps_lon'],
                 'height': db_intersection_info['height']
             }
 
@@ -178,15 +186,17 @@ def get_intersection_info():
 def add_corridor():
     response = get_response_template()
 
-    corridor_id    = request.values.get('corridor_id')
+    corridor_id = request.values.get('corridor_id')
     intersection_a = request.values.get('intersection_a')
     intersection_b = request.values.get('intersection_b')
-    
+
     # Check if all required values were given
     response = check_argument_not_null(response, corridor_id, 'corridor_id')
-    response = check_argument_not_null(response, intersection_a, 'intersection_a')
-    response = check_argument_not_null(response, intersection_b, 'intersection_b')
-    
+    response = check_argument_not_null(
+        response, intersection_a, 'intersection_a')
+    response = check_argument_not_null(
+        response, intersection_b, 'intersection_b')
+
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
@@ -194,7 +204,8 @@ def add_corridor():
     db = get_db()
 
     # Check if intersection_a exists
-    db_intersection_a = db.execute('SELECT id FROM intersections WHERE id = ?', (intersection_a,)).fetchone()
+    db_intersection_a = db.execute(
+        'SELECT id FROM intersections WHERE id = ?', (intersection_a,)).fetchone()
     if db_intersection_a is None:
         response = add_error_to_response(
             response,
@@ -204,7 +215,8 @@ def add_corridor():
         )
 
     # Check if intersection_b exists
-    db_intersection_b = db.execute('SELECT id FROM intersections WHERE id = ?', (intersection_b,)).fetchone()
+    db_intersection_b = db.execute(
+        'SELECT id FROM intersections WHERE id = ?', (intersection_b,)).fetchone()
     if db_intersection_b is None:
         response = add_error_to_response(
             response,
@@ -214,7 +226,8 @@ def add_corridor():
         )
 
     # Check if a corridor with given id already exists
-    db_corridor_info = db.execute('SELECT id FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
+    db_corridor_info = db.execute(
+        'SELECT id FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
     if not db_corridor_info is None:
         response = add_error_to_response(
             response,
@@ -222,7 +235,7 @@ def add_corridor():
             f'A corridor with the id "{corridor_id}" already exists.',
             False
         )
-    
+
     # Check if a corridor connecting the intersection a and b already exists
     db_corridor_connecting_info = db.execute("""
         SELECT id
@@ -265,10 +278,10 @@ def remove_corridor():
     response = get_response_template()
 
     corridor_id = request.values.get('corridor_id')
-    
+
     # Check if all required values were given
     response = check_argument_not_null(response, corridor_id, 'corridor_id')
-    
+
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
@@ -276,7 +289,8 @@ def remove_corridor():
     db = get_db()
 
     # Check if corridor with given id exists
-    db_corridor_info = db.execute('SELECT id FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
+    db_corridor_info = db.execute(
+        'SELECT id FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
     if not db_corridor_info is None:
         try:
             db.execute('DELETE FROM corridors WHERE id = ?', (corridor_id,))
@@ -304,10 +318,10 @@ def get_corridor_info():
     response = get_response_template(response_data=True)
 
     corridor_id = request.values.get('corridor_id')
-    
+
     # Check if all required values were given
     response = check_argument_not_null(response, corridor_id, 'corridor_id')
-    
+
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
@@ -316,7 +330,7 @@ def get_corridor_info():
 
     if corridor_id == 'all':
         db_corridors_info = db.execute('SELECT * FROM corridors').fetchall()
-        
+
         corridors = {}
         for corridor in db_corridors_info:
             corridors[corridor['id']] = {
@@ -324,11 +338,12 @@ def get_corridor_info():
                 'intersection_a': corridor['intersection_a'],
                 'intersection_b': corridor['intersection_b']
             }
-        
+
         response['response_data'] = corridors
     else:
         # Check if corridor exists
-        db_corridor_info = db.execute('SELECT * FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
+        db_corridor_info = db.execute(
+            'SELECT * FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
         if db_corridor_info is None:
             response = add_error_to_response(
                 response,

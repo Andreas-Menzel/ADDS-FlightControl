@@ -29,8 +29,8 @@ CREATE TABLE drones (
 
 CREATE TABLE intersections (
     id              TEXT    PRIMARY KEY,
-    coordinates_lat TEXT    NOT NULL,
-    coordinates_lon TEXT    NOT NULL,
+    gps_lat         TEXT    NOT NULL,
+    gps_lon         TEXT    NOT NULL,
     height          INT     NOT NULL
 );
 

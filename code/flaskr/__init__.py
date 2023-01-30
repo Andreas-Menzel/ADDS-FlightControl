@@ -23,13 +23,13 @@ def create_app(test_config=None):
         os.makedirs(app.instance_path)
     except OSError:
         pass
-    
+
     from . import db
     db.init_app(app)
 
     @app.route('/how_are_you')
     def how_are_you():
-        return jsonify({ 'version': '1.0.0-alpha' })
+        return jsonify({'version': '1.0.0-alpha'})
 
     # register blueprints
     from . import tell
@@ -43,6 +43,7 @@ def create_app(test_config=None):
 
     from . import ui
     app.register_blueprint(ui.bp)
+
     @app.route('/')
     def index():
         return redirect('/ui')
