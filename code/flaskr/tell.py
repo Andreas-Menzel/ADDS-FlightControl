@@ -58,7 +58,7 @@ def here_i_am():
         response, gps_lat = check_argument_type(
             response, gps_lat, 'gps_lat', 'float')
     if not gps_lon is None:
-        response, gps_lat = check_argument_type(
+        response, gps_lon = check_argument_type(
             response, gps_lon, 'gps_lon', 'float')
     if not altitude is None:
         response, altitude = check_argument_type(
