@@ -1,4 +1,4 @@
-# ADDS-TrafficSystem-Central
+# ADDS-TrafficControl
 The central part of the Traffic System running on the main server.
 
 **Initialize database**
