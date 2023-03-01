@@ -137,21 +137,25 @@ def tell_aircraft_location():
     try:
         # Update all required fields
         db.execute("""
-            UPDATE drones
-            SET gps_signal_level = ?,
-                gps_satellites_connected = ?,
-                gps_valid = ?,
-                gps_lat = ?,
-                gps_lon = ?,
-                altitude = ?,
-                velocity_x = ?,
-                velocity_y = ?,
-                velocity_z = ?,
-                pitch = ?,
-                yaw = ?,
-                roll = ?,
-            WHERE id = ?
-            """, (gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll, drone_id,)
+            INSERT INTO aircraft_location(
+                drone_id,
+                gps_signal_level,
+                gps_satellites_connected,
+                gps_valid,
+                gps_lat,
+                gps_lon,
+                altitude,
+                velocity_x,
+                velocity_y,
+                velocity_z,
+                pitch,
+                yaw,
+                roll
+            )
+            VALUES (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
+            """, (drone_id, gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll,)
         )
 
         db.commit()
