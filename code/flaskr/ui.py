@@ -88,3 +88,43 @@ def show_infrastructure():
         ).add_to(folium_map)
 
     return folium_map._repr_html_()
+
+
+@bp.route('/show_flightpath')
+def show_flightplan():
+    start_coords = (48.047341, 11.654751)
+    folium_map = folium.Map(location=start_coords, zoom_start=18)
+
+    db = get_db()
+
+    db_locations = db.execute('SELECT * FROM aircraft_location WHERE drone_id = "demo_drone"').fetchall()
+    lat_old = 0
+    lon_old = 0
+    for location in db_locations:
+        lat_new = location['gps_lat']
+        lon_new = location['gps_lon']
+
+        # Check if has changed and is valid
+        if lat_old == lat_new and lon_old == lon_new:
+            continue
+        if not location['gps_valid']:
+            continue
+
+        # Draw line if we have two coordinates
+        if not (lat_old == 0 and lat_new == 0):
+            folium.PolyLine(
+                [
+                    [lat_old, lon_old],
+                    [lat_new, lon_new]
+                ],
+                color='red',
+                weight=5,
+                opacity=1
+                #popup=f'<b>{corridor["id"]}</b>',
+                #tooltip=f'<b>{corridor["id"]}</b>'
+            ).add_to(folium_map)
+
+        lat_old = lat_new
+        lon_old = lon_new
+
+    return folium_map._repr_html_()
