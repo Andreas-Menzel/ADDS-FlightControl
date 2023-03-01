@@ -103,15 +103,16 @@ def show_flightplan():
     for location in db_locations:
         lat_new = location['gps_lat']
         lon_new = location['gps_lon']
+        gps_valid = strtobool(location['gps_valid'])
 
         # Check if has changed and is valid
         if lat_old == lat_new and lon_old == lon_new:
             continue
-        if not location['gps_valid']:
+        if not gps_valid:
             continue
 
         # Draw line if we have two coordinates
-        if not (lat_old == 0 and lat_new == 0):
+        if not (lat_old == 0 and lon_old == 0):
             folium.PolyLine(
                 [
                     [lat_old, lon_old],
