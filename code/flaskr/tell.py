@@ -16,7 +16,6 @@ from functions_collection import *
 bp = Blueprint('tell', __name__, url_prefix='/tell')
 
 
-
 @bp.route('aircraft_location')
 def tell_aircraft_location():
     response = get_response_template()
@@ -24,7 +23,8 @@ def tell_aircraft_location():
     # Get data formatted as JSON string
     payload_as_json_string = request.values.get('payload')
 
-    response = check_argument_not_null(response, payload_as_json_string, 'payload')
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
 
     # Return if an error already occured
     if not response['executed']:
@@ -49,7 +49,8 @@ def tell_aircraft_location():
     if not data_type == 'aircraft_location':
         response = add_error_to_response(response,
                                          1,
-                                         "'data_type' must be 'aircraft_location'.")
+                                         "'data_type' must be 'aircraft_location'.",
+                                         False)
 
     # Return if an error already occured
     if not response['executed']:
@@ -111,7 +112,129 @@ def tell_aircraft_location():
     response, yaw = check_argument_type(response, yaw, 'yaw', 'float')
     response, roll = check_argument_type(response, roll, 'roll', 'float')
 
-    # TODO: Check if value sets are complete (gps_lat & gps_lon, pitch & yaw & roll)
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if drone with given id exists
+    tmp_db_drone_id = db.execute(
+        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if tmp_db_drone_id is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    try:
+        db.execute("""
+            INSERT INTO aircraft_location(
+                drone_id,
+                gps_signal_level,
+                gps_satellites_connected,
+                gps_valid,
+                gps_lat,
+                gps_lon,
+                altitude,
+                velocity_x,
+                velocity_y,
+                velocity_z,
+                pitch,
+                yaw,
+                roll
+            )
+            VALUES (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
+            """, (drone_id, gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll,)
+        )
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
+
+    return jsonify(response)
+
+
+@bp.route('aircraft_power')
+def tell_aircraft_power():
+    response = get_response_template()
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload['drone_id']
+    data_type = payload['data_type']
+    data = payload['data']
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+    response = check_argument_not_null(response, data, 'data')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'aircraft_power':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'aircraft_power'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    battery_remaining = data['battery_remaining']
+    battery_remaining_percent = data['battery_remaining_percent']
+    remaining_flight_time = data['remaining_flight_time']
+    remaining_flight_radius = data['remaining_flight_radius']
+
+    response = check_argument_not_null(
+        response, battery_remaining, 'battery_remaining')
+    response = check_argument_not_null(
+        response, battery_remaining_percent, 'battery_remaining_percent')
+    response = check_argument_not_null(
+        response, remaining_flight_time, 'remaining_flight_time')
+    response = check_argument_not_null(
+        response, remaining_flight_radius, 'remaining_flight_radius')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Convert variables to correct type
+    response, battery_remaining = check_argument_type(
+        response, battery_remaining, 'battery_remaining', 'int')
+    response, battery_remaining_percent = check_argument_type(
+        response, battery_remaining_percent, 'battery_remaining_percent', 'int')
+    response, remaining_flight_time = check_argument_type(
+        response, remaining_flight_time, 'remaining_flight_time', 'int')
+    response, remaining_flight_radius = check_argument_type(
+        response, remaining_flight_radius, 'remaining_flight_radius', 'float')
 
     # Return if an error already occured
     if not response['executed']:
@@ -135,27 +258,18 @@ def tell_aircraft_location():
         return jsonify(response)
 
     try:
-        # Update all required fields
         db.execute("""
-            INSERT INTO aircraft_location(
+            INSERT INTO aircraft_power(
                 drone_id,
-                gps_signal_level,
-                gps_satellites_connected,
-                gps_valid,
-                gps_lat,
-                gps_lon,
-                altitude,
-                velocity_x,
-                velocity_y,
-                velocity_z,
-                pitch,
-                yaw,
-                roll
+                battery_remaining,
+                battery_remaining_percent,
+                remaining_flight_time,
+                remaining_flight_radius
             )
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?
             )
-            """, (drone_id, gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll,)
+            """, (drone_id, battery_remaining, battery_remaining_percent, remaining_flight_time, remaining_flight_radius,)
         )
 
         db.commit()
@@ -275,6 +389,9 @@ def my_health():
     return jsonify(response)
 
 
+################################################################################
+#                         UPDATE TO NEW SPECIFICATIONS                         #
+################################################################################
 @bp.route('register_drone')
 def register_drone():
     response = get_response_template()

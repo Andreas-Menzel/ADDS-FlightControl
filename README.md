@@ -22,9 +22,9 @@ flask --app flaskr/ --debug run
 
 **TELL**
 
-- [x] /api/tell/here_i_am
-- [ ] /api/tell/here_i_go
-- [x] /api/tell/my_health
+- [x] /api/tell/aircraft_location
+- [x] /api/tell/aircraft_power
+- [ ] /api/tell/my_health
 - [x] /api/tell/register
 - [x] /api/tell/deregister
 - [x] /api/tell/activate_drone
@@ -45,6 +45,24 @@ flask --app flaskr/ --debug run
 - [x] /api/infrastructure/remove_corridor
 - [x] /api/infrastructure/get_corridor_info
 
+### Structure of the payload
+
+The data sent to Traffic Control can be transmitted by GET or POST. The data
+is packaged inside a JSON string with the following format:
+
+```json
+{
+    "drone_id": <drone_id>,
+    "data_type": <data_type>,
+    "data": {
+        
+    }
+}
+```
+
+In the sections below the `data_type` and `data` fields are specified per
+category.
+
 ### Structure of return message
 
 The server returns a json string with the following elements.
@@ -64,47 +82,82 @@ The server returns a json string with the following elements.
 
 ### TELL
 
-#### /api/tell/here_i_am
+#### /api/tell/aircraft_location
 
 The drone can send information about the current location, heading and speed.
 
-| FIELD                      | TYPE        | REQ / OPT    | INFORMATION        |
-|----------------------------|-------------|--------------|--------------------|
-| **drone_id**               | **string**  | **required** |                    |
-| *gps_signal_level*         | *int*       | *optional*   | DJI drone: 0-5     |
-| *gps_satellites_connected* | *int*       | *optional*   |                    |
-| **gps_valid**              | **boolean** | **required** |                    |
-| **gps_lat**                | **float**   | **required** |                    |
-| **gps_lon**                | **float**   | **required** |                    |
-| **altitude**               | **float**   | **required** | In meters          |
-| *velocity_x*               | *float*     | *optional*   | In meters / second |
-| *velocity_y*               | *float*     | *optional*   | In meters / second |
-| *velocity_z*               | *float*     | *optional*   | In meters / second |
-| *pitch*                    | *float*     | *optional*   | In deg: -180 - 180 |
-| *yaw*                      | *float*     | *optional*   | In deg: -180 - 180 |
-| *roll*                     | *float*     | *optional*   | In deg: -180 - 180 |
+The `data_type` is `aircraft_location`.
 
-#### /api/tell/here_i_go
+| FIELD                    | TYPE    | REQ / OPT | INFORMATION                                                |
+|--------------------------|---------|-----------|------------------------------------------------------------|
+| gps_signal_level         | int     | required  | [0;5]                                                      |
+| gps_satellites_connected | int     | required  | [0;X]                                                      |
+| gps_valid                | boolean | required  | Says whether one can trust the gps_lat and gps_lon values. |
+| gps_lat                  | float   | required  | GPS latitude.                                              |
+| gps_lon                  | float   | required  | GPS longitude.                                             |
+| altitude                 | float   | required  | In meters above take-off point.                            |
+| velocity_x               | float   | required  | In meters / second.                                        |
+| velocity_y               | float   | required  | In meters / second.                                        |
+| velocity_z               | float   | required  | In meters / second.                                        |
+| pitch                    | float   | required  | In deg: [-180;180].                                        |
+| yaw                      | float   | required  | In deg: [-180;180].                                        |
+| roll                     | float   | required  | In deg: [-180;180].                                        |
 
-The drone can send information about the planned flight path.
+<details><summary>Sample payload</summary><p>
 
-| FIELD     | REQ / OPT | VALUES                                                                   |
-|-----------|-----------|--------------------------------------------------------------------------|
-| drone_id  | required  |                                                                          |
-| waypoints | required  | `[ { coordinates: <coord>, height: <height>, heading: <heading>}, ... ]` |
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "aircraft_location",
+    "data": {
+        "gps_signal_level": 5,
+        "gps_satellites_connected": 9,
+        "gps_valid": 1,
+        "gps_lat": 48.047341,
+        "gps_lon": 11.654751,
+        "altitude": 42,
+        "velocity_x": 3.7,
+        "velocity_y": 5.0,
+        "velocity_z": 0.0,
+        "pitch": -20.0,
+        "yaw": 0.0,
+        "roll": 60.0
+    }
+}
+```
 
-#### /api/tell/my_health
+</p></details><br>
 
-The drone can send information about its current health and status.
+#### /api/tell/aircraft_power
 
-| FIELD                         | REQ / OPT    | TYPE       | VALUES                              |
-|-------------------------------|--------------|------------|-------------------------------------|
-| **drone_id**                  | **required** | **string** |                                     |
-| **health**                    | **required** | **string** | `'ok'` \| `'emergency'`             |
-| *battery_remaining*           | *optional*   | *int*      | In mAh.                             |
-| **battery_remaining_percent** | **required** | **int**    | In percent.                         |
-| *remaining_flight_time*       | *optional*   | *int*      | In seconds.                         |
-| *remaining_flight_radius*     | *optional*   | *float*    | In meters around the home location. |
+The drone can send information about the battery state of charge and remaining
+flight time and radius.
+
+The `data_type` is `aircraft_power`.
+
+| FIELD                     | TYPE  | REQ / OPT | INFORMATION                         |
+|---------------------------|-------|-----------|-------------------------------------|
+| battery_remaining         | int   | required  | Battery capacity remaining. In mAh. |
+| battery_remaining_percent | int   | required  | Battery capacity remaining. In %.   |
+| remaining_flight_time     | int   | required  | In seconds.                         |
+| remaining_flight_radius   | float | required  | In meters.                          |
+
+<details><summary>Sample payload</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "aircraft_power",
+    "data": {
+        "battery_remaining": 4500,
+        "battery_remaining_percent": 42,
+        "remaining_flight_time": 720,
+        "remaining_flight_radius": 4530.2
+    }
+}
+```
+
+</p></details><br>
 
 #### /api/tell/register_drone
 
@@ -211,8 +264,8 @@ A system administrator can add a new intersection
 | FIELD           | REQ / OPT |
 |-----------------|-----------|
 | intersection_id | required  |
-| gps_lat | required  |
-| gps_lon | required  |
+| gps_lat         | required  |
+| gps_lon         | required  |
 | height          | required  |
 
 #### /api/infrastructure/remove_intersection

@@ -1,7 +1,10 @@
 DROP TABLE IF EXISTS drones;
 DROP TABLE IF EXISTS aircraft_location;
+DROP TABLE IF EXISTS aircraft_power;
+
 DROP TABLE IF EXISTS intersections;
 DROP TABLE IF EXISTS corridors;
+
 
 CREATE TABLE drones (
     id                          TEXT    PRIMARY KEY,
@@ -16,7 +19,7 @@ CREATE TABLE drones (
 
 CREATE TABLE aircraft_location (
     id                          INTEGER PRIMARY KEY AUTOINCREMENT,
-    drone_id                    TEXT,
+    drone_id                    TEXT NOT NULL,
     
     gps_signal_level            INTEGER,
     gps_satellites_connected    INTEGER,
@@ -33,6 +36,18 @@ CREATE TABLE aircraft_location (
     roll                        FLOAT
 );
 
+CREATE TABLE aircraft_power (
+    id                          INTEGER PRIMARY KEY AUTOINCREMENT,
+    drone_id                    TEXT NOT NULL,
+
+    battery_remaining           INTEGER,
+    battery_remaining_percent   INTEGER,
+
+    remaining_flight_time       INTEGER,
+    remaining_flight_radius     FLOAT
+);
+
+
 CREATE TABLE intersections (
     id              TEXT    PRIMARY KEY,
     gps_lat         TEXT    NOT NULL,
@@ -45,6 +60,7 @@ CREATE TABLE corridors (
     intersection_a  TEXT    NOT NULL,
     intersection_b  TEXT    NOT NULL
 );
+
 
 INSERT INTO drones(id, active) VALUES("demo_drone", 0);
 
