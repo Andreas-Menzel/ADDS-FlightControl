@@ -112,7 +112,7 @@ The `data_type` is `aircraft_location`.
     "data": {
         "gps_signal_level": 5,
         "gps_satellites_connected": 9,
-        "gps_valid": 1,
+        "gps_valid": "true",
         "gps_lat": 48.047341,
         "gps_lon": 11.654751,
         "altitude": 42,
