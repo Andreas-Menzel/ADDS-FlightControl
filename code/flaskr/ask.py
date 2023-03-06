@@ -125,3 +125,103 @@ def get_drone_info():
         }
 
     return jsonify(response)
+
+
+@bp.route('aircraft_power')
+def get_drone_info():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')  # can be None
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'aircraft_power':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'aircraft_power'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if drone with given id exists
+    db_drone_id = db.execute(
+        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if db_drone_id is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Get aircraft_power data
+    db_drone_info = None
+    if data is None:
+        # Get latest entry
+        db_drone_info = db.execute("""
+            SELECT * FROM aircraft_power
+            WHERE drone_id = ?
+            ORDER BY id DESC
+            """, (drone_id,)).fetchone()
+    else:
+        # Get specific entry
+        data_id = data.get('data_id')
+
+        response = check_argument_not_null(response, data_id, 'data_id')
+
+        # Return if an error already occured
+        if not response['executed']:
+            return jsonify(response)
+
+        response, data_id = check_argument_type(
+            response, data_id, 'data_id', 'int')
+
+        # Return if an error already occured
+        if not response['executed']:
+            return jsonify(response)
+
+        db_drone_info = db.execute("""
+            SELECT * FROM aircraft_power
+            WHERE drone_id = ?
+                  AND id = ?
+            """, (drone_id, data_id,)).fetchone()
+
+    if not db_drone_info is None:
+        response['response_data'] = {
+            'battery_remaining': db_drone_info['battery_remaining'],
+            'battery_remaining_percent': db_drone_info['battery_remaining_percent'],
+
+            'remaining_flight_time': db_drone_info['remaining_flight_time'],
+            'remaining_flight_radius': db_drone_info['remaining_flight_radius']
+        }
+
+    return jsonify(response)
