@@ -9,6 +9,7 @@ These interfaces are accessible via `<server_domain>/api/tell/<interface>`.
 - [Format of the request payload and response](#format-of-the-request-payload-and-response)
 - [Interfaces](#interfaces)
     - [aircraft_location](#aircraft_location)
+    - [aircraft_power](#aircraft_power)
 
 ## Format of the request payload and response
 
@@ -178,6 +179,44 @@ The `data_type` is `aircraft_location`.
         "pitch": 0,
         "yaw": 0,
         "roll": 0
+    }
+}
+```
+
+</details>
+
+#### Response
+
+Standard response. The `response_data` field is never set.
+
+### aircraft_power
+
+One can send information about the state of charge and range of a drone.
+
+#### Request
+
+The `data_type` is `aircraft_power`.
+
+**Payload - data field (required)**
+
+| FIELD                     | TYPE  | REQ / OPT | INFORMATION |
+|---------------------------|-------|-----------|-------------|
+| battery_remaining         | int   | required  | In mAh.     |
+| battery_remaining_percent | int   | required  | In %.       |
+| remaining_flight_time     | int   | required  | In seconds. |
+| remaining_flight_radius   | float | required  | In meters.  |
+
+<details><summary>Sample payload</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "aircraft_power",
+    "data": {
+        "battery_remaining": 4500,
+        "battery_remaining_percent": 42,
+        "remaining_flight_time": 550,
+        "remaining_flight_radius": 4320.5
     }
 }
 ```

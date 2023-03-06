@@ -9,6 +9,7 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
 - [Format of the request payload and response](#format-of-the-request-payload-and-response)
 - [Interfaces](#interfaces)
     - [aircraft_location](#aircraft_location)
+    - [aircraft_power](#aircraft_power)
 
 ## Format of the request payload and response
 
@@ -202,20 +203,20 @@ The `data_type` is `aircraft_location`.
 
 **response_data field**
 
-| FIELD                    | TYPE    | INFORMATION                                  |
-|--------------------------|---------|----------------------------------------------|
-| gps_signal_level         | int     | 0 (no gps signal) - 5 (very good gps signal) |
-| gps_satellites_connected | int     | Number of gps-satellites connected.          |
-| gps_valid                | boolean | Whether the drone has a (valid) gps-signal.  |
-| gps_lat                  | float   | Latitude.                                    |
-| gps_lon                  | float   | Longitude.                                   |
-| altitude                 | float   | Altitude in meters.                          |
-| velocity_x               | float   | Velocity X in meters / second.               |
-| velocity_y               | float   | Velocity Y in meters / second.               |
-| velocity_z               | float   | Velocity Z in meters / second.               |
-| pitch                    | float   | [-180;180].                                  |
-| yaw                      | float   | [-180;180].                                  |
-| roll                     | float   | [-180;180].                                  |
+| FIELD                    | TYPE    | VALUE SET? | INFORMATION                                  |
+|--------------------------|---------|------------|----------------------------------------------|
+| gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal) |
+| gps_satellites_connected | int     | always     | Number of gps-satellites connected.          |
+| gps_valid                | boolean | always     | Whether the drone has a (valid) gps-signal.  |
+| gps_lat                  | float   | always     | Latitude.                                    |
+| gps_lon                  | float   | always     | Longitude.                                   |
+| altitude                 | float   | always     | Altitude in meters.                          |
+| velocity_x               | float   | always     | Velocity X in meters / second.               |
+| velocity_y               | float   | always     | Velocity Y in meters / second.               |
+| velocity_z               | float   | always     | Velocity Z in meters / second.               |
+| pitch                    | float   | always     | [-180;180].                                  |
+| yaw                      | float   | always     | [-180;180].                                  |
+| roll                     | float   | always     | [-180;180].                                  |
 
 <details><summary>Sample response</summary><p>
 
@@ -241,6 +242,76 @@ The `data_type` is `aircraft_location`.
         "pitch": 0,
         "yaw": 0,
         "roll": 0
+    }
+}
+```
+
+</details>
+
+### aircraft_power
+
+One can request information about the state of charge and range of a drone.
+
+#### Request
+
+The `data_type` is `aircraft_power`.
+
+**Payload - data field (optional)**
+
+| FIELD   | TYPE | REQ / OPT | INFORMATION           |
+|---------|------|-----------|-----------------------|
+| data_id | int  | required  | ID of the data entry. |
+
+**Note:** *data_id* must be specified when the data-field is specified.
+
+<details><summary>Sample payload: Latest dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "aircraft_power"
+}
+```
+
+</details>
+
+<details><summary>Sample payload: Specific dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "aircraft_power",
+    "data": {
+        "data_id": 42
+    }
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD                     | TYPE  | VALUE SET? | INFORMATION |
+|---------------------------|-------|------------|-------------|
+| battery_remaining         | int   | always     | In mAh.     |
+| battery_remaining_percent | int   | always     | In %.       |
+| remaining_flight_time     | int   | always     | In seconds. |
+| remaining_flight_radius   | float | always     | In meters.  |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "battery_remaining": 4500,
+        "battery_remaining_percent": 42,
+        "remaining_flight_time": 550,
+        "remaining_flight_radius": 4320.5
     }
 }
 ```
