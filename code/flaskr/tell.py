@@ -34,9 +34,9 @@ def tell_aircraft_location():
 
     payload = json.loads(payload_as_json_string)
 
-    drone_id = payload['drone_id']
-    data_type = payload['data_type']
-    data = payload['data']
+    drone_id = payload.get('drone_id')
+    data_type = payloadget('data_type')
+    data = payloadget('data')
 
     response = check_argument_not_null(response, drone_id, 'drone_id')
     response = check_argument_not_null(response, data_type, 'data_type')
@@ -56,18 +56,18 @@ def tell_aircraft_location():
     if not response['executed']:
         return jsonify(response)
 
-    gps_signal_level = data['gps_signal_level']
-    gps_satellites_connected = data['gps_satellites_connected']
-    gps_valid = data['gps_valid']
-    gps_lat = data['gps_lat']
-    gps_lon = data['gps_lon']
-    altitude = data['altitude']
-    velocity_x = data['velocity_x']
-    velocity_y = data['velocity_y']
-    velocity_z = data['velocity_z']
-    pitch = data['pitch']
-    yaw = data['yaw']
-    roll = data['roll']
+    gps_signal_level = data.get('gps_signal_level')
+    gps_satellites_connected = data.get('gps_satellites_connected')
+    gps_valid = data.get('gps_valid')
+    gps_lat = data.get('gps_lat')
+    gps_lon = data.get('gps_lon')
+    altitude = data.get('altitude')
+    velocity_x = data.get('velocity_x')
+    velocity_y = data.get('velocity_y')
+    velocity_z = data.get('velocity_z')
+    pitch = data.get('pitch')
+    yaw = data.get('yaw')
+    roll = data.get('roll')
 
     response = check_argument_not_null(
         response, gps_signal_level, 'gps_signal_level')
@@ -186,9 +186,9 @@ def tell_aircraft_power():
 
     payload = json.loads(payload_as_json_string)
 
-    drone_id = payload['drone_id']
-    data_type = payload['data_type']
-    data = payload['data']
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')
 
     response = check_argument_not_null(response, drone_id, 'drone_id')
     response = check_argument_not_null(response, data_type, 'data_type')
@@ -208,10 +208,10 @@ def tell_aircraft_power():
     if not response['executed']:
         return jsonify(response)
 
-    battery_remaining = data['battery_remaining']
-    battery_remaining_percent = data['battery_remaining_percent']
-    remaining_flight_time = data['remaining_flight_time']
-    remaining_flight_radius = data['remaining_flight_radius']
+    battery_remaining = data.get('battery_remaining')
+    battery_remaining_percent = data.get('battery_remaining_percent')
+    remaining_flight_time = data.get('remaining_flight_time')
+    remaining_flight_radius = data.get('remaining_flight_radius')
 
     response = check_argument_not_null(
         response, battery_remaining, 'battery_remaining')
@@ -283,6 +283,10 @@ def tell_aircraft_power():
 
     return jsonify(response)
 
+
+################################################################################
+#                         UPDATE TO NEW SPECIFICATIONS                         #
+################################################################################
 
 @bp.route('/my_health')
 def my_health():
@@ -389,9 +393,6 @@ def my_health():
     return jsonify(response)
 
 
-################################################################################
-#                         UPDATE TO NEW SPECIFICATIONS                         #
-################################################################################
 @bp.route('register_drone')
 def register_drone():
     response = get_response_template()

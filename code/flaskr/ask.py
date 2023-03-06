@@ -34,9 +34,9 @@ def get_drone_info():
 
     payload = json.loads(payload_as_json_string)
 
-    drone_id = payload['drone_id']
-    data_type = payload['data_type']
-    data = payload.get('data')  # can be null
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')  # can be None
 
     response = check_argument_not_null(response, drone_id, 'drone_id')
     response = check_argument_not_null(response, data_type, 'data_type')
@@ -104,7 +104,6 @@ def get_drone_info():
                   AND id = ?
             """, (drone_id, data_id,)).fetchone()
 
-    print(db_drone_info)
     if not db_drone_info is None:
         response['response_data'] = {
             'gps_signal_level': db_drone_info['gps_signal_level'],
@@ -124,51 +123,5 @@ def get_drone_info():
             'yaw':        db_drone_info['yaw'],
             'roll':       db_drone_info['roll']
         }
-
-    return jsonify(response)
-
-
-@bp.route('/request_flightplan')
-def request_flightplan():
-    response = get_response_template()
-
-    drone_id = request.values.get('drone_id')
-
-    return jsonify(response)
-
-
-@bp.route('/request_clearance')
-def request_clearance():
-    response = get_response_template(response_data=True)
-
-    drone_id = request.values.get('drone_id')
-    intersection_a = request.values.get('intersection_a')
-    intersection_b = request.values.get('intersection_b')
-
-    # Check if all required values were given
-    response = check_argument_not_null(response, drone_id, 'drone_id')
-    response = check_argument_not_null(
-        response, intersection_a, 'intersection_a')
-    response = check_argument_not_null(
-        response, intersection_b, 'intersection_b')
-
-    # Return if an error already occured
-    if not response['executed']:
-        return jsonify(response)
-
-    db = get_db()
-
-    # Check if active drone with given id exists
-    db_drone_info = db.execute(
-        'SELECT * FROM drones WHERE id = ?', (drone_id,)).fetchone()
-    if db_drone_info is None:
-        response = add_error_to_response(
-            response,
-            1,
-            f'No active drone with id "{drone_id}" found.',
-            False
-        )
-
-    response['response_data']['clearance'] = True
 
     return jsonify(response)
