@@ -49,7 +49,7 @@ can be transmitted via GET or POST.
 }
 ```
 
-</details></br>
+</details>
 
 ### Response
 
@@ -78,7 +78,7 @@ If one or more errors occured, they are added to the errors list.
 }
 ```
 
-</details></br>
+</details>
 
 If one or more warnings occured, they are added to the warnings list.
 
@@ -96,7 +96,7 @@ If one or more warnings occured, they are added to the warnings list.
 }
 ```
 
-</details></br>
+</details>
 
 <details><summary>Sample response: Successful</summary><p>
 
@@ -125,7 +125,7 @@ If one or more warnings occured, they are added to the warnings list.
 }
 ```
 
-</details><br>
+</details>
 
 
 ## Interfaces
@@ -182,7 +182,7 @@ The `data_type` is `aircraft_location`.
 }
 ```
 
-</details><br>
+</details>
 
 #### Response
 
