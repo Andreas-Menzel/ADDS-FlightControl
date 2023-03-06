@@ -203,20 +203,20 @@ The `data_type` is `aircraft_location`.
 
 **response_data field**
 
-| FIELD                    | TYPE    | VALUE SET? | INFORMATION                                  |
-|--------------------------|---------|------------|----------------------------------------------|
-| gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal) |
-| gps_satellites_connected | int     | always     | Number of gps-satellites connected.          |
-| gps_valid                | boolean | always     | Whether the drone has a (valid) gps-signal.  |
-| gps_lat                  | float   | always     | Latitude.                                    |
-| gps_lon                  | float   | always     | Longitude.                                   |
-| altitude                 | float   | always     | Altitude in meters.                          |
-| velocity_x               | float   | always     | Velocity X in meters / second.               |
-| velocity_y               | float   | always     | Velocity Y in meters / second.               |
-| velocity_z               | float   | always     | Velocity Z in meters / second.               |
-| pitch                    | float   | always     | [-180;180].                                  |
-| yaw                      | float   | always     | [-180;180].                                  |
-| roll                     | float   | always     | [-180;180].                                  |
+| FIELD                    | TYPE    | VALUE SET? | INFORMATION                                    |
+|--------------------------|---------|------------|------------------------------------------------|
+| gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal)   |
+| gps_satellites_connected | int     | always     | Number of gps-satellites connected.            |
+| gps_valid                | boolean | always     | Whether the drone has a (valid) gps-signal.    |
+| gps_lat                  | float   | always     | Latitude.                                      |
+| gps_lon                  | float   | always     | Longitude.                                     |
+| altitude                 | float   | always     | In meters.                                     |
+| velocity_x               | float   | always     | Velocity X (towards north) in meters / second. |
+| velocity_y               | float   | always     | Velocity Y (towards east) in meters / second.  |
+| velocity_z               | float   | always     | Velocity Z (towards down) in meters / second.  |
+| pitch                    | float   | always     | [-180;180].                                    |
+| yaw                      | float   | always     | [-180;180].                                    |
+| roll                     | float   | always     | [-180;180].                                    |
 
 <details><summary>Sample response</summary><p>
 
