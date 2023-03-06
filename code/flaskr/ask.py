@@ -7,6 +7,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from flaskr.db import get_db
 
+import json
+
 # Import own files
 from functions_collection import *
 
@@ -14,15 +16,40 @@ from functions_collection import *
 bp = Blueprint('ask', __name__, url_prefix='/ask')
 
 
-# TODO: Adapt to new data schema
-@bp.route('/get_drone_info')
+@bp.route('aircraft_location')
 def get_drone_info():
     response = get_response_template(response_data=True)
 
-    drone_id = request.values.get('drone_id')
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
 
-    # Check if all required values were given
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload['drone_id']
+    data_type = payload['data_type']
+    data = payload.get('data')  # can be null
+
     response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'aircraft_location':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'aircraft_location'.",
+                                         False)
 
     # Return if an error already occured
     if not response['executed']:
@@ -30,14 +57,14 @@ def get_drone_info():
 
     db = get_db()
 
-    # Check if active drone with given id exists
-    db_drone_info = db.execute(
-        'SELECT * FROM drones WHERE id = ?', (drone_id,)).fetchone()
-    if db_drone_info is None:
+    # Check if drone with given id exists
+    db_drone_id = db.execute(
+        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if db_drone_id is None:
         response = add_error_to_response(
             response,
             1,
-            f'No active drone with id "{drone_id}" found.',
+            f'Drone with id "{drone_id}" not found.',
             False
         )
 
@@ -45,19 +72,58 @@ def get_drone_info():
     if not response['executed']:
         return jsonify(response)
 
-    response['response_data'] = {
-        'gps_lat': {'age': 0, 'data': db_drone_info['gps_lat']},
-        'gps_lon': {'age': 0, 'data': db_drone_info['gps_lon']},
-        'height':          {'age': 0, 'data': db_drone_info['height']},
-        'heading':         {'age': 0, 'data': db_drone_info['heading']},
-        'air_speed':       {'age': 0, 'data': db_drone_info['air_speed']},
-        'ground_speed':    {'age': 0, 'data': db_drone_info['ground_speed']},
-        'vertical_speed':  {'age': 0, 'data': db_drone_info['vertical_speed']},
-        'flightplan': {'age': 0, 'data': None},
-        'health':  {'age': 0, 'data': 'ok'},
-        'battery_soc':     {'age': 0, 'data': 85},
-        'rem_flight_time': {'age': 0, 'data': 1500}
-    }
+    # Get aircraft_location data
+    db_drone_info = None
+    if data is None:
+        # Get latest entry
+        db_drone_info = db.execute("""
+            SELECT * FROM aircraft_location
+            WHERE drone_id = ?
+            ORDER BY id DESC
+            """, (drone_id,)).fetchone()
+    else:
+        # Get specific entry
+        data_id = data.get('data_id')
+
+        response = check_argument_not_null(response, data_id, 'data_id')
+
+        # Return if an error already occured
+        if not response['executed']:
+            return jsonify(response)
+
+        response, data_id = check_argument_type(
+            response, data_id, 'data_id', 'int')
+
+        # Return if an error already occured
+        if not response['executed']:
+            return jsonify(response)
+
+        db_drone_info = db.execute("""
+            SELECT * FROM aircraft_location
+            WHERE drone_id = ?
+                  AND id = ?
+            """, (drone_id, data_id,)).fetchone()
+
+    print(db_drone_info)
+    if not db_drone_info is None:
+        response['response_data'] = {
+            'gps_signal_level': db_drone_info['gps_signal_level'],
+            'gps_satellites_connected': db_drone_info['gps_satellites_connected'],
+
+            'gps_valid':  db_drone_info['gps_valid'],
+            'gps_lat':    db_drone_info['gps_lat'],
+            'gps_lon':    db_drone_info['gps_lon'],
+
+            'altitude':   db_drone_info['altitude'],
+
+            'velocity_x': db_drone_info['velocity_x'],
+            'velocity_y': db_drone_info['velocity_y'],
+            'velocity_z': db_drone_info['velocity_z'],
+
+            'pitch':      db_drone_info['pitch'],
+            'yaw':        db_drone_info['yaw'],
+            'roll':       db_drone_info['roll']
+        }
 
     return jsonify(response)
 
