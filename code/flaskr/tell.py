@@ -35,8 +35,8 @@ def tell_aircraft_location():
     payload = json.loads(payload_as_json_string)
 
     drone_id = payload.get('drone_id')
-    data_type = payloadget('data_type')
-    data = payloadget('data')
+    data_type = payload.get('data_type')
+    data = payload.get('data')
 
     response = check_argument_not_null(response, drone_id, 'drone_id')
     response = check_argument_not_null(response, data_type, 'data_type')

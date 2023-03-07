@@ -17,7 +17,7 @@ bp = Blueprint('ask', __name__, url_prefix='/ask')
 
 
 @bp.route('aircraft_location')
-def get_drone_info():
+def ask_aircraft_location():
     response = get_response_template(response_data=True)
 
     # Get data formatted as JSON string
@@ -130,7 +130,7 @@ def get_drone_info():
 
 
 @bp.route('aircraft_power')
-def get_drone_info():
+def ask_aircraft_power():
     response = get_response_template(response_data=True)
 
     # Get data formatted as JSON string
