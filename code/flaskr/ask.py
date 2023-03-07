@@ -124,7 +124,9 @@ def get_drone_info():
             'roll':       db_drone_info['roll']
         }
 
-    return jsonify(response)
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @bp.route('aircraft_power')
@@ -224,4 +226,6 @@ def get_drone_info():
             'remaining_flight_radius': db_drone_info['remaining_flight_radius']
         }
 
-    return jsonify(response)
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
