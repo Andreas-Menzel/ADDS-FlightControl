@@ -10,6 +10,7 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
 - [Interfaces](#interfaces)
     - [aircraft_location](#aircraft_location)
     - [aircraft_power](#aircraft_power)
+    - [flight_data](#flight_data)
 
 ## Format of the request payload and response
 
@@ -312,6 +313,87 @@ The `data_type` is `aircraft_power`.
         "battery_remaining_percent": 42,
         "remaining_flight_time": 550,
         "remaining_flight_radius": 4320.5
+    }
+}
+```
+
+</details>
+
+### flight_data
+
+One can request information about the takeoff / landing time and coordinates of
+a drone.
+
+#### Request
+
+The `data_type` is `flight_data`.
+
+**Payload - data field (optional)**
+
+| FIELD   | TYPE | REQ / OPT | INFORMATION           |
+|---------|------|-----------|-----------------------|
+| data_id | int  | required  | ID of the data entry. |
+
+**Note:** *data_id* must be specified when the data-field is specified.
+
+<details><summary>Sample payload: Latest dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "flight_data"
+}
+```
+
+</details>
+
+<details><summary>Sample payload: Specific dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "flight_data",
+    "data": {
+        "data_id": 42
+    }
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD             | TYPE                    | VALUE SET? | INFORMATION                 |
+|-------------------|-------------------------|------------|-----------------------------|
+| takeoff_time      | int                     | always     | UNIX timestamp.             |
+| takeoff_gps_valid | boolean                 | always     | GPS-coordinates valid?      |
+| takeoff_gps_lat   | float                   | always     | Latitude.                   |
+| takeoff_gps_lon   | float                   | always     | Longitude.                  |
+| landing_time      | int                     | always     | UNIX timestamp.             |
+| landing_gps_valid | boolean                 | always     | GPS-coordinates valid?      |
+| landing_gps_lat   | float                   | always     | Latitude.                   |
+| landing_gps_lon   | float                   | always     | Longitude.                  |
+| operation_modes   | [string] as json-string | always     | The last X Operation Modes. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "takeoff_time": 1678264333,
+        "takeoff_gps_valid": "1",
+        "takeoff_gps_lat": 48.26586,
+        "takeoff_gps_lon": 11.67436,
+        "landing_time": 1678264389,
+        "landing_gps_valid": "1",
+        "landing_gps_lat": 48.26586,
+        "landing_gps_lon": 11.67436,
+        "operation_modes": "[\"OnGround\", \"Landing\", \"Hovering\", \"TakeOff\", \"OnGround\"]"
     }
 }
 ```
