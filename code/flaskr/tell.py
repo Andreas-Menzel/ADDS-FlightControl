@@ -284,6 +284,159 @@ def tell_aircraft_power():
     return jsonify(response)
 
 
+@bp.route('flight_data')
+def tell_flight_data():
+    response = get_response_template()
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+    response = check_argument_not_null(response, data, 'data')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'flight_data':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'flight_data'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    takeoff_time = data.get('takeoff_time')
+    takeoff_gps_valid = data.get('takeoff_gps_valid')
+    takeoff_gps_lat = data.get('takeoff_gps_lat')
+    takeoff_gps_lon = data.get('takeoff_gps_lon')
+
+    landing_time = data.get('landing_time')
+    landing_gps_valid = data.get('landing_gps_valid')
+    landing_gps_lat = data.get('landing_gps_lat')
+    landing_gps_lon = data.get('landing_gps_lon')
+
+    operation_modes = data.get('operation_modes')
+
+    response = check_argument_not_null(
+        response, takeoff_time, 'takeoff_time')
+    response = check_argument_not_null(
+        response, takeoff_gps_valid, 'takeoff_gps_valid')
+    response = check_argument_not_null(
+        response, takeoff_gps_lat, 'takeoff_gps_lat')
+    response = check_argument_not_null(
+        response, takeoff_gps_lon, 'takeoff_gps_lon')
+
+    response = check_argument_not_null(
+        response, landing_time, 'landing_time')
+    response = check_argument_not_null(
+        response, landing_gps_valid, 'landing_gps_valid')
+    response = check_argument_not_null(
+        response, landing_gps_lat, 'landing_gps_lat')
+    response = check_argument_not_null(
+        response, landing_gps_lon, 'landing_gps_lon')
+    
+    response = check_argument_not_null(
+        response, operation_modes, 'operation_modes')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Convert variables to correct type
+    response, takeoff_time = check_argument_type(
+        response, takeoff_time, 'takeoff_time', 'int')
+    response, takeoff_gps_valid = check_argument_type(
+        response, takeoff_gps_valid, 'takeoff_gps_valid', 'boolean')
+    response, takeoff_gps_lat = check_argument_type(
+        response, takeoff_gps_lat, 'takeoff_gps_lat', 'float')
+    response, takeoff_gps_lon = check_argument_type(
+        response, takeoff_gps_lon, 'takeoff_gps_lon', 'float')
+
+    response, landing_time = check_argument_type(
+        response, landing_time, 'landing_time', 'int')
+    response, landing_gps_valid = check_argument_type(
+        response, landing_gps_valid, 'landing_gps_valid', 'boolean')
+    response, landing_gps_lat = check_argument_type(
+        response, landing_gps_lat, 'landing_gps_lat', 'float')
+    response, landing_gps_lon = check_argument_type(
+        response, landing_gps_lon, 'landing_gps_lon', 'float')
+    
+    # TODO: check type of operation_modes: list of strings (?)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if drone with given id exists
+    tmp_db_drone_id = db.execute(
+        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if tmp_db_drone_id is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    str_operation_modes = json.dumps(operation_modes)
+
+    try:
+        db.execute("""
+            INSERT INTO flight_data(
+                drone_id,
+                takeoff_time,
+                takeoff_gps_valid,
+                takeoff_gps_lat,
+                takeoff_gps_lon,
+                landing_time,
+                landing_gps_valid,
+                landing_gps_lat,
+                landing_gps_lon,
+                operation_modes
+            )
+            VALUES (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
+            """, (drone_id, takeoff_time, takeoff_gps_valid, takeoff_gps_lat, takeoff_gps_lon, landing_time, landing_gps_valid, landing_gps_lat, landing_gps_lon, str_operation_modes,)
+        )
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
+
+    return jsonify(response)
+
+
 ################################################################################
 #                         UPDATE TO NEW SPECIFICATIONS                         #
 ################################################################################

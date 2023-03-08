@@ -10,6 +10,7 @@ These interfaces are accessible via `<server_domain>/api/tell/<interface>`.
 - [Interfaces](#interfaces)
     - [aircraft_location](#aircraft_location)
     - [aircraft_power](#aircraft_power)
+    - [flight_data](#flight_data)
 
 ## Format of the request payload and response
 
@@ -218,6 +219,55 @@ The `data_type` is `aircraft_power`.
         "remaining_flight_time": 550,
         "remaining_flight_radius": 4320.5
     }
+}
+```
+
+</details>
+
+#### Response
+
+Standard response. The `response_data` field is never set.
+
+### flight_data
+
+One can send information about the takeoff / landing time and coordinates of a
+drone.
+
+#### Request
+
+The `data_type` is `flight_data`.
+
+**Payload - data field (required)**
+
+| FIELD             | TYPE     | REQ / OPT | INFORMATION                 |
+|-------------------|----------|-----------|-----------------------------|
+| takeoff_time      | int      | required  | UNIX timestamp.             |
+| takeoff_gps_valid | boolean  | required  | GPS-coordinates valid?      |
+| takeoff_gps_lat   | float    | required  | Latitude.                   |
+| takeoff_gps_lon   | float    | required  | Longitude.                  |
+| landing_time      | int      | required  | UNIX timestamp.             |
+| landing_gps_valid | boolean  | required  | GPS-coordinates valid?      |
+| landing_gps_lat   | float    | required  | Latitude.                   |
+| landing_gps_lon   | float    | required  | Longitude.                  |
+| operation_modes   | [string] | required  | The last X Operation Modes. |
+
+<details><summary>Sample payload</summary><p>
+
+```json
+{
+	"drone_id": "demo_drone",
+	"data_type": "flight_data",
+	"data": {
+		"takeoff_time": 1678264333,
+		"takeoff_gps_valid": "true",
+		"takeoff_gps_lat": 48.26586,
+		"takeoff_gps_lon": 11.67436,
+		"landing_time": 1678264389,
+		"landing_gps_valid": "true",
+		"landing_gps_lat": 48.26586,
+		"landing_gps_lon": 11.67436,
+		"operation_modes": ["OnGround", "Landing", "Hovering", "TakeOff", "OnGround"]
+	}
 }
 ```
 

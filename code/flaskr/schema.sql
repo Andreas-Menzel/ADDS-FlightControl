@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS drones;
 DROP TABLE IF EXISTS aircraft_location;
 DROP TABLE IF EXISTS aircraft_power;
+DROP TABLE IF EXISTS flight_data;
 
 DROP TABLE IF EXISTS intersections;
 DROP TABLE IF EXISTS corridors;
@@ -45,6 +46,23 @@ CREATE TABLE aircraft_power (
 
     remaining_flight_time       INTEGER,
     remaining_flight_radius     FLOAT
+);
+
+CREATE TABLE flight_data (
+    id                          INTEGER PRIMARY KEY AUTOINCREMENT,
+    drone_id                    TEXT NOT NULL,
+
+    takeoff_time                INTEGER,
+    takeoff_gps_valid           TEXT,
+    takeoff_gps_lat             FLOAT,
+    takeoff_gps_lon             FLOAT,
+
+    landing_time                INTEGER,
+    landing_gps_valid           TEXT,
+    landing_gps_lat             FLOAT,
+    landing_gps_lon             FLOAT,
+
+    operation_modes             TEXT
 );
 
 
