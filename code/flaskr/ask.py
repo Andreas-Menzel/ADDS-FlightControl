@@ -16,6 +16,65 @@ from functions_collection import *
 bp = Blueprint('ask', __name__, url_prefix='/ask')
 
 
+@bp.route('intersection_list')
+def ask_intersection_list():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    intersection_id = payload.get('intersection_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(
+        response, intersection_id, 'intersection_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+    
+    if not data_type == 'intersection_list':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'intersection_list'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get intersection information
+    db_intersection_list = db.execute("""
+        SELECT id
+        FROM intersections
+        WHERE id LIKE ?
+        ESCAPE '!'
+        """, (intersection_id,)).fetchall()
+
+    response['response_data'] = { 'intersection_ids': [] }
+    for int_id in db_intersection_list:
+        response['response_data']['intersection_ids'].append(int_id['id'])
+
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
 @bp.route('intersection_location')
 def ask_intersection_location():
     response = get_response_template(response_data=True)
@@ -79,6 +138,65 @@ def ask_intersection_location():
 
         'altitude': db_intersection_info['altitude']
     }
+
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
+@bp.route('corridor_list')
+def ask_corridor_list():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    corridor_id = payload.get('corridor_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(
+        response, corridor_id, 'corridor_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+    
+    if not data_type == 'corridor_list':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'corridor_list'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get intersection information
+    db_corridor_list = db.execute("""
+        SELECT id
+        FROM corridors
+        WHERE id LIKE ?
+        ESCAPE '!'
+        """, (corridor_id,)).fetchall()
+
+    response['response_data'] = { 'corridor_ids': [] }
+    for cor_id in db_corridor_list:
+        response['response_data']['corridor_ids'].append(cor_id['id'])
 
     response = jsonify(response)
     response.headers.add('Access-Control-Allow-Origin', '*')

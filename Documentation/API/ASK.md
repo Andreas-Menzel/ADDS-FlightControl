@@ -161,6 +161,67 @@ If one or more warnings occured, they are added to the warnings list.
 
 ## Interfaces
 
+### intersection_list
+
+One can request a list of intersection ids.
+
+#### Request
+
+The `data_type` is `intersection_list`.
+
+The `intersection_id` is a search pattern like in SQL. Use `%` to match any
+sequence and `_` to match any one character. You can use `!` as the escape
+character.
+
+<details><summary>Sample payload: Get all intersections</summary><p>
+
+```json
+{
+    "intersection_id": "%",
+    "data_type": "intersection_list"
+}
+```
+
+</details>
+
+<details><summary>Sample payload: Get all intersections starting with `campus-`</summary><p>
+
+```json
+{
+    "intersection_id": "campus-%",
+    "data_type": "intersection_list"
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD            | TYPE     | VALUE SET? | INFORMATION               |
+|------------------|----------|------------|---------------------------|
+| intersection_ids | [string] | always     | List of intersection ids. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "intersection_ids": [
+            "demo_intersection_1",
+            "demo_intersection_2",
+            "demo_intersection_3"
+        ]
+    }
+}
+```
+
+</details>
+
 ### intersection_location
 
 One can request information about the location of an intersection.
@@ -202,6 +263,67 @@ The `data_type` is `intersection_location`.
         "gps_lon": 11.67436,
 
         "altitude": 42
+    }
+}
+```
+
+</details>
+
+### corridor_list
+
+One can request a list of corridor ids.
+
+#### Request
+
+The `data_type` is `corridor_list`.
+
+The `corridor_id` is a search pattern like in SQL. Use `%` to match any
+sequence and `_` to match any one character. You can use `!` as the escape
+character.
+
+<details><summary>Sample payload: Get all corridors</summary><p>
+
+```json
+{
+    "corridor_id": "%",
+    "data_type": "corridor_list"
+}
+```
+
+</details>
+
+<details><summary>Sample payload: Get all corridors starting with `campus-`</summary><p>
+
+```json
+{
+    "corridor_id": "campus-%",
+    "data_type": "corridor_list"
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD        | TYPE     | VALUE SET? | INFORMATION           |
+|--------------|----------|------------|-----------------------|
+| corridor_ids | [string] | always     | List of corridor ids. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "corridor_ids": [
+            "demo_corridor_1",
+            "demo_corridor_2",
+            "demo_corridor_3"
+        ]
     }
 }
 ```
