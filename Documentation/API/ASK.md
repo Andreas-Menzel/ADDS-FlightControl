@@ -161,96 +161,6 @@ If one or more warnings occured, they are added to the warnings list.
 
 ## Interfaces
 
-### aircraft_location
-
-One can request information about the location of a drone.
-
-#### Request
-
-The `data_type` is `aircraft_location`.
-
-**Payload - data field (optional)**
-
-| FIELD   | TYPE | REQ / OPT | INFORMATION           |
-|---------|------|-----------|-----------------------|
-| data_id | int  | required  | ID of the data entry. |
-
-**Note:** *data_id* must be specified when the data-field is specified.
-
-<details><summary>Sample payload: Latest dataset</summary><p>
-
-```json
-{
-    "drone_id": "demo_drone",
-    "data_type": "aircraft_location"
-}
-```
-
-</details>
-
-<details><summary>Sample payload: Specific dataset</summary><p>
-
-```json
-{
-    "drone_id": "demo_drone",
-    "data_type": "aircraft_location",
-    "data": {
-        "data_id": 42
-    }
-}
-```
-
-</details>
-
-#### Response
-
-**response_data field**
-
-| FIELD                    | TYPE    | VALUE SET? | INFORMATION                                    |
-|--------------------------|---------|------------|------------------------------------------------|
-| gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal)   |
-| gps_satellites_connected | int     | always     | Number of gps-satellites connected.            |
-| gps_valid                | boolean | always     | Whether the drone has a (valid) gps-signal.    |
-| gps_lat                  | float   | always     | Latitude.                                      |
-| gps_lon                  | float   | always     | Longitude.                                     |
-| altitude                 | float   | always     | In meters.                                     |
-| velocity_x               | float   | always     | Velocity X (towards north) in meters / second. |
-| velocity_y               | float   | always     | Velocity Y (towards east) in meters / second.  |
-| velocity_z               | float   | always     | Velocity Z (towards down) in meters / second.  |
-| pitch                    | float   | always     | [-180;180].                                    |
-| yaw                      | float   | always     | [-180;180].                                    |
-| roll                     | float   | always     | [-180;180].                                    |
-
-<details><summary>Sample response</summary><p>
-
-```json
-{
-    "executed": true,
-    "errors": [],
-    "warnings": [],
-    "response_data": {
-        "gps_signal_level": 5,
-        "gps_satellites_connected": 12,
-
-        "gps_valid": true,
-        "gps_lat": 48.26586,
-        "gps_lon": 11.67436,
-
-        "altitude": 42,
-
-        "velocity_x": 0,
-        "velocity_y": 0,
-        "velocity_z": 0,
-
-        "pitch": 0,
-        "yaw": 0,
-        "roll": 0
-    }
-}
-```
-
-</details>
-
 ### intersection_location
 
 One can request information about the location of an intersection.
@@ -336,6 +246,96 @@ The `data_type` is `corridor_location`.
     "response_data": {
         "intersection_a": "demo_intersection_1",
         "intersection_b": "demo_intersection_2"
+    }
+}
+```
+
+</details>
+
+### aircraft_location
+
+One can request information about the location of a drone.
+
+#### Request
+
+The `data_type` is `aircraft_location`.
+
+**Payload - data field (optional)**
+
+| FIELD   | TYPE | REQ / OPT | INFORMATION           |
+|---------|------|-----------|-----------------------|
+| data_id | int  | required  | ID of the data entry. |
+
+**Note:** *data_id* must be specified when the data-field is specified.
+
+<details><summary>Sample payload: Latest dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "aircraft_location"
+}
+```
+
+</details>
+
+<details><summary>Sample payload: Specific dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "aircraft_location",
+    "data": {
+        "data_id": 42
+    }
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD                    | TYPE    | VALUE SET? | INFORMATION                                    |
+|--------------------------|---------|------------|------------------------------------------------|
+| gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal)   |
+| gps_satellites_connected | int     | always     | Number of gps-satellites connected.            |
+| gps_valid                | boolean | always     | Whether the drone has a (valid) gps-signal.    |
+| gps_lat                  | float   | always     | Latitude.                                      |
+| gps_lon                  | float   | always     | Longitude.                                     |
+| altitude                 | float   | always     | In meters.                                     |
+| velocity_x               | float   | always     | Velocity X (towards north) in meters / second. |
+| velocity_y               | float   | always     | Velocity Y (towards east) in meters / second.  |
+| velocity_z               | float   | always     | Velocity Z (towards down) in meters / second.  |
+| pitch                    | float   | always     | [-180;180].                                    |
+| yaw                      | float   | always     | [-180;180].                                    |
+| roll                     | float   | always     | [-180;180].                                    |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "gps_signal_level": 5,
+        "gps_satellites_connected": 12,
+
+        "gps_valid": true,
+        "gps_lat": 48.26586,
+        "gps_lon": 11.67436,
+
+        "altitude": 42,
+
+        "velocity_x": 0,
+        "velocity_y": 0,
+        "velocity_z": 0,
+
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
     }
 }
 ```
