@@ -129,6 +129,141 @@ def ask_aircraft_location():
     return response
 
 
+@bp.route('intersection_location')
+def ask_intersection_location():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    intersection_id = payload.get('intersection_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(
+        response, intersection_id, 'intersection_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'intersection_location':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'intersection_location'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get intersection information
+    db_intersection_info = db.execute(
+        'SELECT * FROM intersections WHERE id = ?', (intersection_id,)).fetchone()
+    if db_intersection_info is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Intersection with id "{intersection_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    response['response_data'] = {
+        'gps_lat': db_intersection_info['gps_lat'],
+        'gps_lon': db_intersection_info['gps_lon'],
+
+        'altitude': db_intersection_info['altitude']
+    }
+
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
+@bp.route('corridor_location')
+def ask_corridor_location():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    corridor_id = payload.get('corridor_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(response, corridor_id, 'corridor_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'corridor_location':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'corridor_location'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get corridor information
+    db_corridor_info = db.execute(
+        'SELECT * FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
+    if db_corridor_info is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Corridor with id "{corridor_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    response['response_data'] = {
+        'intersection_a': db_corridor_info['intersection_a'],
+        'intersection_b': db_corridor_info['intersection_b']
+    }
+
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
 @bp.route('aircraft_power')
 def ask_aircraft_power():
     response = get_response_template(response_data=True)
