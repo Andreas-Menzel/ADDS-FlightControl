@@ -68,13 +68,16 @@ CREATE TABLE flight_data (
 
 CREATE TABLE intersections (
     id              TEXT    PRIMARY KEY,
-    gps_lat         TEXT    NOT NULL,
-    gps_lon         TEXT    NOT NULL,
-    height          INT     NOT NULL
+
+    gps_lat         FLOAT   NOT NULL,
+    gps_lon         FLOAT   NOT NULL,
+
+    altitude        INT     NOT NULL
 );
 
 CREATE TABLE corridors (
     id              TEXT    PRIMARY KEY,
+    
     intersection_a  TEXT    NOT NULL,
     intersection_b  TEXT    NOT NULL
 );

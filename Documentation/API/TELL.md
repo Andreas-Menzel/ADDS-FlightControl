@@ -8,6 +8,8 @@ These interfaces are accessible via `<server_domain>/api/tell/<interface>`.
 
 - [Format of the request payload and response](#format-of-the-request-payload-and-response)
 - [Interfaces](#interfaces)
+    - [intersection_location](#intersection_location)
+    - [corridor_location](#corridor_location)
     - [aircraft_location](#aircraft_location)
     - [aircraft_power](#aircraft_power)
     - [flight_data](#flight_data)
@@ -19,11 +21,11 @@ These interfaces are accessible via `<server_domain>/api/tell/<interface>`.
 The **payload** that is sent to Traffic Control is a JSON formatted string. It
 can be transmitted via GET or POST.
 
-| FIELD     | TYPE              | REQ / OPT | INFORMATION                                |
-|-----------|-------------------|-----------|--------------------------------------------|
-| drone_id  | string            | required  | ID of the drone.                           |
-| data_type | string (constant) | required  | The value is specified for each interface. |
-| data      | dictionary        | optional  | Additional data.                           |
+| FIELD                                      | TYPE              | REQ / OPT | INFORMATION                                |
+|--------------------------------------------|-------------------|-----------|--------------------------------------------|
+| drone_id \| intersection_id \| corridor_id | string            | required  | ID of the drone, intersection or corridor. |
+| data_type                                  | string (constant) | required  | The value is specified for each interface. |
+| data                                       | dictionary        | optional  | Additional data.                           |
 
 <details><summary>Sample payload without data field.</summary><p>
 
@@ -180,6 +182,82 @@ The `data_type` is `aircraft_location`.
         "pitch": 0,
         "yaw": 0,
         "roll": 0
+    }
+}
+```
+
+</details>
+
+#### Response
+
+Standard response. The `response_data` field is never set.
+
+### intersection_location
+
+One can send information about the location of an intersection. The intersection
+will be updated if it already exists; otherwise it will be created.
+
+#### Request
+
+The `data_type` is `intersection_location`.
+
+**Payload - data field (required)**
+
+| FIELD    | TYPE  | REQ / OPT | INFORMATION         |
+|----------|-------|-----------|---------------------|
+| gps_lat  | float | required  | Latitude.           |
+| gps_lon  | float | required  | Longitude.          |
+| altitude | float | required  | Altitude in meters. |
+
+<details><summary>Sample payload</summary><p>
+
+```json
+{
+    "intersection_id": "demo_intersection",
+    "data_type": "intersection_location",
+    "data": {
+        "gps_lat": 48.26586,
+        "gps_lon": 11.67436,
+
+        "altitude": 42
+    }
+}
+```
+
+</details>
+
+#### Response
+
+Standard response. The `response_data` field is never set.
+
+### corridor_location
+
+One can send information about the location of a flight corridor. The corridor
+will be updated if it already exists; otherwise it will be created.
+
+#### Request
+
+The `data_type` is `corridor_location`.
+
+**Payload - data field (required)**
+
+| FIELD          | TYPE   | REQ / OPT | INFORMATION         |
+|----------------|--------|-----------|---------------------|
+| intersection_a | string | required  | First intersection. |
+| intersection_b | string | required  | Second intersection |
+
+**NOTE:** Make sure that the intersections a and b exist before adding them to a
+corridor.
+
+<details><summary>Sample payload</summary><p>
+
+```json
+{
+    "intersection_id": "demo_corridor",
+    "data_type": "corridor_location",
+    "data": {
+        "intersection_a": "demo_intersection_1",
+        "intersection_b": "demo_intersection_2"
     }
 }
 ```

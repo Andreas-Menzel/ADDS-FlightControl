@@ -16,6 +16,210 @@ from functions_collection import *
 bp = Blueprint('tell', __name__, url_prefix='/tell')
 
 
+@bp.route('intersection_location')
+def tell_intersection_location():
+    response = get_response_template()
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    intersection_id = payload.get('intersection_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')
+
+    response = check_argument_not_null(
+        response, intersection_id, 'intersection_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+    response = check_argument_not_null(response, data, 'data')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'intersection_location':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'intersection_location'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    gps_lat = data.get('gps_lat')
+    gps_lon = data.get('gps_lon')
+    altitude = data.get('altitude')
+
+    response = check_argument_not_null(response, gps_lat, 'gps_lat')
+    response = check_argument_not_null(response, gps_lon, 'gps_lon')
+    response = check_argument_not_null(response, altitude, 'altitude')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Convert variables to correct type
+    response, gps_lat = check_argument_type(
+        response, gps_lat, 'gps_lat', 'float')
+    response, gps_lon = check_argument_type(
+        response, gps_lon, 'gps_lon', 'float')
+    response, altitude = check_argument_type(
+        response, altitude, 'altitude', 'float')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    try:
+        db.execute("""
+            INSERT INTO intersections(
+                id, gps_lat, gps_lon, altitude
+            ) VALUES (
+                ?, ?, ?, ?
+            )
+            ON CONFLICT(id) DO UPDATE SET
+            gps_lat = ?,
+            gps_lon = ?,
+            altitude = ?
+            """, (intersection_id, gps_lat, gps_lon, altitude, gps_lat, gps_lon, altitude,)
+        )
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
+
+    return jsonify(response)
+
+
+@bp.route('corridor_location')
+def tell_corridor_location():
+    response = get_response_template()
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    corridor_id = payload.get('corridor_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')
+
+    response = check_argument_not_null(response, corridor_id, 'corridor_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+    response = check_argument_not_null(response, data, 'data')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'corridor_location':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'corridor_location'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    intersection_a = data.get('intersection_a')
+    intersection_b = data.get('intersection_b')
+
+    response = check_argument_not_null(
+        response, intersection_a, 'intersection_a')
+    response = check_argument_not_null(
+        response, intersection_b, 'intersection_b')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if intersection_a exists
+    tmp_db_intersection_a_id = db.execute("""
+        SELECT id
+        FROM intersections
+        WHERE id = ?
+        """, (intersection_a,)).fetchone()
+    if tmp_db_intersection_a_id is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Intersection A with id "{intersection_a}" not found.',
+            False
+        )
+    
+    # Check if intersection_b exists
+    tmp_db_intersection_b_id = db.execute("""
+        SELECT id
+        FROM intersections
+        WHERE id = ?
+        """, (intersection_b,)).fetchone()
+    if tmp_db_intersection_b_id is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Intersection B with id "{intersection_b}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    try:
+        db.execute("""
+            INSERT INTO corridors(
+                id, intersection_a, intersection_b
+            ) VALUES (
+                ?, ?, ?
+            )
+            ON CONFLICT(id) DO UPDATE SET
+            intersection_a = ?,
+            intersection_b = ?
+            """, (corridor_id, intersection_a, intersection_b, intersection_a, intersection_b,)
+        )
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
+
+    return jsonify(response)
+
+
 @bp.route('aircraft_location')
 def tell_aircraft_location():
     response = get_response_template()
@@ -353,7 +557,7 @@ def tell_flight_data():
         response, landing_gps_lat, 'landing_gps_lat')
     response = check_argument_not_null(
         response, landing_gps_lon, 'landing_gps_lon')
-    
+
     response = check_argument_not_null(
         response, operation_modes, 'operation_modes')
 
@@ -379,7 +583,7 @@ def tell_flight_data():
         response, landing_gps_lat, 'landing_gps_lat', 'float')
     response, landing_gps_lon = check_argument_type(
         response, landing_gps_lon, 'landing_gps_lon', 'float')
-    
+
     # TODO: check type of operation_modes: list of strings (?)
 
     # Return if an error already occured
