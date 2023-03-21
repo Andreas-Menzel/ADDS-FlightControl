@@ -45,7 +45,7 @@ def ask_intersection_list():
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
-    
+
     if not data_type == 'intersection_list':
         response = add_error_to_response(response,
                                          1,
@@ -60,15 +60,19 @@ def ask_intersection_list():
 
     # Get intersection information
     db_intersection_list = db.execute("""
-        SELECT id
+        SELECT *
         FROM intersections
         WHERE id LIKE ?
         ESCAPE '!'
         """, (intersection_id,)).fetchall()
 
-    response['response_data'] = { 'intersection_ids': [] }
-    for int_id in db_intersection_list:
-        response['response_data']['intersection_ids'].append(int_id['id'])
+    response['response_data'] = {}
+    for intersection in db_intersection_list:
+        response['response_data'][intersection['id']] = {}
+        response['response_data'][intersection['id']]['id'] = intersection['id']
+        response['response_data'][intersection['id']]['gps_lat'] = intersection['gps_lat']
+        response['response_data'][intersection['id']]['gps_lon'] = intersection['gps_lon']
+        response['response_data'][intersection['id']]['altitude'] = intersection['altitude']
 
     response = jsonify(response)
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -173,7 +177,7 @@ def ask_corridor_list():
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
-    
+
     if not data_type == 'corridor_list':
         response = add_error_to_response(response,
                                          1,
@@ -188,15 +192,18 @@ def ask_corridor_list():
 
     # Get intersection information
     db_corridor_list = db.execute("""
-        SELECT id
+        SELECT *
         FROM corridors
         WHERE id LIKE ?
         ESCAPE '!'
         """, (corridor_id,)).fetchall()
 
-    response['response_data'] = { 'corridor_ids': [] }
-    for cor_id in db_corridor_list:
-        response['response_data']['corridor_ids'].append(cor_id['id'])
+    response['response_data'] = {}
+    for corridor in db_corridor_list:
+        response['response_data'][corridor['id']] = {}
+        response['response_data'][corridor['id']]['id'] = corridor['id']
+        response['response_data'][corridor['id']]['intersection_a'] = corridor['intersection_a']
+        response['response_data'][corridor['id']]['intersection_b'] = corridor['intersection_b']
 
     response = jsonify(response)
     response.headers.add('Access-Control-Allow-Origin', '*')

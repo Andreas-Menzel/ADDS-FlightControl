@@ -8,7 +8,9 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
 
 - [Format of the request payload and response](#format-of-the-request-payload-and-response)
 - [Interfaces](#interfaces)
+    - [intersection_list](#intersection_list)
     - [intersection_location](#intersection_location)
+    - [corridor_list](#corridor_list)
     - [corridor_location](#corridor_location)
     - [aircraft_location](#aircraft_location)
     - [aircraft_power](#aircraft_power)
@@ -163,7 +165,7 @@ If one or more warnings occured, they are added to the warnings list.
 
 ### intersection_list
 
-One can request a list of intersection ids.
+One can request a list of intersections.
 
 #### Request
 
@@ -199,9 +201,13 @@ character.
 
 **response_data field**
 
-| FIELD            | TYPE     | VALUE SET? | INFORMATION               |
-|------------------|----------|------------|---------------------------|
-| intersection_ids | [string] | always     | List of intersection ids. |
+| FIELD                | TYPE | VALUE SET? | INFORMATION       |
+|----------------------|------|------------|-------------------|
+| &lt;intersection&gt; | dict | always     | One intersection. |
+
+**NOTE:** The `<intersection>` dictionary has the id of the intersection as the
+key. There can be none, one or multiple `<intersection>` fields in the
+`response_data` field. See sample response.
 
 <details><summary>Sample response</summary><p>
 
@@ -211,11 +217,24 @@ character.
     "errors": [],
     "warnings": [],
     "response_data": {
-        "intersection_ids": [
-            "demo_intersection_1",
-            "demo_intersection_2",
-            "demo_intersection_3"
-        ]
+        "campus-int-1": {
+            "id": "campus-int-1",
+            "altitude": 10,
+            "gps_lat": 48.047679,
+            "gps_lon": 11.652243
+        },
+        "campus-int-2": {
+            "id": "campus-int-2",
+            "altitude": 15,
+            "gps_lat": 48.046641,
+            "gps_lon": 11.652629
+        },
+        "campus-int-3": {
+            "id": "campus-int-3",
+            "altitude": 10,
+            "gps_lat": 48.0468,
+            "gps_lon": 11.654028
+        }
     }
 }
 ```
@@ -271,7 +290,7 @@ The `data_type` is `intersection_location`.
 
 ### corridor_list
 
-One can request a list of corridor ids.
+One can request a list of corridors.
 
 #### Request
 
@@ -307,9 +326,13 @@ character.
 
 **response_data field**
 
-| FIELD        | TYPE     | VALUE SET? | INFORMATION           |
-|--------------|----------|------------|-----------------------|
-| corridor_ids | [string] | always     | List of corridor ids. |
+| FIELD            | TYPE | VALUE SET? | INFORMATION   |
+|------------------|------|------------|---------------|
+| &lt;corridor&gt; | dict | always     | One corridor. |
+
+**NOTE:** The `<corridor>` dictionary has the id of the corridor as the key.
+There can be none, one or multiple `<corridor>` fields in the
+`response_data` field. See sample response.
 
 <details><summary>Sample response</summary><p>
 
@@ -319,11 +342,21 @@ character.
     "errors": [],
     "warnings": [],
     "response_data": {
-        "corridor_ids": [
-            "demo_corridor_1",
-            "demo_corridor_2",
-            "demo_corridor_3"
-        ]
+        "campus-cor-1": {
+            "id": "campus-cor-1",
+            "intersection_a": "campus-int-1",
+            "intersection_b": "campus-int-2"
+        },
+        "campus-cor-2": {
+            "id": "campus-cor-2",
+            "intersection_a": "campus-int-2",
+            "intersection_b": "campus-int-3"
+        },
+        "campus-cor-3": {
+            "id": "campus-cor-3",
+            "intersection_a": "campus-int-3",
+            "intersection_b": "campus-int-1"
+        }
     }
 }
 ```
