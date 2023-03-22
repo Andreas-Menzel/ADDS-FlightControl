@@ -134,64 +134,6 @@ If one or more warnings occured, they are added to the warnings list.
 
 ## Interfaces
 
-### aircraft_location
-
-One can send information about the location of a drone.
-
-#### Request
-
-The `data_type` is `aircraft_location`.
-
-**Payload - data field (required)**
-
-| FIELD                    | TYPE    | REQ / OPT | INFORMATION                                  |
-|--------------------------|---------|-----------|----------------------------------------------|
-| gps_signal_level         | int     | required  | 0 (no gps signal) - 5 (very good gps signal) |
-| gps_satellites_connected | int     | required  | Number of gps-satellites connected.          |
-| gps_valid                | boolean | required  | Whether the drone has a (valid) gps-signal.  |
-| gps_lat                  | float   | required  | Latitude.                                    |
-| gps_lon                  | float   | required  | Longitude.                                   |
-| altitude                 | float   | required  | Altitude in meters.                          |
-| velocity_x               | float   | required  | Velocity X in meters / second.               |
-| velocity_y               | float   | required  | Velocity Y in meters / second.               |
-| velocity_z               | float   | required  | Velocity Z in meters / second.               |
-| pitch                    | float   | required  | [-180;180].                                  |
-| yaw                      | float   | required  | [-180;180].                                  |
-| roll                     | float   | required  | [-180;180].                                  |
-
-<details><summary>Sample payload</summary><p>
-
-```json
-{
-    "drone_id": "demo_drone",
-    "data_type": "aircraft_location",
-    "data": {
-        "gps_signal_level": 5,
-        "gps_satellites_connected": 12,
-
-        "gps_valid": true,
-        "gps_lat": 48.26586,
-        "gps_lon": 11.67436,
-
-        "altitude": 42,
-
-        "velocity_x": 0,
-        "velocity_y": 0,
-        "velocity_z": 0,
-
-        "pitch": 0,
-        "yaw": 0,
-        "roll": 0
-    }
-}
-```
-
-</details>
-
-#### Response
-
-Standard response. The `response_data` field is never set.
-
 ### intersection_location
 
 One can send information about the location of an intersection. The intersection
@@ -268,6 +210,83 @@ corridor.
 
 Standard response. The `response_data` field is never set.
 
+### aircraft_location
+
+One can send information about the location of a drone.
+
+#### Request
+
+The `data_type` is `aircraft_location`.
+
+**Payload - data field (required)**
+
+| FIELD                    | TYPE    | REQ / OPT | INFORMATION                                  |
+|--------------------------|---------|-----------|----------------------------------------------|
+| gps_signal_level         | int     | required  | 0 (no gps signal) - 5 (very good gps signal) |
+| gps_satellites_connected | int     | required  | Number of gps-satellites connected.          |
+| gps_valid                | boolean | required  | Whether the drone has a (valid) gps-signal.  |
+| gps_lat                  | float   | required  | Latitude.                                    |
+| gps_lon                  | float   | required  | Longitude.                                   |
+| altitude                 | float   | required  | Altitude in meters.                          |
+| velocity_x               | float   | required  | Velocity X in meters / second.               |
+| velocity_y               | float   | required  | Velocity Y in meters / second.               |
+| velocity_z               | float   | required  | Velocity Z in meters / second.               |
+| pitch                    | float   | required  | [-180;180].                                  |
+| yaw                      | float   | required  | [-180;180].                                  |
+| roll                     | float   | required  | [-180;180].                                  |
+
+<details><summary>Sample payload</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "aircraft_location",
+    "data": {
+        "gps_signal_level": 5,
+        "gps_satellites_connected": 12,
+
+        "gps_valid": true,
+        "gps_lat": 48.26586,
+        "gps_lon": 11.67436,
+
+        "altitude": 42,
+
+        "velocity_x": 0,
+        "velocity_y": 0,
+        "velocity_z": 0,
+
+        "pitch": 0,
+        "yaw": 0,
+        "roll": 0
+    }
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD            | TYPE   | VALUE SET? | INFORMATION                                        |
+|------------------|--------|------------|----------------------------------------------------|
+| transaction_uuid | string | always     | UUID of the dataset transaction in the blockchain. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "transaction_uuid": "00000000-0000-0000-000000000000",
+    }
+}
+```
+
+</details>
+
 ### aircraft_power
 
 One can send information about the state of charge and range of a drone.
@@ -304,7 +323,26 @@ The `data_type` is `aircraft_power`.
 
 #### Response
 
-Standard response. The `response_data` field is never set.
+**response_data field**
+
+| FIELD            | TYPE   | VALUE SET? | INFORMATION                                        |
+|------------------|--------|------------|----------------------------------------------------|
+| transaction_uuid | string | always     | UUID of the dataset transaction in the blockchain. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "transaction_uuid": "00000000-0000-0000-000000000000",
+    }
+}
+```
+
+</details>
 
 ### flight_data
 
@@ -353,4 +391,23 @@ The `data_type` is `flight_data`.
 
 #### Response
 
-Standard response. The `response_data` field is never set.
+**response_data field**
+
+| FIELD            | TYPE   | VALUE SET? | INFORMATION                                        |
+|------------------|--------|------------|----------------------------------------------------|
+| transaction_uuid | string | always     | UUID of the dataset transaction in the blockchain. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "transaction_uuid": "00000000-0000-0000-000000000000",
+    }
+}
+```
+
+</details>

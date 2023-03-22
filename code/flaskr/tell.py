@@ -176,7 +176,7 @@ def tell_corridor_location():
             f'Intersection A with id "{intersection_a}" not found.',
             False
         )
-    
+
     # Check if intersection_b exists
     tmp_db_intersection_b_id = db.execute("""
         SELECT id
@@ -222,7 +222,7 @@ def tell_corridor_location():
 
 @bp.route('aircraft_location')
 def tell_aircraft_location():
-    response = get_response_template()
+    response = get_response_template(response_data=True)
 
     # Get data formatted as JSON string
     payload_as_json_string = request.values.get('payload')
@@ -337,9 +337,16 @@ def tell_aircraft_location():
     if not response['executed']:
         return jsonify(response)
 
+    # Save data in blockchain and get transaction_uuid
+    response, transaction_uuid = save_data_in_blockchain(
+        response, payload_as_json_string)
+    response['response_data'] = {}
+    response['response_data']['transaction_uuid'] = transaction_uuid
+
     try:
         db.execute("""
             INSERT INTO aircraft_location(
+                transaction_uuid,
                 drone_id,
                 gps_signal_level,
                 gps_satellites_connected,
@@ -355,9 +362,9 @@ def tell_aircraft_location():
                 roll
             )
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
-            """, (drone_id, gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll,)
+            """, (transaction_uuid, drone_id, gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll,)
         )
 
         db.commit()
@@ -374,7 +381,7 @@ def tell_aircraft_location():
 
 @bp.route('aircraft_power')
 def tell_aircraft_power():
-    response = get_response_template()
+    response = get_response_template(response_data=True)
 
     # Get data formatted as JSON string
     payload_as_json_string = request.values.get('payload')
@@ -461,9 +468,16 @@ def tell_aircraft_power():
     if not response['executed']:
         return jsonify(response)
 
+    # Save data in blockchain and get transaction_uuid
+    response, transaction_uuid = save_data_in_blockchain(
+        response, payload_as_json_string)
+    response['response_data'] = {}
+    response['response_data']['transaction_uuid'] = transaction_uuid
+
     try:
         db.execute("""
             INSERT INTO aircraft_power(
+                transaction_uuid,
                 drone_id,
                 battery_remaining,
                 battery_remaining_percent,
@@ -473,7 +487,7 @@ def tell_aircraft_power():
             VALUES (
                 ?, ?, ?, ?, ?
             )
-            """, (drone_id, battery_remaining, battery_remaining_percent, remaining_flight_time, remaining_flight_radius,)
+            """, (transaction_uuid, drone_id, battery_remaining, battery_remaining_percent, remaining_flight_time, remaining_flight_radius,)
         )
 
         db.commit()
@@ -490,7 +504,7 @@ def tell_aircraft_power():
 
 @bp.route('flight_data')
 def tell_flight_data():
-    response = get_response_template()
+    response = get_response_template(response_data=True)
 
     # Get data formatted as JSON string
     payload_as_json_string = request.values.get('payload')
@@ -607,11 +621,17 @@ def tell_flight_data():
     if not response['executed']:
         return jsonify(response)
 
-    str_operation_modes = json.dumps(operation_modes)
+    # Save data in blockchain and get transaction_uuid
+    response, transaction_uuid = save_data_in_blockchain(
+        response, payload_as_json_string)
+    response['response_data'] = {}
+    response['response_data']['transaction_uuid'] = transaction_uuid
 
+    str_operation_modes = json.dumps(operation_modes)
     try:
         db.execute("""
             INSERT INTO flight_data(
+                transaction_uuid,
                 drone_id,
                 takeoff_time,
                 takeoff_gps_valid,
@@ -626,7 +646,7 @@ def tell_flight_data():
             VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
-            """, (drone_id, takeoff_time, takeoff_gps_valid, takeoff_gps_lat, takeoff_gps_lon, landing_time, landing_gps_valid, landing_gps_lat, landing_gps_lon, str_operation_modes,)
+            """, (transaction_uuid, drone_id, takeoff_time, takeoff_gps_valid, takeoff_gps_lat, takeoff_gps_lon, landing_time, landing_gps_valid, landing_gps_lat, landing_gps_lon, str_operation_modes,)
         )
 
         db.commit()

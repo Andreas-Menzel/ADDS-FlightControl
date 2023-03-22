@@ -452,20 +452,21 @@ The `data_type` is `aircraft_location`.
 
 **response_data field**
 
-| FIELD                    | TYPE    | VALUE SET? | INFORMATION                                    |
-|--------------------------|---------|------------|------------------------------------------------|
-| gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal)   |
-| gps_satellites_connected | int     | always     | Number of gps-satellites connected.            |
-| gps_valid                | boolean | always     | Whether the drone has a (valid) gps-signal.    |
-| gps_lat                  | float   | always     | Latitude.                                      |
-| gps_lon                  | float   | always     | Longitude.                                     |
-| altitude                 | float   | always     | In meters.                                     |
-| velocity_x               | float   | always     | Velocity X (towards north) in meters / second. |
-| velocity_y               | float   | always     | Velocity Y (towards east) in meters / second.  |
-| velocity_z               | float   | always     | Velocity Z (towards down) in meters / second.  |
-| pitch                    | float   | always     | [-180;180].                                    |
-| yaw                      | float   | always     | [-180;180].                                    |
-| roll                     | float   | always     | [-180;180].                                    |
+| FIELD                    | TYPE    | VALUE SET? | INFORMATION                                        |
+|--------------------------|---------|------------|----------------------------------------------------|
+| transaction_uuid         | string  | always     | UUID of the dataset transaction in the blockchain. |
+| gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal)       |
+| gps_satellites_connected | int     | always     | Number of gps-satellites connected.                |
+| gps_valid                | boolean | always     | Whether the drone has a (valid) gps-signal.        |
+| gps_lat                  | float   | always     | Latitude.                                          |
+| gps_lon                  | float   | always     | Longitude.                                         |
+| altitude                 | float   | always     | In meters.                                         |
+| velocity_x               | float   | always     | Velocity X (towards north) in meters / second.     |
+| velocity_y               | float   | always     | Velocity Y (towards east) in meters / second.      |
+| velocity_z               | float   | always     | Velocity Z (towards down) in meters / second.      |
+| pitch                    | float   | always     | [-180;180].                                        |
+| yaw                      | float   | always     | [-180;180].                                        |
+| roll                     | float   | always     | [-180;180].                                        |
 
 <details><summary>Sample response</summary><p>
 
@@ -475,6 +476,8 @@ The `data_type` is `aircraft_location`.
     "errors": [],
     "warnings": [],
     "response_data": {
+        "transaction_uuid": "00000000-0000-0000-000000000000",
+
         "gps_signal_level": 5,
         "gps_satellites_connected": 12,
 
@@ -542,12 +545,13 @@ The `data_type` is `aircraft_power`.
 
 **response_data field**
 
-| FIELD                     | TYPE  | VALUE SET? | INFORMATION |
-|---------------------------|-------|------------|-------------|
-| battery_remaining         | int   | always     | In mAh.     |
-| battery_remaining_percent | int   | always     | In %.       |
-| remaining_flight_time     | int   | always     | In seconds. |
-| remaining_flight_radius   | float | always     | In meters.  |
+| FIELD                     | TYPE   | VALUE SET? | INFORMATION                                        |
+|---------------------------|--------|------------|----------------------------------------------------|
+| transaction_uuid          | string | always     | UUID of the dataset transaction in the blockchain. |
+| battery_remaining         | int    | always     | In mAh.                                            |
+| battery_remaining_percent | int    | always     | In %.                                              |
+| remaining_flight_time     | int    | always     | In seconds.                                        |
+| remaining_flight_radius   | float  | always     | In meters.                                         |
 
 <details><summary>Sample response</summary><p>
 
@@ -557,8 +561,11 @@ The `data_type` is `aircraft_power`.
     "errors": [],
     "warnings": [],
     "response_data": {
+        "transaction_uuid": "00000000-0000-0000-000000000000",
+
         "battery_remaining": 4500,
         "battery_remaining_percent": 42,
+
         "remaining_flight_time": 550,
         "remaining_flight_radius": 4320.5
     }
@@ -613,17 +620,18 @@ The `data_type` is `flight_data`.
 
 **response_data field**
 
-| FIELD             | TYPE                    | VALUE SET? | INFORMATION                 |
-|-------------------|-------------------------|------------|-----------------------------|
-| takeoff_time      | int                     | always     | UNIX timestamp.             |
-| takeoff_gps_valid | boolean                 | always     | GPS-coordinates valid?      |
-| takeoff_gps_lat   | float                   | always     | Latitude.                   |
-| takeoff_gps_lon   | float                   | always     | Longitude.                  |
-| landing_time      | int                     | always     | UNIX timestamp.             |
-| landing_gps_valid | boolean                 | always     | GPS-coordinates valid?      |
-| landing_gps_lat   | float                   | always     | Latitude.                   |
-| landing_gps_lon   | float                   | always     | Longitude.                  |
-| operation_modes   | [string] as json-string | always     | The last X Operation Modes. |
+| FIELD             | TYPE                    | VALUE SET? | INFORMATION                                        |
+|-------------------|-------------------------|------------|----------------------------------------------------|
+| transaction_uuid  | string                  | always     | UUID of the dataset transaction in the blockchain. |
+| takeoff_time      | int                     | always     | UNIX timestamp.                                    |
+| takeoff_gps_valid | boolean                 | always     | GPS-coordinates valid?                             |
+| takeoff_gps_lat   | float                   | always     | Latitude.                                          |
+| takeoff_gps_lon   | float                   | always     | Longitude.                                         |
+| landing_time      | int                     | always     | UNIX timestamp.                                    |
+| landing_gps_valid | boolean                 | always     | GPS-coordinates valid?                             |
+| landing_gps_lat   | float                   | always     | Latitude.                                          |
+| landing_gps_lon   | float                   | always     | Longitude.                                         |
+| operation_modes   | [string] as json-string | always     | The last X Operation Modes.                        |
 
 <details><summary>Sample response</summary><p>
 
@@ -633,14 +641,18 @@ The `data_type` is `flight_data`.
     "errors": [],
     "warnings": [],
     "response_data": {
+        "transaction_uuid": "00000000-0000-0000-000000000000",
+
         "takeoff_time": 1678264333,
         "takeoff_gps_valid": "1",
         "takeoff_gps_lat": 48.26586,
         "takeoff_gps_lon": 11.67436,
+
         "landing_time": 1678264389,
         "landing_gps_valid": "1",
         "landing_gps_lat": 48.26586,
         "landing_gps_lon": 11.67436,
+        
         "operation_modes": "[\"OnGround\", \"Landing\", \"Hovering\", \"TakeOff\", \"OnGround\"]"
     }
 }

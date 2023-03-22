@@ -366,6 +366,8 @@ def ask_aircraft_location():
 
     if not db_drone_info is None:
         response['response_data'] = {
+            'transaction_uuid': db_drone_info['transaction_uuid'],
+
             'gps_signal_level': db_drone_info['gps_signal_level'],
             'gps_satellites_connected': db_drone_info['gps_satellites_connected'],
 
@@ -446,10 +448,10 @@ def ask_aircraft_power():
         return jsonify(response)
 
     # Get aircraft_power data
-    db_drone_info = None
+    db_aircraft_power_info = None
     if data is None:
         # Get latest entry
-        db_drone_info = db.execute("""
+        db_aircraft_power_info = db.execute("""
             SELECT * FROM aircraft_power
             WHERE drone_id = ?
             ORDER BY id DESC
@@ -471,19 +473,21 @@ def ask_aircraft_power():
         if not response['executed']:
             return jsonify(response)
 
-        db_drone_info = db.execute("""
+        db_aircraft_power_info = db.execute("""
             SELECT * FROM aircraft_power
             WHERE drone_id = ?
                   AND id = ?
             """, (drone_id, data_id,)).fetchone()
 
-    if not db_drone_info is None:
+    if not db_aircraft_power_info is None:
         response['response_data'] = {
-            'battery_remaining': db_drone_info['battery_remaining'],
-            'battery_remaining_percent': db_drone_info['battery_remaining_percent'],
+            'transaction_uuid': db_aircraft_power_info['transaction_uuid'],
 
-            'remaining_flight_time': db_drone_info['remaining_flight_time'],
-            'remaining_flight_radius': db_drone_info['remaining_flight_radius']
+            'battery_remaining': db_aircraft_power_info['battery_remaining'],
+            'battery_remaining_percent': db_aircraft_power_info['battery_remaining_percent'],
+
+            'remaining_flight_time': db_aircraft_power_info['remaining_flight_time'],
+            'remaining_flight_radius': db_aircraft_power_info['remaining_flight_radius']
         }
 
     response = jsonify(response)
@@ -548,10 +552,10 @@ def ask_flight_data():
         return jsonify(response)
 
     # Get aircraft_power data
-    db_drone_info = None
+    db_flight_data_info = None
     if data is None:
         # Get latest entry
-        db_drone_info = db.execute("""
+        db_flight_data_info = db.execute("""
             SELECT * FROM flight_data
             WHERE drone_id = ?
             ORDER BY id DESC
@@ -573,25 +577,27 @@ def ask_flight_data():
         if not response['executed']:
             return jsonify(response)
 
-        db_drone_info = db.execute("""
+        db_flight_data_info = db.execute("""
             SELECT * FROM flight_data
             WHERE drone_id = ?
                   AND id = ?
             """, (drone_id, data_id,)).fetchone()
 
-    if not db_drone_info is None:
+    if not db_flight_data_info is None:
         response['response_data'] = {
-            'takeoff_time': db_drone_info['takeoff_time'],
-            'takeoff_gps_valid': db_drone_info['takeoff_gps_valid'],
-            'takeoff_gps_lat': db_drone_info['takeoff_gps_lat'],
-            'takeoff_gps_lon': db_drone_info['takeoff_gps_lon'],
+            'transaction_uuid': db_flight_data_info['transaction_uuid'],
 
-            'landing_time': db_drone_info['landing_time'],
-            'landing_gps_valid': db_drone_info['landing_gps_valid'],
-            'landing_gps_lat': db_drone_info['landing_gps_lat'],
-            'landing_gps_lon': db_drone_info['landing_gps_lon'],
+            'takeoff_time': db_flight_data_info['takeoff_time'],
+            'takeoff_gps_valid': db_flight_data_info['takeoff_gps_valid'],
+            'takeoff_gps_lat': db_flight_data_info['takeoff_gps_lat'],
+            'takeoff_gps_lon': db_flight_data_info['takeoff_gps_lon'],
 
-            'operation_modes': db_drone_info['operation_modes']
+            'landing_time': db_flight_data_info['landing_time'],
+            'landing_gps_valid': db_flight_data_info['landing_gps_valid'],
+            'landing_gps_lat': db_flight_data_info['landing_gps_lat'],
+            'landing_gps_lon': db_flight_data_info['landing_gps_lon'],
+
+            'operation_modes': db_flight_data_info['operation_modes']
         }
 
     response = jsonify(response)

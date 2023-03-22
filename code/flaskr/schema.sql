@@ -20,6 +20,8 @@ CREATE TABLE drones (
 
 CREATE TABLE aircraft_location (
     id                          INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_uuid            TEXT,
+
     drone_id                    TEXT NOT NULL,
     
     gps_signal_level            INTEGER,
@@ -39,6 +41,8 @@ CREATE TABLE aircraft_location (
 
 CREATE TABLE aircraft_power (
     id                          INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_uuid            TEXT,
+
     drone_id                    TEXT NOT NULL,
 
     battery_remaining           INTEGER,
@@ -50,6 +54,8 @@ CREATE TABLE aircraft_power (
 
 CREATE TABLE flight_data (
     id                          INTEGER PRIMARY KEY AUTOINCREMENT,
+    transaction_uuid            TEXT,
+
     drone_id                    TEXT NOT NULL,
 
     takeoff_time                INTEGER,

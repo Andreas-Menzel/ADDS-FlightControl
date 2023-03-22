@@ -1,4 +1,9 @@
+import requests
+
 # This file holds variables and functions that can / will be used by all modules
+
+cchainlink_url = 'http://adds-demo.an-men.de:8080/'
+
 
 # Function copied from "https://github.com/python/cpython/blob/b2076b00710c4366dcfe6cd236e480d68a3c38b7/Lib/distutils/util.py#L308"
 def strtobool (val):
@@ -85,3 +90,76 @@ def check_argument_type(response, argument, argument_name, data_type, err_id = -
         )
     
     return response, argument
+
+
+def save_data_in_blockchain(response, payload):
+    transaction_uuid = None
+
+    cchainlink_response = None
+    try:
+        cchainlink_response = requests.get(cchainlink_url + 'book_data?payload=' + payload)
+    except:
+        response = add_error_to_response(
+            response,
+            -1,
+            'Could not reach C-Chain Link. Data was not booked in the blockchain!',
+            False
+            )
+    
+    cchainlink_response_json = None
+    if not cchainlink_response is None:
+        try:
+            cchainlink_response_json = cchainlink_response.json()
+        except:
+            response = add_error_to_response(
+                response,
+                -1,
+                'Invalid response from C-Chain Link. Data may not have been booked in the blockchain!',
+                False
+                )
+    
+    if not cchainlink_response_json is None:
+        try:
+            transaction_uuid = cchainlink_response_json['response_data']['transaction_uuid']
+        except:
+            response = add_error_to_response(
+                response,
+                -1,
+                'Invalid response from C-Chain Link (transaction_uuid not transmitted properly). Data may not have been booked in the blockchain!',
+                False
+                )
+        
+        try:
+            for err in cchainlink_response_json.get('errors'):
+                response = add_error_to_response(
+                    response,
+                    err.get('err_id'),
+                    'From C-Chain Link: ' + err.get('err_msg')
+                    )
+        except:
+            response = add_error_to_response(
+                response,
+                -1,
+                'Invalid response from C-Chain Link (errors not transmitted properly). Data may not have been booked in the blockchain!',
+                False
+                )
+        
+        try:
+            for warn in cchainlink_response_json.get('warnings'):
+                response = add_warning_to_response(
+                    response,
+                    warn.get('warn_id'),
+                    'From C-Chain Link: ' + warn.get('warn_msg')
+                    )
+        except:
+            response = add_error_to_response(
+                response,
+                -1,
+                'Invalid response from C-Chain Link (warnings not transmitted properly). Data may not have been booked in the blockchain!',
+                False
+                )
+    
+    if not cchainlink_response_json is None and not cchainlink_response_json.get('executed'):
+        response['executed'] = False
+
+    return response, transaction_uuid
