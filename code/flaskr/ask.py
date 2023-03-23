@@ -74,9 +74,7 @@ def ask_intersection_list():
         response['response_data'][intersection['id']]['gps_lon'] = intersection['gps_lon']
         response['response_data'][intersection['id']]['altitude'] = intersection['altitude']
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('intersection_location')
@@ -143,9 +141,7 @@ def ask_intersection_location():
         'altitude': db_intersection_info['altitude']
     }
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('corridor_list')
@@ -205,9 +201,7 @@ def ask_corridor_list():
         response['response_data'][corridor['id']]['intersection_a'] = corridor['intersection_a']
         response['response_data'][corridor['id']]['intersection_b'] = corridor['intersection_b']
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('corridor_location')
@@ -271,9 +265,7 @@ def ask_corridor_location():
         'intersection_b': db_corridor_info['intersection_b']
     }
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('drone_ids')
@@ -329,9 +321,7 @@ def ask_drone_ids():
     for drone in db_drone_info:
         response['response_data']['drone_ids'].append(drone['id'])
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('aircraft_location_ids')
@@ -388,9 +378,7 @@ def ask_aircraft_location_ids():
         'max_id': db_aircraft_location_info['max_id']
         }
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('aircraft_location')
@@ -503,9 +491,7 @@ def ask_aircraft_location():
             'roll':       db_drone_info['roll']
         }
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('aircraft_power_ids')
@@ -562,9 +548,7 @@ def ask_aircraft_power_ids():
         'max_id': db_aircraft_power_info['max_id']
         }
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('aircraft_power')
@@ -666,9 +650,7 @@ def ask_aircraft_power():
             'remaining_flight_radius': db_aircraft_power_info['remaining_flight_radius']
         }
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('flight_data_ids')
@@ -725,9 +707,7 @@ def ask_flight_data_ids():
         'max_id': db_flight_data_info['max_id']
         }
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
 
 
 @bp.route('flight_data')
@@ -835,6 +815,4 @@ def ask_flight_data():
             'operation_modes': db_flight_data_info['operation_modes']
         }
 
-    response = jsonify(response)
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    return response
+    return jsonify(response)
