@@ -490,9 +490,10 @@ character.
 
 **response_data field**
 
-| FIELD                 | TYPE     | VALUE SET? | INFORMATION                                |
-|-----------------------|----------|------------|--------------------------------------------|
-| aircraft_location_ids | [string] | always     | The list of aircraft_location dataset ids. |
+| FIELD  | TYPE | VALUE SET? | INFORMATION                                |
+|--------|------|------------|--------------------------------------------|
+| min_id | int  | always     | The minimum id available. Normally 0 or 1. |
+| max_id | int  | always     | The maximum id available                   |
 
 <details><summary>Sample response</summary><p>
 
@@ -502,9 +503,8 @@ character.
     "errors": [],
     "warnings": [],
     "response_data": {
-        "aircraft_location_ids": [
-            1, 2, 3, 4, 5, 6, 7, 8, 9
-        ]
+        "min_id": 1,
+        "max_id": 42
     }
 }
 ```
@@ -633,9 +633,10 @@ character.
 
 **response_data field**
 
-| FIELD              | TYPE     | VALUE SET? | INFORMATION                             |
-|--------------------|----------|------------|-----------------------------------------|
-| aircraft_power_ids | [string] | always     | The list of aircraft_power dataset ids. |
+| FIELD  | TYPE | VALUE SET? | INFORMATION                                |
+|--------|------|------------|--------------------------------------------|
+| min_id | int  | always     | The minimum id available. Normally 0 or 1. |
+| max_id | int  | always     | The maximum id available                   |
 
 <details><summary>Sample response</summary><p>
 
@@ -645,9 +646,8 @@ character.
     "errors": [],
     "warnings": [],
     "response_data": {
-        "aircraft_power_ids": [
-            1, 2, 3, 4, 5, 6, 7, 8, 9
-        ]
+        "min_id": 1,
+        "max_id": 42
     }
 }
 ```
@@ -757,9 +757,10 @@ character.
 
 **response_data field**
 
-| FIELD           | TYPE     | VALUE SET? | INFORMATION                          |
-|-----------------|----------|------------|--------------------------------------|
-| flight_data_ids | [string] | always     | The list of flight_data dataset ids. |
+| FIELD  | TYPE | VALUE SET? | INFORMATION                                |
+|--------|------|------------|--------------------------------------------|
+| min_id | int  | always     | The minimum id available. Normally 0 or 1. |
+| max_id | int  | always     | The maximum id available                   |
 
 <details><summary>Sample response</summary><p>
 
@@ -769,9 +770,8 @@ character.
     "errors": [],
     "warnings": [],
     "response_data": {
-        "flight_data_ids": [
-            1, 2, 3, 4, 5, 6, 7, 8, 9
-        ]
+        "min_id": 1,
+        "max_id": 42
     }
 }
 ```

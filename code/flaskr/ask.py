@@ -377,15 +377,16 @@ def ask_aircraft_location_ids():
 
     # Get aircraft_location ids
     db_aircraft_location_info = db.execute("""
-        SELECT id
+        SELECT min(id) as min_id, max(id) as max_id
         FROM aircraft_location
         WHERE id LIKE ?
         ESCAPE '!'
-        """, (dataset_id,)).fetchall()
+        """, (dataset_id,)).fetchone()
 
-    response['response_data'] = { 'aircraft_location_ids': [] }
-    for dataset in db_aircraft_location_info:
-        response['response_data']['aircraft_location_ids'].append(dataset['id'])
+    response['response_data'] = {
+        'min_id': db_aircraft_location_info['min_id'],
+        'max_id': db_aircraft_location_info['max_id']
+        }
 
     response = jsonify(response)
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -550,15 +551,16 @@ def ask_aircraft_power_ids():
 
     # Get aircraft_power ids
     db_aircraft_power_info = db.execute("""
-        SELECT id
+        SELECT min(id) as min_id, max(id) as max_id
         FROM aircraft_power
         WHERE id LIKE ?
         ESCAPE '!'
-        """, (dataset_id,)).fetchall()
+        """, (dataset_id,)).fetchone()
 
-    response['response_data'] = { 'aircraft_power_ids': [] }
-    for dataset in db_aircraft_power_info:
-        response['response_data']['aircraft_power_ids'].append(dataset['id'])
+    response['response_data'] = {
+        'min_id': db_aircraft_power_info['min_id'],
+        'max_id': db_aircraft_power_info['max_id']
+        }
 
     response = jsonify(response)
     response.headers.add('Access-Control-Allow-Origin', '*')
@@ -712,15 +714,16 @@ def ask_flight_data_ids():
 
     # Get flight_data ids
     db_flight_data_info = db.execute("""
-        SELECT id
+        SELECT min(id) as min_id, max(id) as max_id
         FROM flight_data
         WHERE id LIKE ?
         ESCAPE '!'
-        """, (dataset_id,)).fetchall()
+        """, (dataset_id,)).fetchone()
 
-    response['response_data'] = { 'flight_data_ids': [] }
-    for dataset in db_flight_data_info:
-        response['response_data']['flight_data_ids'].append(dataset['id'])
+    response['response_data'] = {
+        'min_id': db_flight_data_info['min_id'],
+        'max_id': db_flight_data_info['max_id']
+        }
 
     response = jsonify(response)
     response.headers.add('Access-Control-Allow-Origin', '*')
