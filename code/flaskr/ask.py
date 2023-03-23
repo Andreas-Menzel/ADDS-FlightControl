@@ -800,12 +800,12 @@ def ask_flight_data():
             'transaction_uuid': db_flight_data_info['transaction_uuid'],
 
             'takeoff_time': db_flight_data_info['takeoff_time'],
-            'takeoff_gps_valid': db_flight_data_info['takeoff_gps_valid'],
+            'takeoff_gps_valid': strtobool(db_flight_data_info['takeoff_gps_valid']),
             'takeoff_gps_lat': db_flight_data_info['takeoff_gps_lat'],
             'takeoff_gps_lon': db_flight_data_info['takeoff_gps_lon'],
 
             'landing_time': db_flight_data_info['landing_time'],
-            'landing_gps_valid': db_flight_data_info['landing_gps_valid'],
+            'landing_gps_valid': strtobool(db_flight_data_info['landing_gps_valid']),
             'landing_gps_lat': db_flight_data_info['landing_gps_lat'],
             'landing_gps_lon': db_flight_data_info['landing_gps_lon'],
 
