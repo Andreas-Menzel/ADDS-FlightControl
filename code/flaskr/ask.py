@@ -276,6 +276,122 @@ def ask_corridor_location():
     return response
 
 
+@bp.route('drone_ids')
+def ask_drone_ids():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'drone_ids':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'drone_ids'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get drone ids
+    db_drone_info = db.execute("""
+        SELECT id
+        FROM drones
+        WHERE id LIKE ?
+        ESCAPE '!'
+        """, (drone_id,)).fetchall()
+
+    response['response_data'] = { 'drone_ids': [] }
+    for drone in db_drone_info:
+        response['response_data']['drone_ids'].append(drone['id'])
+
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
+@bp.route('aircraft_location_ids')
+def ask_aircraft_location_ids():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    dataset_id = payload.get('dataset_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(response, dataset_id, 'dataset_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'aircraft_location_ids':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'aircraft_location_ids'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get aircraft_location ids
+    db_aircraft_location_info = db.execute("""
+        SELECT id
+        FROM aircraft_location
+        WHERE id LIKE ?
+        ESCAPE '!'
+        """, (dataset_id,)).fetchall()
+
+    response['response_data'] = { 'aircraft_location_ids': [] }
+    for dataset in db_aircraft_location_info:
+        response['response_data']['aircraft_location_ids'].append(dataset['id'])
+
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
 @bp.route('aircraft_location')
 def ask_aircraft_location():
     response = get_response_template(response_data=True)
@@ -391,6 +507,64 @@ def ask_aircraft_location():
     return response
 
 
+@bp.route('aircraft_power_ids')
+def ask_aircraft_power_ids():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    dataset_id = payload.get('dataset_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(response, dataset_id, 'dataset_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'aircraft_power_ids':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'aircraft_power_ids'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get aircraft_power ids
+    db_aircraft_power_info = db.execute("""
+        SELECT id
+        FROM aircraft_power
+        WHERE id LIKE ?
+        ESCAPE '!'
+        """, (dataset_id,)).fetchall()
+
+    response['response_data'] = { 'aircraft_power_ids': [] }
+    for dataset in db_aircraft_power_info:
+        response['response_data']['aircraft_power_ids'].append(dataset['id'])
+
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
 @bp.route('aircraft_power')
 def ask_aircraft_power():
     response = get_response_template(response_data=True)
@@ -489,6 +663,64 @@ def ask_aircraft_power():
             'remaining_flight_time': db_aircraft_power_info['remaining_flight_time'],
             'remaining_flight_radius': db_aircraft_power_info['remaining_flight_radius']
         }
+
+    response = jsonify(response)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
+
+@bp.route('flight_data_ids')
+def ask_flight_data_ids():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    dataset_id = payload.get('dataset_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(response, dataset_id, 'dataset_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'flight_data_ids':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'flight_data_ids'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get flight_data ids
+    db_flight_data_info = db.execute("""
+        SELECT id
+        FROM flight_data
+        WHERE id LIKE ?
+        ESCAPE '!'
+        """, (dataset_id,)).fetchall()
+
+    response['response_data'] = { 'flight_data_ids': [] }
+    for dataset in db_flight_data_info:
+        response['response_data']['flight_data_ids'].append(dataset['id'])
 
     response = jsonify(response)
     response.headers.add('Access-Control-Allow-Origin', '*')

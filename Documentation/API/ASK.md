@@ -12,8 +12,11 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
     - [intersection_location](#intersection_location)
     - [corridor_list](#corridor_list)
     - [corridor_location](#corridor_location)
+    - [aircraft_location_ids](#aircraft_location_ids)
     - [aircraft_location](#aircraft_location)
+    - [aircraft_power_ids](#aircraft_power_ids)
     - [aircraft_power](#aircraft_power)
+    - [flight_data_ids](#flight_data_ids)
     - [flight_data](#flight_data)
 
 ## Format of the request payload and response
@@ -23,11 +26,11 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
 The **payload** that is sent to Traffic Control is a JSON formatted string. It
 can be transmitted via GET or POST.
 
-| FIELD                                      | TYPE              | REQ / OPT | INFORMATION                                |
-|--------------------------------------------|-------------------|-----------|--------------------------------------------|
-| drone_id \| intersection_id \| corridor_id | string            | required  | ID of the drone, intersection or corridor. |
-| data_type                                  | string (constant) | required  | The value is specified for each interface. |
-| data                                       | dictionary        | optional  | Additional data.                           |
+| FIELD                                                    | TYPE              | REQ / OPT | INFORMATION                                         |
+|----------------------------------------------------------|-------------------|-----------|-----------------------------------------------------|
+| drone_id \| intersection_id \| corridor_id \| dataset_id | string            | required  | ID of the drone, intersection, corridor or dataset. |
+| data_type                                                | string (constant) | required  | The value is specified for each interface.          |
+| data                                                     | dictionary        | optional  | Additional data.                                    |
 
 <details><summary>Sample payload without data field.</summary><p>
 
@@ -407,6 +410,107 @@ The `data_type` is `corridor_location`.
 
 </details>
 
+### drone_ids
+
+One can request a list of drone ids.
+
+#### Request
+
+The `data_type` is `drone_ids`.
+
+The `dataset_id` is a search pattern like in SQL. Use `%` to match any
+sequence and `_` to match any one character. You can use `!` as the escape
+character.
+
+**NOTE:** You will most likely want to to use `%` to match all ids.
+
+<details><summary>Sample payload: Get all drone ids</summary><p>
+
+```json
+{
+    "dataset_id": "%",
+    "data_type": "drone_ids"
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD     | TYPE     | VALUE SET? | INFORMATION            |
+|-----------|----------|------------|------------------------|
+| drone_ids | [string] | always     | The list of drone ids. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "drone_ids": [
+            "demo_drone",
+            "other_demo_drone"
+        ]
+    }
+}
+```
+
+</details>
+
+### aircraft_location_ids
+
+One can request a list of aircraft_location dataset ids.
+
+#### Request
+
+The `data_type` is `aircraft_location_ids`.
+
+The `dataset_id` is a search pattern like in SQL. Use `%` to match any
+sequence and `_` to match any one character. You can use `!` as the escape
+character.
+
+**NOTE:** You will most likely want to to use `%` to match all ids.
+
+<details><summary>Sample payload: Get all aircraft_location dataset ids</summary><p>
+
+```json
+{
+    "dataset_id": "%",
+    "data_type": "aircraft_location_ids"
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD                 | TYPE     | VALUE SET? | INFORMATION                                |
+|-----------------------|----------|------------|--------------------------------------------|
+| aircraft_location_ids | [string] | always     | The list of aircraft_location dataset ids. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "aircraft_location_ids": [
+            1, 2, 3, 4, 5, 6, 7, 8, 9
+        ]
+    }
+}
+```
+
+</details>
+
 ### aircraft_location
 
 One can request information about the location of a drone.
@@ -500,6 +604,56 @@ The `data_type` is `aircraft_location`.
 
 </details>
 
+### aircraft_power_ids
+
+One can request a list of aircraft_power dataset ids.
+
+#### Request
+
+The `data_type` is `aircraft_power_ids`.
+
+The `dataset_id` is a search pattern like in SQL. Use `%` to match any
+sequence and `_` to match any one character. You can use `!` as the escape
+character.
+
+**NOTE:** You will most likely want to to use `%` to match all ids.
+
+<details><summary>Sample payload: Get all aircraft_power dataset ids</summary><p>
+
+```json
+{
+    "dataset_id": "%",
+    "data_type": "aircraft_power_ids"
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD              | TYPE     | VALUE SET? | INFORMATION                             |
+|--------------------|----------|------------|-----------------------------------------|
+| aircraft_power_ids | [string] | always     | The list of aircraft_power dataset ids. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "aircraft_power_ids": [
+            1, 2, 3, 4, 5, 6, 7, 8, 9
+        ]
+    }
+}
+```
+
+</details>
+
 ### aircraft_power
 
 One can request information about the state of charge and range of a drone.
@@ -568,6 +722,56 @@ The `data_type` is `aircraft_power`.
 
         "remaining_flight_time": 550,
         "remaining_flight_radius": 4320.5
+    }
+}
+```
+
+</details>
+
+### flight_data_ids
+
+One can request a list of flight_data dataset ids.
+
+#### Request
+
+The `data_type` is `flight_data_ids`.
+
+The `dataset_id` is a search pattern like in SQL. Use `%` to match any
+sequence and `_` to match any one character. You can use `!` as the escape
+character.
+
+**NOTE:** You will most likely want to to use `%` to match all ids.
+
+<details><summary>Sample payload: Get all flight_data dataset ids</summary><p>
+
+```json
+{
+    "dataset_id": "%",
+    "data_type": "flight_data_ids"
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD           | TYPE     | VALUE SET? | INFORMATION                          |
+|-----------------|----------|------------|--------------------------------------|
+| flight_data_ids | [string] | always     | The list of flight_data dataset ids. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "flight_data_ids": [
+            1, 2, 3, 4, 5, 6, 7, 8, 9
+        ]
     }
 }
 ```
