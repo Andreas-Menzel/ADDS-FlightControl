@@ -342,11 +342,11 @@ def ask_aircraft_location_ids():
 
     payload = json.loads(payload_as_json_string)
 
-    dataset_id = payload.get('dataset_id')
+    drone_id = payload.get('drone_id')
     data_type = payload.get('data_type')
     # data is not needed here
 
-    response = check_argument_not_null(response, dataset_id, 'dataset_id')
+    response = check_argument_not_null(response, drone_id, 'drone_id')
     response = check_argument_not_null(response, data_type, 'data_type')
 
     # Return if an error already occured
@@ -369,9 +369,8 @@ def ask_aircraft_location_ids():
     db_aircraft_location_info = db.execute("""
         SELECT min(id) as min_id, max(id) as max_id
         FROM aircraft_location
-        WHERE id LIKE ?
-        ESCAPE '!'
-        """, (dataset_id,)).fetchone()
+        WHERE drone_id = ?
+        """, (drone_id,)).fetchone()
 
     response['response_data'] = {
         'min_id': db_aircraft_location_info['min_id'],
@@ -512,11 +511,11 @@ def ask_aircraft_power_ids():
 
     payload = json.loads(payload_as_json_string)
 
-    dataset_id = payload.get('dataset_id')
+    drone_id = payload.get('drone_id')
     data_type = payload.get('data_type')
     # data is not needed here
 
-    response = check_argument_not_null(response, dataset_id, 'dataset_id')
+    response = check_argument_not_null(response, drone_id, 'drone_id')
     response = check_argument_not_null(response, data_type, 'data_type')
 
     # Return if an error already occured
@@ -539,9 +538,8 @@ def ask_aircraft_power_ids():
     db_aircraft_power_info = db.execute("""
         SELECT min(id) as min_id, max(id) as max_id
         FROM aircraft_power
-        WHERE id LIKE ?
-        ESCAPE '!'
-        """, (dataset_id,)).fetchone()
+        WHERE drone_id = ?
+        """, (drone_id,)).fetchone()
 
     response['response_data'] = {
         'min_id': db_aircraft_power_info['min_id'],
@@ -671,11 +669,11 @@ def ask_flight_data_ids():
 
     payload = json.loads(payload_as_json_string)
 
-    dataset_id = payload.get('dataset_id')
+    drone_id = payload.get('drone_id')
     data_type = payload.get('data_type')
     # data is not needed here
 
-    response = check_argument_not_null(response, dataset_id, 'dataset_id')
+    response = check_argument_not_null(response, drone_id, 'drone_id')
     response = check_argument_not_null(response, data_type, 'data_type')
 
     # Return if an error already occured
@@ -698,9 +696,8 @@ def ask_flight_data_ids():
     db_flight_data_info = db.execute("""
         SELECT min(id) as min_id, max(id) as max_id
         FROM flight_data
-        WHERE id LIKE ?
-        ESCAPE '!'
-        """, (dataset_id,)).fetchone()
+        WHERE drone_id = ?
+        """, (drone_id,)).fetchone()
 
     response['response_data'] = {
         'min_id': db_flight_data_info['min_id'],

@@ -26,11 +26,11 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
 The **payload** that is sent to Traffic Control is a JSON formatted string. It
 can be transmitted via GET or POST.
 
-| FIELD                                                    | TYPE              | REQ / OPT | INFORMATION                                         |
-|----------------------------------------------------------|-------------------|-----------|-----------------------------------------------------|
-| drone_id \| intersection_id \| corridor_id \| dataset_id | string            | required  | ID of the drone, intersection, corridor or dataset. |
-| data_type                                                | string (constant) | required  | The value is specified for each interface.          |
-| data                                                     | dictionary        | optional  | Additional data.                                    |
+| FIELD                                      | TYPE              | REQ / OPT | INFORMATION                                |
+|--------------------------------------------|-------------------|-----------|--------------------------------------------|
+| drone_id \| intersection_id \| corridor_id | string            | required  | ID of the drone, intersection or corridor. |
+| data_type                                  | string (constant) | required  | The value is specified for each interface. |
+| data                                       | dictionary        | optional  | Additional data.                           |
 
 <details><summary>Sample payload without data field.</summary><p>
 
@@ -469,17 +469,11 @@ One can request a list of aircraft_location dataset ids.
 
 The `data_type` is `aircraft_location_ids`.
 
-The `dataset_id` is a search pattern like in SQL. Use `%` to match any
-sequence and `_` to match any one character. You can use `!` as the escape
-character.
-
-**NOTE:** You will most likely want to to use `%` to match all ids.
-
 <details><summary>Sample payload: Get all aircraft_location dataset ids</summary><p>
 
 ```json
 {
-    "dataset_id": "%",
+    "drone_id": "demo_drone",
     "data_type": "aircraft_location_ids"
 }
 ```
@@ -612,17 +606,11 @@ One can request a list of aircraft_power dataset ids.
 
 The `data_type` is `aircraft_power_ids`.
 
-The `dataset_id` is a search pattern like in SQL. Use `%` to match any
-sequence and `_` to match any one character. You can use `!` as the escape
-character.
-
-**NOTE:** You will most likely want to to use `%` to match all ids.
-
 <details><summary>Sample payload: Get all aircraft_power dataset ids</summary><p>
 
 ```json
 {
-    "dataset_id": "%",
+    "drone_id": "demo_drone",
     "data_type": "aircraft_power_ids"
 }
 ```
@@ -736,17 +724,11 @@ One can request a list of flight_data dataset ids.
 
 The `data_type` is `flight_data_ids`.
 
-The `dataset_id` is a search pattern like in SQL. Use `%` to match any
-sequence and `_` to match any one character. You can use `!` as the escape
-character.
-
-**NOTE:** You will most likely want to to use `%` to match all ids.
-
 <details><summary>Sample payload: Get all flight_data dataset ids</summary><p>
 
 ```json
 {
-    "dataset_id": "%",
+    "drone_id": "demo_drone",
     "data_type": "flight_data_ids"
 }
 ```

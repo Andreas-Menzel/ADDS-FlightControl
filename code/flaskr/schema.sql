@@ -19,10 +19,10 @@ CREATE TABLE drones (
 );
 
 CREATE TABLE aircraft_location (
-    id                          INTEGER PRIMARY KEY AUTOINCREMENT,
-    transaction_uuid            TEXT,
-
+    id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
+
+    transaction_uuid            TEXT,
     
     gps_signal_level            INTEGER,
     gps_satellites_connected    INTEGER,
@@ -36,27 +36,48 @@ CREATE TABLE aircraft_location (
     velocity_z                  FLOAT,
     pitch                       FLOAT,
     yaw                         FLOAT,
-    roll                        FLOAT
+    roll                        FLOAT,
+
+    PRIMARY KEY (id, drone_id)
 );
 
-CREATE TABLE aircraft_power (
-    id                          INTEGER PRIMARY KEY AUTOINCREMENT,
-    transaction_uuid            TEXT,
+CREATE TRIGGER aircraft_location_increment_id
+AFTER INSERT ON aircraft_location
+BEGIN
+  UPDATE aircraft_location
+  SET id=(SELECT COALESCE(MAX(id), 0) + 1 FROM aircraft_location WHERE drone_id = NEW.drone_id)
+  WHERE id IS null AND drone_id = NEW.drone_id;
+END;
 
+
+CREATE TABLE aircraft_power (
+    id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
+
+    transaction_uuid            TEXT,
 
     battery_remaining           INTEGER,
     battery_remaining_percent   INTEGER,
 
     remaining_flight_time       INTEGER,
-    remaining_flight_radius     FLOAT
+    remaining_flight_radius     FLOAT,
+
+    PRIMARY KEY (id, drone_id)
 );
 
-CREATE TABLE flight_data (
-    id                          INTEGER PRIMARY KEY AUTOINCREMENT,
-    transaction_uuid            TEXT,
+CREATE TRIGGER aircraft_power_increment_id
+AFTER INSERT ON aircraft_power
+BEGIN
+  UPDATE aircraft_power
+  SET id=(SELECT COALESCE(MAX(id), 0) + 1 FROM aircraft_power WHERE drone_id = NEW.drone_id)
+  WHERE id IS null AND drone_id = NEW.drone_id;
+END;
 
+CREATE TABLE flight_data (
+    id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
+
+    transaction_uuid            TEXT,
 
     takeoff_time                INTEGER,
     takeoff_gps_valid           TEXT,
@@ -68,8 +89,18 @@ CREATE TABLE flight_data (
     landing_gps_lat             FLOAT,
     landing_gps_lon             FLOAT,
 
-    operation_modes             TEXT
+    operation_modes             TEXT,
+
+    PRIMARY KEY (id, drone_id)
 );
+
+CREATE TRIGGER flight_data_increment_id
+AFTER INSERT ON flight_data
+BEGIN
+  UPDATE flight_data
+  SET id=(SELECT COALESCE(MAX(id), 0) + 1 FROM flight_data WHERE drone_id = NEW.drone_id)
+  WHERE id IS null AND drone_id = NEW.drone_id;
+END;
 
 
 CREATE TABLE intersections (
@@ -90,6 +121,7 @@ CREATE TABLE corridors (
 
 
 INSERT INTO drones(id, active) VALUES("demo_drone", 0);
+INSERT INTO drones(id, active) VALUES("other_demo_drone", 0);
 
 INSERT INTO intersections VALUES("EDMR-Landeplatz", "48.048121", "11.653678", 0);
 INSERT INTO intersections VALUES("int_1", "48.047705", "11.653841", 0);
