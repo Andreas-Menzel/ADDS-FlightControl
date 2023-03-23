@@ -485,7 +485,7 @@ def tell_aircraft_power():
                 remaining_flight_radius
             )
             VALUES (
-                ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?
             )
             """, (transaction_uuid, drone_id, battery_remaining, battery_remaining_percent, remaining_flight_time, remaining_flight_radius,)
         )
@@ -644,7 +644,7 @@ def tell_flight_data():
                 operation_modes
             )
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
             """, (transaction_uuid, drone_id, takeoff_time, takeoff_gps_valid, takeoff_gps_lat, takeoff_gps_lon, landing_time, landing_gps_valid, landing_gps_lat, landing_gps_lon, str_operation_modes,)
         )
