@@ -806,18 +806,18 @@ The `data_type` is `flight_data`.
 
 **response_data field**
 
-| FIELD             | TYPE                    | VALUE SET? | INFORMATION                                        |
-|-------------------|-------------------------|------------|----------------------------------------------------|
-| transaction_uuid  | string                  | always     | UUID of the dataset transaction in the blockchain. |
-| takeoff_time      | int                     | always     | UNIX timestamp.                                    |
-| takeoff_gps_valid | boolean                 | always     | GPS-coordinates valid?                             |
-| takeoff_gps_lat   | float                   | always     | Latitude.                                          |
-| takeoff_gps_lon   | float                   | always     | Longitude.                                         |
-| landing_time      | int                     | always     | UNIX timestamp.                                    |
-| landing_gps_valid | boolean                 | always     | GPS-coordinates valid?                             |
-| landing_gps_lat   | float                   | always     | Latitude.                                          |
-| landing_gps_lon   | float                   | always     | Longitude.                                         |
-| operation_modes   | [string] as json-string | always     | The last X Operation Modes.                        |
+| FIELD             | TYPE     | VALUE SET? | INFORMATION                                        |
+|-------------------|----------|------------|----------------------------------------------------|
+| transaction_uuid  | string   | always     | UUID of the dataset transaction in the blockchain. |
+| takeoff_time      | int      | always     | UNIX timestamp.                                    |
+| takeoff_gps_valid | boolean  | always     | GPS-coordinates valid?                             |
+| takeoff_gps_lat   | float    | always     | Latitude.                                          |
+| takeoff_gps_lon   | float    | always     | Longitude.                                         |
+| landing_time      | int      | always     | UNIX timestamp.                                    |
+| landing_gps_valid | boolean  | always     | GPS-coordinates valid?                             |
+| landing_gps_lat   | float    | always     | Latitude.                                          |
+| landing_gps_lon   | float    | always     | Longitude.                                         |
+| operation_modes   | [string] | always     | A list of the last X Operation Modes.              |
 
 <details><summary>Sample response</summary><p>
 
@@ -839,7 +839,13 @@ The `data_type` is `flight_data`.
         "landing_gps_lat": 48.26586,
         "landing_gps_lon": 11.67436,
         
-        "operation_modes": "[\"OnGround\", \"Landing\", \"Hovering\", \"TakeOff\", \"OnGround\"]"
+        "operation_modes": [
+            "OnGround",
+            "Landing",
+            "Hovering",
+            "TakeOff",
+            "OnGround"
+        ]
     }
 }
 ```

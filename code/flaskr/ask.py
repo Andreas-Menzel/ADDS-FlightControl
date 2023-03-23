@@ -475,7 +475,7 @@ def ask_aircraft_location():
             'gps_signal_level': db_drone_info['gps_signal_level'],
             'gps_satellites_connected': db_drone_info['gps_satellites_connected'],
 
-            'gps_valid':  db_drone_info['gps_valid'],
+            'gps_valid':  strtobool(db_drone_info['gps_valid']),
             'gps_lat':    db_drone_info['gps_lat'],
             'gps_lon':    db_drone_info['gps_lon'],
 
@@ -809,7 +809,7 @@ def ask_flight_data():
             'landing_gps_lat': db_flight_data_info['landing_gps_lat'],
             'landing_gps_lon': db_flight_data_info['landing_gps_lon'],
 
-            'operation_modes': db_flight_data_info['operation_modes']
+            'operation_modes': json.loads(db_flight_data_info['operation_modes'])
         }
 
     return jsonify(response)
