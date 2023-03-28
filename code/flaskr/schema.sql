@@ -120,9 +120,11 @@ CREATE TABLE corridors (
 );
 
 
-INSERT INTO drones(id, active) VALUES("demo_drone", 0);
-INSERT INTO drones(id, active) VALUES("other_demo_drone", 0);
+INSERT INTO drones(id, active) VALUES("setup_drone", 0);
+INSERT INTO drones(id, active) VALUES("demo_drone_1", 0);
+INSERT INTO drones(id, active) VALUES("demo_drone_2", 0);
 
+/*
 INSERT INTO intersections VALUES("EDMR-Landeplatz", "48.048121", "11.653678", 0);
 INSERT INTO intersections VALUES("int_1", "48.047705", "11.653841", 0);
 INSERT INTO intersections VALUES("int_2", "48.047679", "11.652243", 0);
@@ -144,3 +146,4 @@ INSERT INTO corridors VALUES("cor_9", "int_5", "int_7");
 INSERT INTO corridors VALUES("cor_10", "int_1", "int_7");
 INSERT INTO corridors VALUES("cor_11", "int_1", "int_5");
 INSERT INTO corridors VALUES("cor_12", "int_4", "int_7");
+*/
