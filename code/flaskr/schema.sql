@@ -11,11 +11,8 @@ CREATE TABLE drones (
     id                          TEXT    PRIMARY KEY,
     active                      INTEGER NOT NULL    DEFAULT 0,
     
-    health                      TEXT,
-    battery_remaining           INTEGER,
-    battery_remaining_percent   INTEGER,
-    remaining_flight_time       INTEGER,
-    remaining_flight_radius     FLOAT
+    chain_uuid_mission          TEXT,
+    chain_uuid_blackbox         TEXT
 );
 
 CREATE TABLE aircraft_location (
@@ -44,9 +41,9 @@ CREATE TABLE aircraft_location (
 CREATE TRIGGER aircraft_location_increment_id
 AFTER INSERT ON aircraft_location
 BEGIN
-  UPDATE aircraft_location
-  SET id=(SELECT COALESCE(MAX(id), 0) + 1 FROM aircraft_location WHERE drone_id = NEW.drone_id)
-  WHERE id IS null AND drone_id = NEW.drone_id;
+    UPDATE aircraft_location
+    SET id=(SELECT COALESCE(MAX(id), 0) + 1 FROM aircraft_location WHERE drone_id = NEW.drone_id)
+    WHERE id IS null AND drone_id = NEW.drone_id;
 END;
 
 
@@ -97,9 +94,9 @@ CREATE TABLE flight_data (
 CREATE TRIGGER flight_data_increment_id
 AFTER INSERT ON flight_data
 BEGIN
-  UPDATE flight_data
-  SET id=(SELECT COALESCE(MAX(id), 0) + 1 FROM flight_data WHERE drone_id = NEW.drone_id)
-  WHERE id IS null AND drone_id = NEW.drone_id;
+    UPDATE flight_data
+    SET id=(SELECT COALESCE(MAX(id), 0) + 1 FROM flight_data WHERE drone_id = NEW.drone_id)
+    WHERE id IS null AND drone_id = NEW.drone_id;
 END;
 
 
@@ -120,9 +117,24 @@ CREATE TABLE corridors (
 );
 
 
-INSERT INTO drones(id, active) VALUES("setup_drone", 0);
-INSERT INTO drones(id, active) VALUES("demo_drone_1", 0);
-INSERT INTO drones(id, active) VALUES("demo_drone_2", 0);
+
+INSERT INTO drones (
+    id, chain_uuid_mission, chain_uuid_blackbox
+)
+VALUES (
+    "setup_drone",
+    "48a5c885-43f2-4476-ba62-4340de24a472",
+    "d069307f-7aa7-4efa-8845-92e464665492"
+);
+
+INSERT INTO drones (
+    id, chain_uuid_mission, chain_uuid_blackbox
+)
+VALUES (
+    "demo_drone",
+    "2a536579-9ef7-4f63-aff9-c25a92a0c803",
+    "1ce103f8-0e9a-4a71-9081-6a69bbc842cf"
+);
 
 /*
 INSERT INTO intersections VALUES("EDMR-Landeplatz", "48.048121", "11.653678", 0);

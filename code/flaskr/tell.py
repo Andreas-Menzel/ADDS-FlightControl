@@ -661,44 +661,61 @@ def tell_flight_data():
     return jsonify(response)
 
 
-################################################################################
-#                         UPDATE TO NEW SPECIFICATIONS                         #
-################################################################################
-
-@bp.route('/my_health')
-def my_health():
+@bp.route('register_drone')
+def tell_register_drone():
     response = get_response_template()
 
-    drone_id = request.values.get('drone_id')
-    health = request.values.get('health')
-    battery_remaining = request.values.get('battery_remaining')
-    battery_remaining_percent = request.values.get('battery_remaining_percent')
-    remaining_flight_time = request.values.get('remaining_flight_time')
-    remaining_flight_radius = request.values.get('remaining_flight_radius')
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
 
-    # Check if all required values were given
-    response = check_argument_not_null(response, drone_id, 'drone_id')
-    response = check_argument_not_null(response, health, 'health')
     response = check_argument_not_null(
-        response, battery_remaining_percent, 'battery_remaining_percent')
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+    response = check_argument_not_null(response, data, 'data')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'register_drone':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'register_drone'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO:
+    #crypt_id = data.get('crypt_id')
+
+    # TODO:
+    # response = check_argument_not_null(
+    #    response, crypt_id, 'crypt_id')
 
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
 
     # Convert variables to correct type
-    if not battery_remaining is None:
-        response, battery_remaining = check_argument_type(
-            response, battery_remaining, 'battery_remaining', 'int')
-    if not battery_remaining_percent is None:
-        response, battery_remaining_percent = check_argument_type(
-            response, battery_remaining_percent, 'battery_remaining_percent', 'int')
-    if not remaining_flight_time is None:
-        response, remaining_flight_time = check_argument_type(
-            response, remaining_flight_time, 'remaining_flight_time', 'int')
-    if not remaining_flight_radius is None:
-        response, remaining_flight_radius = check_argument_type(
-            response, remaining_flight_radius, 'remaining_flight_radius', 'float')
+    # TODO: crypt_id
+    # response, takeoff_time = check_argument_type(
+    #    response, takeoff_time, 'takeoff_time', 'int')
 
     # Return if an error already occured
     if not response['executed']:
@@ -706,244 +723,71 @@ def my_health():
 
     db = get_db()
 
-    # Check if drone with given id exists
-    tmp_db_drone_id = db.execute(
-        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
-    if tmp_db_drone_id is None:
-        response = add_error_to_response(
-            response,
-            1,
-            f'Drone with id "{drone_id}" not found.',
-            False
-        )
+    is_new_registration = True
+    chain_uuid_mission = None
+    chain_uuid_blackbox = None
 
-    # Return if an error already occured
-    if not response['executed']:
-        return jsonify(response)
+    # Check if drone with given id exists (fully registered or not)
+    tmp_db_drone_id = db.execute("""
+        SELECT id, chain_uuid_mission, chain_uuid_blackbox
+        FROM drones
+        WHERE id = ?
+        """, (drone_id,)).fetchone()
+    if not tmp_db_drone_id is None:
+        is_new_registration = False
 
-    try:
-        # Update all required fields
-        db.execute("""
-            UPDATE drones
-            SET health = ?,
-                battery_remaining_percent = ?
-            WHERE id = ?
-            """, (health, battery_remaining_percent, drone_id,)
-        )
-
-        # Update battery_remaining if is set
-        if not battery_remaining is None:
-            db.execute("""
-            UPDATE drones
-            SET battery_remaining = ?
-            WHERE id = ?
-            """, (battery_remaining, drone_id,)
-            )
-
-        # Update remaining_flight_time if is set
-        if not remaining_flight_time is None:
-            db.execute("""
-            UPDATE drones
-            SET remaining_flight_time = ?
-            WHERE id = ?
-            """, (remaining_flight_time, drone_id,)
-            )
-
-        # Update remaining_flight_radius if is set
-        if not remaining_flight_radius is None:
-            db.execute("""
-            UPDATE drones
-            SET remaining_flight_radius = ?
-            WHERE id = ?
-            """, (remaining_flight_radius, drone_id,)
-            )
-
-        db.commit()
-    except db.IntegrityError:
-        response = add_error_to_response(
-            response,
-            1,
-            'Internal server error: IntegrityError while accessing the database.',
-            False
-        )
-
-    return jsonify(response)
-
-
-@bp.route('register_drone')
-def register_drone():
-    response = get_response_template()
-
-    drone_id = request.values.get('drone_id')
-
-    # Check if all required values were given
-    response = check_argument_not_null(response, drone_id, 'drone_id')
-
-    # Return if an error already occured
-    if not response['executed']:
-        return jsonify(response)
-
-    db = get_db()
-
-    # Check if drone with this id already exists
-    db_drone = db.execute(
-        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
-    if db_drone is None:
-        db.execute('INSERT INTO drones(id) VALUES(?)', (drone_id,))
-
-        db.commit()
-    else:
-        response = add_warning_to_response(
-            response,
-            1,
-            f'Drone with id "{drone_id}" already exists.'
-        )
-
-    return jsonify(response)
-
-
-@bp.route('deregister_drone')
-def deregister_drone():
-    response = get_response_template()
-
-    drone_id = request.values.get('drone_id')
-
-    # Check if all required values were given
-    response = check_argument_not_null(response, drone_id, 'drone_id')
-
-    # Return if an error already occured
-    if not response['executed']:
-        return jsonify(response)
-
-    db = get_db()
-
-    db_drone = db.execute(
-        'SELECT id, active FROM drones WHERE id = ?', (drone_id,)).fetchone()
-
-    # Check if drone with this id exists
-    if not db_drone is None:
-        if not db_drone['active']:
-            db.execute('DELETE FROM drones WHERE id = ?', (drone_id,))
-
-            db.commit()
+        if tmp_db_drone_id['chain_uuid_mission'] is None or tmp_db_drone_id['chain_uuid_mission'] == '':
+            chain_uuid_mission = None
         else:
-            response = add_error_to_response(
+            chain_uuid_mission = tmp_db_drone_id['chain_uuid_mission']
+
+        if tmp_db_drone_id['chain_uuid_blackbox'] is None or tmp_db_drone_id['chain_uuid_blackbox'] == '':
+            chain_uuid_blackbox = None
+        else:
+            chain_uuid_blackbox = tmp_db_drone_id['chain_uuid_blackbox']
+
+        if chain_uuid_mission is None or chain_uuid_blackbox is None:
+            response = add_warning_to_response(
                 response,
-                1,
-                f'Drone with id "{drone_id}" is still active.',
-                False
+                -1,
+                'Previous registration not completely finished. Continuing.'
             )
-    else:
-        response = add_warning_to_response(
-            response,
-            1,
-            f'Drone with id "{drone_id}" does not exist.'
-        )
 
-    return jsonify(response)
+    # TODO: Save cryptID of app (?)
+    if chain_uuid_mission is None or chain_uuid_blackbox is None:
+        # Create chains
+        if chain_uuid_mission is None:
+            response, chain_uuid_mission = create_chain_mission(response, drone_id)
+        if chain_uuid_blackbox is None:
+            response, chain_uuid_blackbox = create_chain_blackbox(response, drone_id)
 
-
-@bp.route('/activate_drone')
-def activate_drone():
-    response = get_response_template()
-
-    drone_id = request.values.get('drone_id')
-
-    # Check if all required values were given
-    response = check_argument_not_null(response, drone_id, 'drone_id')
-
-    # Return if an error already occured
-    if not response['executed']:
-        return jsonify(response)
-
-    db = get_db()
-
-    db_drone = db.execute(
-        'SELECT id, active FROM drones WHERE id = ?', (drone_id,)).fetchone()
-
-    # Check if drone with given id exists
-    if db_drone is None:
-        response = add_error_to_response(
-            response,
-            1,
-            f'Drone with id "{drone_id}" does not exist.',
-            False
-        )
-
-    # Return if an error already occured
-    if not response['executed']:
-        return jsonify(response)
-
-    if not db_drone['active']:
         try:
-            db.execute(
-                'UPDATE drones SET active = TRUE WHERE id = ?', (drone_id,))
+            if is_new_registration:
+                db.execute("""
+                    INSERT INTO drones (
+                        id
+                    )
+                    VALUES (
+                        ?
+                    )
+                """, (drone_id,)
+                )
+
+            db.execute("""
+                UPDATE drones
+                SET chain_uuid_mission = ?,
+                    chain_uuid_blackbox = ?
+                WHERE id = ?
+            """, (chain_uuid_mission, chain_uuid_blackbox, drone_id,)
+            )
+
             db.commit()
         except db.IntegrityError:
             response = add_error_to_response(
                 response,
                 1,
-                'Internal server error: IntegrityError while accessing the database',
+                'Internal server error: IntegrityError while accessing the database.',
                 False
             )
-    else:
-        response = add_warning_to_response(
-            response,
-            1,
-            f'Drone with id "{drone_id}" already active.'
-        )
-
-    return jsonify(response)
-
-
-@bp.route('/deactivate_drone')
-def deactivate_drone():
-    response = get_response_template()
-
-    drone_id = request.values.get('drone_id')
-
-    # Check if all required values were given
-    response = check_argument_not_null(response, drone_id, 'drone_id')
-
-    # Return if an error already occured
-    if not response['executed']:
-        return jsonify(response)
-
-    db = get_db()
-
-    db_drone = db.execute(
-        'SELECT id, active FROM drones WHERE id = ?', (drone_id,)).fetchone()
-
-    # Check if drone with given id exists
-    if db_drone is None:
-        response = add_error_to_response(
-            response,
-            1,
-            f'Drone with id "{drone_id}" does not exist.',
-            False
-        )
-
-    # Return if an error already occured
-    if not response['executed']:
-        return jsonify(response)
-
-    if db_drone['active']:
-        try:
-            db.execute(
-                'UPDATE drones SET active = FALSE WHERE id = ?', (drone_id,))
-            db.commit()
-        except db.IntegrityError:
-            response = add_error_to_response(
-                response,
-                1,
-                'Internal server error: IntegrityError while accessing the database',
-                False
-            )
-    else:
-        response = add_warning_to_response(
-            response,
-            1,
-            f'Drone with id "{drone_id}" not active.'
-        )
 
     return jsonify(response)

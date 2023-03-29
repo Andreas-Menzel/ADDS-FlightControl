@@ -13,6 +13,7 @@ These interfaces are accessible via `<server_domain>/api/tell/<interface>`.
     - [aircraft_location](#aircraft_location)
     - [aircraft_power](#aircraft_power)
     - [flight_data](#flight_data)
+    - [register_drone](#register_drone)
 
 ## Format of the request payload and response
 
@@ -411,3 +412,47 @@ The `data_type` is `flight_data`.
 ```
 
 </details>
+
+### register_drone
+
+Before a drone can be used, it has to be registered.
+
+#### Request
+
+The `data_type` is `register_drone`.
+
+**Payload - data field (required)**
+
+**TODO:**
+
+| FIELD    | TYPE   | REQ / OPT | INFORMATION              |
+|----------|--------|-----------|--------------------------|
+| crypt_id | string | required  | The Crypt-ID of the app. |
+
+<details><summary>Sample payload</summary><p>
+
+```json
+{
+	"drone_id": "demo_drone",
+	"data_type": "register_drone",
+	"data": {
+
+	}
+}
+```
+
+</details>
+
+**Note:**
+- The drone registration is idempotent; registering a drone a second time has no
+  effect.
+- If the registration could not be finished completely (e.g. the chains could
+  not be created), the `execution` field is set to `false` and an appropriate
+  error is set.
+- If the registration did not succeed, one has to send the registration request
+  again. A warning will now be set, indicating that this is not a completely new
+  registration.
+
+#### Response
+
+Standard response. The `response_data` field is never set.
