@@ -160,6 +160,18 @@ def tell_corridor_location():
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
+    
+    if intersection_a == intersection_b:
+        response = add_error_to_response(
+            response,
+            -1,
+            'Intersections A and B must not be the same!',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
 
     db = get_db()
 
