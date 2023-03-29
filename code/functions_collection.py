@@ -5,7 +5,6 @@ import requests
 cchainlink_url = 'http://adds-demo.an-men.de:8080/'
 
 
-# Function copied from "https://github.com/python/cpython/blob/b2076b00710c4366dcfe6cd236e480d68a3c38b7/Lib/distutils/util.py#L308"
 def strtobool(val):
     if isinstance(val, bool):
         return val
@@ -93,7 +92,7 @@ def check_argument_type(response, argument, argument_name, data_type, err_id=-1)
 def save_data_in_blockchain(response, chain_uuid, payload):
     transaction_uuid = None
 
-    if chain_uuid is None:
+    if chain_uuid is None or chain_uuid == '':
         response = add_error_to_response(
             response,
             -1,
@@ -106,7 +105,7 @@ def save_data_in_blockchain(response, chain_uuid, payload):
     try:
         cchainlink_response = requests.get(
             cchainlink_url + 'book_data?'
-            + '?chain_uuid=' + chain_uuid
+            + 'chain_uuid=' + chain_uuid
             + '&payload=' + payload)
     except:
         response = add_error_to_response(
