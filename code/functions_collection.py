@@ -7,21 +7,19 @@ cchainlink_url = 'http://adds-demo.an-men.de:8080/'
 
 # Function copied from "https://github.com/python/cpython/blob/b2076b00710c4366dcfe6cd236e480d68a3c38b7/Lib/distutils/util.py#L308"
 def strtobool(val):
-    """Convert a string representation of truth to true (1) or false (0).
-    True values are 'y', 'yes', 't', 'true', 'on', and '1'; false values
-    are 'n', 'no', 'f', 'false', 'off', and '0'.  Raises ValueError if
-    'val' is anything else.
-    """
     if isinstance(val, bool):
         return val
-
-    val = val.lower()
-    if val in ('y', 'yes', 't', 'true', 'on', '1'):
-        return 1
-    elif val in ('n', 'no', 'f', 'false', 'off', '0'):
-        return 0
+    elif isinstance(val, str):
+        val = val.strip().lower()
+        if val in ["true", "1", "yes", "on"]:
+            return True
+        elif val in ["false", "0", "no", "off"]:
+            return False
+    elif isinstance(val, (int, float)):
+        return val == True
     else:
-        raise ValueError("invalid truth value %r" % (val,))
+        return bool(val)
+
 
 
 def get_response_template(requesting_values=False, response_data=False):

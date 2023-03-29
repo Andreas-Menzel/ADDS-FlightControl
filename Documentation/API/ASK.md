@@ -12,6 +12,8 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
     - [intersection_location](#intersection_location)
     - [corridor_list](#corridor_list)
     - [corridor_location](#corridor_location)
+    - [drone_ids](#drone_ids)
+    - [drone_list](#drone_list)
     - [aircraft_location_ids](#aircraft_location_ids)
     - [aircraft_location](#aircraft_location)
     - [aircraft_power_ids](#aircraft_power_ids)
@@ -418,7 +420,7 @@ One can request a list of drone ids.
 
 The `data_type` is `drone_ids`.
 
-The `dataset_id` is a search pattern like in SQL. Use `%` to match any
+The `drone_id` is a search pattern like in SQL. Use `%` to match any
 sequence and `_` to match any one character. You can use `!` as the escape
 character.
 
@@ -428,7 +430,18 @@ character.
 
 ```json
 {
-    "dataset_id": "%",
+    "drone_id": "%",
+    "data_type": "drone_ids"
+}
+```
+
+</details>
+
+<details><summary>Sample payload: Get all drone ids starting with campus-</summary><p>
+
+```json
+{
+    "drone_id": "campus-%",
     "data_type": "drone_ids"
 }
 ```
@@ -455,6 +468,76 @@ character.
             "demo_drone",
             "other_demo_drone"
         ]
+    }
+}
+```
+
+</details>
+
+### drone_list
+
+One can request a list of drones.
+
+#### Request
+
+The `data_type` is `drone_list`.
+
+The `drone_id` is a search pattern like in SQL. Use `%` to match any
+sequence and `_` to match any one character. You can use `!` as the escape
+character.
+
+<details><summary>Sample payload: Get all drones</summary><p>
+
+```json
+{
+    "drone_id": "%",
+    "data_type": "drone_list"
+}
+```
+
+</details>
+
+<details><summary>Sample payload: Get all drones with an id starting with campus-</summary><p>
+
+```json
+{
+    "drone_id": "campus-%",
+    "data_type": "drone_list"
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD            | TYPE | VALUE SET? | INFORMATION            |
+|------------------|------|------------|------------------------|
+| &lt;drone_id&gt; | dict | always     | The info of one drone. |
+
+**Note:** Multiple `<drone_id>` fields can be present. See sample response.
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "demo_drone": {
+            "id": "demo_drone",
+            "active": false,
+            "chain_uuid_mission": "00000000-0000-0000-0000-000000000000",
+            "chain_uuid_blackbox": "00000000-0000-0000-0000-000000000000"
+        },
+        "demo_drone_2": {
+            "id": "demo_drone_2",
+            "active": false,
+            "chain_uuid_mission": "00000000-0000-0000-0000-000000000000",
+            "chain_uuid_blackbox": "00000000-0000-0000-0000-000000000000"
+        },
     }
 }
 ```

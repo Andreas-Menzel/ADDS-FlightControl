@@ -324,6 +324,66 @@ def ask_drone_ids():
     return jsonify(response)
 
 
+@bp.route('drone_list')
+def ask_drone_list():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'drone_list':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'drone_list'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get drones
+    db_drone_info = db.execute("""
+        SELECT id, active, chain_uuid_mission, chain_uuid_blackbox
+        FROM drones
+        WHERE id LIKE ?
+        ESCAPE '!'
+        """, (drone_id,)).fetchall()
+
+    response['response_data'] = {}
+    for drone in db_drone_info:
+        response['response_data'][drone['id']] = {}
+        response['response_data'][drone['id']]['id'] = drone['id']
+        response['response_data'][drone['id']]['active'] = strtobool(drone['active'])
+        response['response_data'][drone['id']]['chain_uuid_mission'] = drone['chain_uuid_mission']
+        response['response_data'][drone['id']]['chain_uuid_blackbox'] = drone['chain_uuid_blackbox']
+
+    return jsonify(response)
+
+
 @bp.route('aircraft_location_ids')
 def ask_aircraft_location_ids():
     response = get_response_template(response_data=True)
