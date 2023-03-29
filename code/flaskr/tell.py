@@ -109,6 +109,86 @@ def tell_intersection_location():
     return jsonify(response)
 
 
+@bp.route('delete_intersection')
+def tell_delete_intersection():
+    response = get_response_template()
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    intersection_id = payload.get('intersection_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(
+        response, intersection_id, 'intersection_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'delete_intersection':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'delete_intersection'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check that intersection is not part of a corridor
+    tmp_db_corridor_ids = db.execute("""
+        SELECT id
+        FROM corridors
+        WHERE intersection_a = ?
+           OR intersection_b = ?
+        """, (intersection_id, intersection_id,)).fetchall()
+
+    if not tmp_db_corridor_ids is None:
+        for cor in tmp_db_corridor_ids:
+            cor_id = cor['id']
+            response = add_error_to_response(
+                response,
+                -1,
+                'Cannot delete intersection. Is still part of corridor with id "' + cor_id + '".',
+                False
+            )
+
+    # Delete intersection
+    try:
+        db.execute("""
+            DELETE FROM intersections
+            WHERE id = ?
+            """, (intersection_id,)
+        )
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
+
+    return jsonify(response)
+
+
 @bp.route('corridor_location')
 def tell_corridor_location():
     response = get_response_template()
@@ -160,7 +240,7 @@ def tell_corridor_location():
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
-    
+
     if intersection_a == intersection_b:
         response = add_error_to_response(
             response,
@@ -218,6 +298,66 @@ def tell_corridor_location():
             intersection_a = ?,
             intersection_b = ?
             """, (corridor_id, intersection_a, intersection_b, intersection_a, intersection_b,)
+        )
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
+
+    return jsonify(response)
+
+
+@bp.route('delete_corridor')
+def tell_delete_corridor():
+    response = get_response_template()
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    corridor_id = payload.get('corridor_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(response, corridor_id, 'corridor_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'delete_corridor':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'delete_corridor'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+    
+    try:
+        db.execute("""
+            DELETE FROM corridors
+            WHERE id = ?
+            """, (corridor_id,)
         )
 
         db.commit()

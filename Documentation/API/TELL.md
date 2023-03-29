@@ -9,7 +9,9 @@ These interfaces are accessible via `<server_domain>/api/tell/<interface>`.
 - [Format of the request payload and response](#format-of-the-request-payload-and-response)
 - [Interfaces](#interfaces)
     - [intersection_location](#intersection_location)
+    - [delete_intersection](#delete_intersection)
     - [corridor_location](#corridor_location)
+    - [delete_corridor](#delete_corridor)
     - [aircraft_location](#aircraft_location)
     - [aircraft_power](#aircraft_power)
     - [flight_data](#flight_data)
@@ -173,6 +175,33 @@ The `data_type` is `intersection_location`.
 
 Standard response. The `response_data` field is never set.
 
+### delete_intersection
+
+One can delete an intersection. This endpoint is idempotent; trying to delete an
+intersection that does not exist will not result in an error.
+
+**Note:** Make sure that the intersection is not a part of any corridor.
+Otherwise the intersection will not be deleted and an error will be returned.
+
+#### Request
+
+The `data_type` is `delete_intersection`.
+
+<details><summary>Sample payload: Delete intersection with id demo_intersection</summary><p>
+
+```json
+{
+    "intersection_id": "demo_intersection",
+    "data_type": "delete_intersection"
+}
+```
+
+</details>
+
+#### Response
+
+Standard response. The `response_data` field is never set.
+
 ### corridor_location
 
 One can send information about the location of a flight corridor. The corridor
@@ -202,6 +231,30 @@ corridor.
         "intersection_a": "demo_intersection_1",
         "intersection_b": "demo_intersection_2"
     }
+}
+```
+
+</details>
+
+#### Response
+
+Standard response. The `response_data` field is never set.
+
+### delete_corridor
+
+One can delete a corridor. This endpoint is idempotent; trying to delete a
+corridor that does not exist will not result in an error.
+
+#### Request
+
+The `data_type` is `delete_corridor`.
+
+<details><summary>Sample payload: Delete corridor with id demo_corridor</summary><p>
+
+```json
+{
+    "corridor_id": "demo_corridor",
+    "data_type": "delete_corridor"
 }
 ```
 
