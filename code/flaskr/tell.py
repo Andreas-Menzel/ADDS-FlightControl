@@ -168,6 +168,9 @@ def tell_delete_intersection():
                 'Cannot delete intersection. Is still part of corridor with id "' + cor_id + '".',
                 False
             )
+    
+    if not response['executed']:
+        return jsonify(response)
 
     # Delete intersection
     try:
