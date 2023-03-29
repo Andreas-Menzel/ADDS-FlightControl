@@ -323,9 +323,12 @@ def tell_aircraft_location():
     db = get_db()
 
     # Check if drone with given id exists
-    tmp_db_drone_id = db.execute(
-        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
-    if tmp_db_drone_id is None:
+    tmp_db_drone_info = db.execute("""
+        SELECT id, chain_uuid_blackbox
+        FROM drones
+        WHERE id = ?
+        """, (drone_id,)).fetchone()
+    if tmp_db_drone_info is None:
         response = add_error_to_response(
             response,
             1,
@@ -339,7 +342,7 @@ def tell_aircraft_location():
 
     # Save data in blockchain and get transaction_uuid
     response, transaction_uuid = save_data_in_blockchain(
-        response, payload_as_json_string)
+        response, tmp_db_drone_info['chain_uuid_blackbox'], payload_as_json_string)
     response['response_data'] = {}
     response['response_data']['transaction_uuid'] = transaction_uuid
 
@@ -454,9 +457,12 @@ def tell_aircraft_power():
     db = get_db()
 
     # Check if drone with given id exists
-    tmp_db_drone_id = db.execute(
-        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
-    if tmp_db_drone_id is None:
+    tmp_db_drone_info = db.execute("""
+        SELECT id, chain_uuid_blackbox
+        FROM drones
+        WHERE id = ?
+        """, (drone_id,)).fetchone()
+    if tmp_db_drone_info is None:
         response = add_error_to_response(
             response,
             1,
@@ -470,7 +476,7 @@ def tell_aircraft_power():
 
     # Save data in blockchain and get transaction_uuid
     response, transaction_uuid = save_data_in_blockchain(
-        response, payload_as_json_string)
+        response, tmp_db_drone_info['chain_uuid_blackbox'], payload_as_json_string)
     response['response_data'] = {}
     response['response_data']['transaction_uuid'] = transaction_uuid
 
@@ -607,9 +613,12 @@ def tell_flight_data():
     db = get_db()
 
     # Check if drone with given id exists
-    tmp_db_drone_id = db.execute(
-        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
-    if tmp_db_drone_id is None:
+    tmp_db_drone_info = db.execute("""
+        SELECT id, chain_uuid_blackbox
+        FROM drones
+        WHERE id = ?
+        """, (drone_id,)).fetchone()
+    if tmp_db_drone_info is None:
         response = add_error_to_response(
             response,
             1,
@@ -623,7 +632,7 @@ def tell_flight_data():
 
     # Save data in blockchain and get transaction_uuid
     response, transaction_uuid = save_data_in_blockchain(
-        response, payload_as_json_string)
+        response, tmp_db_drone_info['chain_uuid_blackbox'], payload_as_json_string)
     response['response_data'] = {}
     response['response_data']['transaction_uuid'] = transaction_uuid
 
@@ -750,44 +759,44 @@ def tell_register_drone():
             response = add_warning_to_response(
                 response,
                 -1,
-                'Previous registration not completely finished. Continuing.'
+                'This drone is already (partially?) registered.'
             )
 
-    # TODO: Save cryptID of app (?)
-    if chain_uuid_mission is None or chain_uuid_blackbox is None:
-        # Create chains
-        if chain_uuid_mission is None:
-            response, chain_uuid_mission = create_chain_mission(response, drone_id)
-        if chain_uuid_blackbox is None:
-            response, chain_uuid_blackbox = create_chain_blackbox(response, drone_id)
+    # Create chains
+    if chain_uuid_mission is None:
+        response, chain_uuid_mission = create_chain_mission(
+            response, drone_id)
+    if chain_uuid_blackbox is None:
+        response, chain_uuid_blackbox = create_chain_blackbox(
+            response, drone_id)
 
-        try:
-            if is_new_registration:
-                db.execute("""
-                    INSERT INTO drones (
-                        id
-                    )
-                    VALUES (
-                        ?
-                    )
-                """, (drone_id,)
-                )
-
+    try:
+        if is_new_registration:
             db.execute("""
-                UPDATE drones
-                SET chain_uuid_mission = ?,
-                    chain_uuid_blackbox = ?
-                WHERE id = ?
-            """, (chain_uuid_mission, chain_uuid_blackbox, drone_id,)
+                INSERT INTO drones (
+                    id
+                )
+                VALUES (
+                    ?
+                )
+            """, (drone_id,)
             )
 
-            db.commit()
-        except db.IntegrityError:
-            response = add_error_to_response(
-                response,
-                1,
-                'Internal server error: IntegrityError while accessing the database.',
-                False
-            )
+        db.execute("""
+            UPDATE drones
+            SET chain_uuid_mission = ?,
+                chain_uuid_blackbox = ?
+            WHERE id = ?
+        """, (chain_uuid_mission, chain_uuid_blackbox, drone_id,)
+        )
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
 
     return jsonify(response)

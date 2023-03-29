@@ -92,13 +92,24 @@ def check_argument_type(response, argument, argument_name, data_type, err_id=-1)
     return response, argument
 
 
-def save_data_in_blockchain(response, payload):
+def save_data_in_blockchain(response, chain_uuid, payload):
     transaction_uuid = None
+
+    if chain_uuid is None:
+        response = add_error_to_response(
+            response,
+            -1,
+            'The ChainUUID is None. Data was not booked in the blockchain!',
+            False
+        )
+        return response, transaction_uuid
 
     cchainlink_response = None
     try:
         cchainlink_response = requests.get(
-            cchainlink_url + 'book_data?payload=' + payload)
+            cchainlink_url + 'book_data?'
+            + '?chain_uuid=' + chain_uuid
+            + '&payload=' + payload)
     except:
         response = add_error_to_response(
             response,
