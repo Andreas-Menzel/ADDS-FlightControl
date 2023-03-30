@@ -371,12 +371,12 @@ def ask_drone_list():
             d.id,
             d.chain_uuid_mission,
             d.chain_uuid_blackbox,
-            al.latest_time_sent latest_time_sent_aircraft_location,
-            ap.latest_time_sent latest_time_sent_aircraft_power,
-            fd.latest_time_sent latest_time_sent_flight_data,
-            al.latest_time_recorded latest_time_recorded_aircraft_location,
-            ap.latest_time_recorded latest_time_recorded_aircraft_power,
-            fd.latest_time_recorded latest_time_recorded_flight_data
+            IFNULL(al.latest_time_sent, 0) latest_time_sent_aircraft_location,
+            IFNULL(ap.latest_time_sent, 0) latest_time_sent_aircraft_power,
+            IFNULL(fd.latest_time_sent, 0) latest_time_sent_flight_data,
+            IFNULL(al.latest_time_recorded, 0) latest_time_recorded_aircraft_location,
+            IFNULL(ap.latest_time_recorded, 0) latest_time_recorded_aircraft_power,
+            IFNULL(fd.latest_time_recorded, 0) latest_time_recorded_flight_data
         FROM drones d
         LEFT JOIN (
             SELECT drone_id, MAX(time_sent) latest_time_sent, MAX(time_recorded) latest_time_recorded
