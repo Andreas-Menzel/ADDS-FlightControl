@@ -530,13 +530,19 @@ character.
             "id": "demo_drone",
             "active": false,
             "chain_uuid_mission": "00000000-0000-0000-0000-000000000000",
-            "chain_uuid_blackbox": "00000000-0000-0000-0000-000000000000"
+            "chain_uuid_blackbox": "00000000-0000-0000-0000-000000000000",
+            "latest_time_sent_aircraft_location": 1673338740,
+            "latest_time_sent_aircraft_power": 1673338735,
+            "latest_time_sent_flight_data": 1673338730
         },
         "demo_drone_2": {
             "id": "demo_drone_2",
             "active": false,
             "chain_uuid_mission": "00000000-0000-0000-0000-000000000000",
-            "chain_uuid_blackbox": "00000000-0000-0000-0000-000000000000"
+            "chain_uuid_blackbox": "00000000-0000-0000-0000-000000000000",
+            "latest_time_sent_aircraft_location": 1673338740,
+            "latest_time_sent_aircraft_power": 1673338735,
+            "latest_time_sent_flight_data": 1673338730
         },
     }
 }
@@ -633,21 +639,22 @@ The `data_type` is `aircraft_location`.
 
 **response_data field**
 
-| FIELD                    | TYPE    | VALUE SET? | INFORMATION                                        |
-|--------------------------|---------|------------|----------------------------------------------------|
-| transaction_uuid         | string  | always     | UUID of the dataset transaction in the blockchain. |
-| gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal)       |
-| gps_satellites_connected | int     | always     | Number of gps-satellites connected.                |
-| gps_valid                | boolean | always     | Whether the drone has a (valid) gps-signal.        |
-| gps_lat                  | float   | always     | Latitude.                                          |
-| gps_lon                  | float   | always     | Longitude.                                         |
-| altitude                 | float   | always     | In meters.                                         |
-| velocity_x               | float   | always     | Velocity X (towards north) in meters / second.     |
-| velocity_y               | float   | always     | Velocity Y (towards east) in meters / second.      |
-| velocity_z               | float   | always     | Velocity Z (towards down) in meters / second.      |
-| pitch                    | float   | always     | [-180;180].                                        |
-| yaw                      | float   | always     | [-180;180].                                        |
-| roll                     | float   | always     | [-180;180].                                        |
+| FIELD                    | TYPE    | VALUE SET? | INFORMATION                                            |
+|--------------------------|---------|------------|--------------------------------------------------------|
+| time_sent                | float   | always     | UNIX timestamp when the dataset was sent from the app. |
+| transaction_uuid         | string  | always     | UUID of the dataset transaction in the blockchain.     |
+| gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal)           |
+| gps_satellites_connected | int     | always     | Number of gps-satellites connected.                    |
+| gps_valid                | boolean | always     | Whether the drone has a (valid) gps-signal.            |
+| gps_lat                  | float   | always     | Latitude.                                              |
+| gps_lon                  | float   | always     | Longitude.                                             |
+| altitude                 | float   | always     | In meters.                                             |
+| velocity_x               | float   | always     | Velocity X (towards north) in meters / second.         |
+| velocity_y               | float   | always     | Velocity Y (towards east) in meters / second.          |
+| velocity_z               | float   | always     | Velocity Z (towards down) in meters / second.          |
+| pitch                    | float   | always     | [-180;180].                                            |
+| yaw                      | float   | always     | [-180;180].                                            |
+| roll                     | float   | always     | [-180;180].                                            |
 
 <details><summary>Sample response</summary><p>
 
@@ -657,6 +664,8 @@ The `data_type` is `aircraft_location`.
     "errors": [],
     "warnings": [],
     "response_data": {
+        "time_sent": 1673338740,
+
         "transaction_uuid": "00000000-0000-0000-000000000000",
 
         "gps_signal_level": 5,
@@ -770,13 +779,14 @@ The `data_type` is `aircraft_power`.
 
 **response_data field**
 
-| FIELD                     | TYPE   | VALUE SET? | INFORMATION                                        |
-|---------------------------|--------|------------|----------------------------------------------------|
-| transaction_uuid          | string | always     | UUID of the dataset transaction in the blockchain. |
-| battery_remaining         | int    | always     | In mAh.                                            |
-| battery_remaining_percent | int    | always     | In %.                                              |
-| remaining_flight_time     | int    | always     | In seconds.                                        |
-| remaining_flight_radius   | float  | always     | In meters.                                         |
+| FIELD                     | TYPE   | VALUE SET? | INFORMATION                                            |
+|---------------------------|--------|------------|--------------------------------------------------------|
+| time_sent                 | float  | always     | UNIX timestamp when the dataset was sent from the app. |
+| transaction_uuid          | string | always     | UUID of the dataset transaction in the blockchain.     |
+| battery_remaining         | int    | always     | In mAh.                                                |
+| battery_remaining_percent | int    | always     | In %.                                                  |
+| remaining_flight_time     | int    | always     | In seconds.                                            |
+| remaining_flight_radius   | float  | always     | In meters.                                             |
 
 <details><summary>Sample response</summary><p>
 
@@ -786,6 +796,8 @@ The `data_type` is `aircraft_power`.
     "errors": [],
     "warnings": [],
     "response_data": {
+        "latest_time_sent_aircraft_location": 1673338740,
+
         "transaction_uuid": "00000000-0000-0000-000000000000",
 
         "battery_remaining": 4500,
@@ -889,18 +901,19 @@ The `data_type` is `flight_data`.
 
 **response_data field**
 
-| FIELD             | TYPE     | VALUE SET? | INFORMATION                                        |
-|-------------------|----------|------------|----------------------------------------------------|
-| transaction_uuid  | string   | always     | UUID of the dataset transaction in the blockchain. |
-| takeoff_time      | int      | always     | UNIX timestamp.                                    |
-| takeoff_gps_valid | boolean  | always     | GPS-coordinates valid?                             |
-| takeoff_gps_lat   | float    | always     | Latitude.                                          |
-| takeoff_gps_lon   | float    | always     | Longitude.                                         |
-| landing_time      | int      | always     | UNIX timestamp.                                    |
-| landing_gps_valid | boolean  | always     | GPS-coordinates valid?                             |
-| landing_gps_lat   | float    | always     | Latitude.                                          |
-| landing_gps_lon   | float    | always     | Longitude.                                         |
-| operation_modes   | [string] | always     | A list of the last X Operation Modes.              |
+| FIELD             | TYPE     | VALUE SET? | INFORMATION                                            |
+|-------------------|----------|------------|--------------------------------------------------------|
+| time_sent         | float    | always     | UNIX timestamp when the dataset was sent from the app. |
+| transaction_uuid  | string   | always     | UUID of the dataset transaction in the blockchain.     |
+| takeoff_time      | int      | always     | UNIX timestamp.                                        |
+| takeoff_gps_valid | boolean  | always     | GPS-coordinates valid?                                 |
+| takeoff_gps_lat   | float    | always     | Latitude.                                              |
+| takeoff_gps_lon   | float    | always     | Longitude.                                             |
+| landing_time      | int      | always     | UNIX timestamp.                                        |
+| landing_gps_valid | boolean  | always     | GPS-coordinates valid?                                 |
+| landing_gps_lat   | float    | always     | Latitude.                                              |
+| landing_gps_lon   | float    | always     | Longitude.                                             |
+| operation_modes   | [string] | always     | A list of the last X Operation Modes.                  |
 
 <details><summary>Sample response</summary><p>
 
@@ -910,6 +923,8 @@ The `data_type` is `flight_data`.
     "errors": [],
     "warnings": [],
     "response_data": {
+        "latest_time_sent_aircraft_location": 1673338740,
+
         "transaction_uuid": "00000000-0000-0000-000000000000",
 
         "takeoff_time": 1678264333,
