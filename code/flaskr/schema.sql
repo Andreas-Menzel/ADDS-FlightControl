@@ -9,7 +9,6 @@ DROP TABLE IF EXISTS corridors;
 
 CREATE TABLE drones (
     id                          TEXT    PRIMARY KEY,
-    active                      INTEGER NOT NULL    DEFAULT 0,
     
     chain_uuid_mission          TEXT,
     chain_uuid_blackbox         TEXT
@@ -18,6 +17,7 @@ CREATE TABLE drones (
 CREATE TABLE aircraft_location (
     id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
+    time_sent                   TEXT,
 
     transaction_uuid            TEXT,
     
@@ -50,6 +50,7 @@ END;
 CREATE TABLE aircraft_power (
     id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
+    time_sent                   TEXT,
 
     transaction_uuid            TEXT,
 
@@ -73,6 +74,7 @@ END;
 CREATE TABLE flight_data (
     id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
+    time_sent                   TEXT,
 
     transaction_uuid            TEXT,
 

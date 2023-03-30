@@ -367,19 +367,43 @@ def ask_drone_list():
 
     # Get drones
     db_drone_info = db.execute("""
-        SELECT id, active, chain_uuid_mission, chain_uuid_blackbox
-        FROM drones
+        SELECT
+            d.id,
+            d.chain_uuid_mission,
+            d.chain_uuid_blackbox,
+            al.latest_time_sent latest_time_sent_aircraft_location,
+            ap.latest_time_sent latest_time_sent_aircraft_power,
+            fd.latest_time_sent latest_time_sent_flight_data
+        FROM drones d
+        INNER JOIN (
+            SELECT drone_id, MAX(time_sent) latest_time_sent
+            FROM aircraft_location
+            GROUP BY drone_id
+        ) al ON d.id = al.drone_id
+        INNER JOIN (
+            SELECT drone_id, MAX(time_sent) latest_time_sent
+            FROM aircraft_power
+            GROUP BY drone_id
+        ) ap ON d.id = ap.drone_id
+        INNER JOIN (
+            SELECT drone_id, MAX(time_sent) latest_time_sent
+            FROM flight_data
+            GROUP BY drone_id
+        ) fd ON d.id = fd.drone_id
         WHERE id LIKE ?
         ESCAPE '!'
+        ;
         """, (drone_id,)).fetchall()
 
     response['response_data'] = {}
     for drone in db_drone_info:
         response['response_data'][drone['id']] = {}
         response['response_data'][drone['id']]['id'] = drone['id']
-        response['response_data'][drone['id']]['active'] = strtobool(drone['active'])
         response['response_data'][drone['id']]['chain_uuid_mission'] = drone['chain_uuid_mission']
         response['response_data'][drone['id']]['chain_uuid_blackbox'] = drone['chain_uuid_blackbox']
+        response['response_data'][drone['id']]['latest_time_sent_aircraft_location'] = drone['latest_time_sent_aircraft_location']
+        response['response_data'][drone['id']]['latest_time_sent_aircraft_power'] = drone['latest_time_sent_aircraft_power']
+        response['response_data'][drone['id']]['latest_time_sent_flight_data'] = drone['latest_time_sent_flight_data']
 
     return jsonify(response)
 
