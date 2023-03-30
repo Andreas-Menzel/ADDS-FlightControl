@@ -74,7 +74,7 @@ END;
 CREATE TABLE flight_data (
     id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
-    time_sent                   TEXT,
+    time_sent                   FLOAT,
 
     transaction_uuid            TEXT,
 
