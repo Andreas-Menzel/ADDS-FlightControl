@@ -554,6 +554,8 @@ def ask_aircraft_location():
 
     if not db_drone_info is None:
         response['response_data'] = {
+            'time_sent': db_drone_info['time_sent'],
+
             'transaction_uuid': db_drone_info['transaction_uuid'],
 
             'gps_signal_level': db_drone_info['gps_signal_level'],
@@ -723,6 +725,8 @@ def ask_aircraft_power():
 
     if not db_aircraft_power_info is None:
         response['response_data'] = {
+            'time_sent': db_drone_info['time_sent'],
+
             'transaction_uuid': db_aircraft_power_info['transaction_uuid'],
 
             'battery_remaining': db_aircraft_power_info['battery_remaining'],
@@ -881,6 +885,8 @@ def ask_flight_data():
 
     if not db_flight_data_info is None:
         response['response_data'] = {
+            'time_sent': db_drone_info['time_sent'],
+            
             'transaction_uuid': db_flight_data_info['transaction_uuid'],
 
             'takeoff_time': db_flight_data_info['takeoff_time'],
