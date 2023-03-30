@@ -274,20 +274,21 @@ The `data_type` is `aircraft_location`.
 
 **Payload - data field (required)**
 
-| FIELD                    | TYPE    | REQ / OPT | INFORMATION                                  |
-|--------------------------|---------|-----------|----------------------------------------------|
-| gps_signal_level         | int     | required  | 0 (no gps signal) - 5 (very good gps signal) |
-| gps_satellites_connected | int     | required  | Number of gps-satellites connected.          |
-| gps_valid                | boolean | required  | Whether the drone has a (valid) gps-signal.  |
-| gps_lat                  | float   | required  | Latitude.                                    |
-| gps_lon                  | float   | required  | Longitude.                                   |
-| altitude                 | float   | required  | Altitude in meters.                          |
-| velocity_x               | float   | required  | Velocity X in meters / second.               |
-| velocity_y               | float   | required  | Velocity Y in meters / second.               |
-| velocity_z               | float   | required  | Velocity Z in meters / second.               |
-| pitch                    | float   | required  | [-180;180].                                  |
-| yaw                      | float   | required  | [-180;180].                                  |
-| roll                     | float   | required  | [-180;180].                                  |
+| FIELD                    | TYPE    | REQ / OPT | INFORMATION                                            |
+|--------------------------|---------|-----------|--------------------------------------------------------|
+| time_sent                | float   | required  | UNIX timestamp when the dataset was sent from the app. |
+| gps_signal_level         | int     | required  | 0 (no gps signal) - 5 (very good gps signal)           |
+| gps_satellites_connected | int     | required  | Number of gps-satellites connected.                    |
+| gps_valid                | boolean | required  | Whether the drone has a (valid) gps-signal.            |
+| gps_lat                  | float   | required  | Latitude.                                              |
+| gps_lon                  | float   | required  | Longitude.                                             |
+| altitude                 | float   | required  | Altitude in meters.                                    |
+| velocity_x               | float   | required  | Velocity X in meters / second.                         |
+| velocity_y               | float   | required  | Velocity Y in meters / second.                         |
+| velocity_z               | float   | required  | Velocity Z in meters / second.                         |
+| pitch                    | float   | required  | [-180;180].                                            |
+| yaw                      | float   | required  | [-180;180].                                            |
+| roll                     | float   | required  | [-180;180].                                            |
 
 <details><summary>Sample payload</summary><p>
 
@@ -296,6 +297,8 @@ The `data_type` is `aircraft_location`.
     "drone_id": "demo_drone",
     "data_type": "aircraft_location",
     "data": {
+        "time_sent": 1673338740,
+
         "gps_signal_level": 5,
         "gps_satellites_connected": 12,
 
@@ -351,12 +354,13 @@ The `data_type` is `aircraft_power`.
 
 **Payload - data field (required)**
 
-| FIELD                     | TYPE  | REQ / OPT | INFORMATION |
-|---------------------------|-------|-----------|-------------|
-| battery_remaining         | int   | required  | In mAh.     |
-| battery_remaining_percent | int   | required  | In %.       |
-| remaining_flight_time     | int   | required  | In seconds. |
-| remaining_flight_radius   | float | required  | In meters.  |
+| FIELD                     | TYPE  | REQ / OPT | INFORMATION                                            |
+|---------------------------|-------|-----------|--------------------------------------------------------|
+| time_sent                 | float | required  | UNIX timestamp when the dataset was sent from the app. |
+| battery_remaining         | int   | required  | In mAh.                                                |
+| battery_remaining_percent | int   | required  | In %.                                                  |
+| remaining_flight_time     | int   | required  | In seconds.                                            |
+| remaining_flight_radius   | float | required  | In meters.                                             |
 
 <details><summary>Sample payload</summary><p>
 
@@ -365,8 +369,11 @@ The `data_type` is `aircraft_power`.
     "drone_id": "demo_drone",
     "data_type": "aircraft_power",
     "data": {
+        "time_sent": 1673338740,
+
         "battery_remaining": 4500,
         "battery_remaining_percent": 42,
+        
         "remaining_flight_time": 550,
         "remaining_flight_radius": 4320.5
     }
@@ -409,17 +416,18 @@ The `data_type` is `flight_data`.
 
 **Payload - data field (required)**
 
-| FIELD             | TYPE     | REQ / OPT | INFORMATION                 |
-|-------------------|----------|-----------|-----------------------------|
-| takeoff_time      | int      | required  | UNIX timestamp.             |
-| takeoff_gps_valid | boolean  | required  | GPS-coordinates valid?      |
-| takeoff_gps_lat   | float    | required  | Latitude.                   |
-| takeoff_gps_lon   | float    | required  | Longitude.                  |
-| landing_time      | int      | required  | UNIX timestamp.             |
-| landing_gps_valid | boolean  | required  | GPS-coordinates valid?      |
-| landing_gps_lat   | float    | required  | Latitude.                   |
-| landing_gps_lon   | float    | required  | Longitude.                  |
-| operation_modes   | [string] | required  | The last X Operation Modes. |
+| FIELD             | TYPE     | REQ / OPT | INFORMATION                                            |
+|-------------------|----------|-----------|--------------------------------------------------------|
+| time_sent         | float    | required  | UNIX timestamp when the dataset was sent from the app. |
+| takeoff_time      | int      | required  | UNIX timestamp.                                        |
+| takeoff_gps_valid | boolean  | required  | GPS-coordinates valid?                                 |
+| takeoff_gps_lat   | float    | required  | Latitude.                                              |
+| takeoff_gps_lon   | float    | required  | Longitude.                                             |
+| landing_time      | int      | required  | UNIX timestamp.                                        |
+| landing_gps_valid | boolean  | required  | GPS-coordinates valid?                                 |
+| landing_gps_lat   | float    | required  | Latitude.                                              |
+| landing_gps_lon   | float    | required  | Longitude.                                             |
+| operation_modes   | [string] | required  | The last X Operation Modes.                            |
 
 <details><summary>Sample payload</summary><p>
 
@@ -428,14 +436,18 @@ The `data_type` is `flight_data`.
 	"drone_id": "demo_drone",
 	"data_type": "flight_data",
 	"data": {
+        "time_sent": 1673338740,
+
 		"takeoff_time": 1678264333,
 		"takeoff_gps_valid": "true",
 		"takeoff_gps_lat": 48.26586,
 		"takeoff_gps_lon": 11.67436,
+
 		"landing_time": 1678264389,
 		"landing_gps_valid": "true",
 		"landing_gps_lat": 48.26586,
 		"landing_gps_lon": 11.67436,
+
 		"operation_modes": ["OnGround", "Landing", "Hovering", "TakeOff", "OnGround"]
 	}
 }
