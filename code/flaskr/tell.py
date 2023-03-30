@@ -416,6 +416,7 @@ def tell_aircraft_location():
         return jsonify(response)
 
     time_sent = data.get('time_sent')
+    time_recorded = data.get('time_recorded')
     gps_signal_level = data.get('gps_signal_level')
     gps_satellites_connected = data.get('gps_satellites_connected')
     gps_valid = data.get('gps_valid')
@@ -430,6 +431,7 @@ def tell_aircraft_location():
     roll = data.get('roll')
 
     response = check_argument_not_null(response, time_sent, 'time_sent')
+    response = check_argument_not_null(response, time_recorded, 'time_recorded')
     response = check_argument_not_null(
         response, gps_signal_level, 'gps_signal_level')
     response = check_argument_not_null(
@@ -452,6 +454,8 @@ def tell_aircraft_location():
     # Convert variables to correct type
     response, time_sent = check_argument_type(
         response, time_sent, 'time_sent', 'float')
+    response, time_recorded = check_argument_type(
+        response, time_recorded, 'time_recorded', 'float')
     response, gps_signal_level = check_argument_type(
         response, gps_signal_level, 'gps_signal_level', 'int')
     response, gps_satellites_connected = check_argument_type(
@@ -509,6 +513,7 @@ def tell_aircraft_location():
         db.execute("""
             INSERT INTO aircraft_location(
                 time_sent,
+                time_recorded,
                 transaction_uuid,
                 drone_id,
                 gps_signal_level,
@@ -525,9 +530,9 @@ def tell_aircraft_location():
                 roll
             )
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
-            """, (time_sent, transaction_uuid, drone_id, gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll,)
+            """, (time_sent, time_recorded, transaction_uuid, drone_id, gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll,)
         )
 
         db.commit()
@@ -583,12 +588,14 @@ def tell_aircraft_power():
         return jsonify(response)
 
     time_sent = data.get('time_sent')
+    time_recorded = data.get('time_recorded')
     battery_remaining = data.get('battery_remaining')
     battery_remaining_percent = data.get('battery_remaining_percent')
     remaining_flight_time = data.get('remaining_flight_time')
     remaining_flight_radius = data.get('remaining_flight_radius')
 
     response = check_argument_not_null(response, time_sent, 'time_sent')
+    response = check_argument_not_null(response, time_recorded, 'time_recorded')
     response = check_argument_not_null(
         response, battery_remaining, 'battery_remaining')
     response = check_argument_not_null(
@@ -605,6 +612,8 @@ def tell_aircraft_power():
     # Convert variables to correct type
     response, time_sent = check_argument_type(
         response, time_sent, 'time_sent', 'float')
+    response, time_recorded = check_argument_type(
+        response, time_recorded, 'time_recorded', 'float')
     response, battery_remaining = check_argument_type(
         response, battery_remaining, 'battery_remaining', 'int')
     response, battery_remaining_percent = check_argument_type(
@@ -648,6 +657,7 @@ def tell_aircraft_power():
         db.execute("""
             INSERT INTO aircraft_power(
                 time_sent,
+                time_recorded,
                 transaction_uuid,
                 drone_id,
                 battery_remaining,
@@ -656,9 +666,9 @@ def tell_aircraft_power():
                 remaining_flight_radius
             )
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?
             )
-            """, (time_sent, transaction_uuid, drone_id, battery_remaining, battery_remaining_percent, remaining_flight_time, remaining_flight_radius,)
+            """, (time_sent, time_recorded, transaction_uuid, drone_id, battery_remaining, battery_remaining_percent, remaining_flight_time, remaining_flight_radius,)
         )
 
         db.commit()
@@ -714,6 +724,7 @@ def tell_flight_data():
         return jsonify(response)
 
     time_sent = data.get('time_sent')
+    time_recorded = data.get('time_recorded')
 
     takeoff_time = data.get('takeoff_time')
     takeoff_gps_valid = data.get('takeoff_gps_valid')
@@ -728,6 +739,7 @@ def tell_flight_data():
     operation_modes = data.get('operation_modes')
 
     response = check_argument_not_null(response, time_sent, 'time_sent')
+    response = check_argument_not_null(response, time_recorded, 'time_recorded')
     
     response = check_argument_not_null(
         response, takeoff_time, 'takeoff_time')
@@ -755,8 +767,10 @@ def tell_flight_data():
         return jsonify(response)
 
     # Convert variables to correct type
-    response, takeoff_gps_lon = check_argument_type(
+    response, time_sent = check_argument_type(
         response, time_sent, 'time_sent', 'float')
+    response, time_recorded = check_argument_type(
+        response, time_recorded, 'time_recorded', 'float')
 
     response, takeoff_time = check_argument_type(
         response, takeoff_time, 'takeoff_time', 'int')
@@ -813,6 +827,7 @@ def tell_flight_data():
         db.execute("""
             INSERT INTO flight_data(
                 time_sent,
+                time_recorded,
                 transaction_uuid,
                 drone_id,
                 takeoff_time,
@@ -826,9 +841,9 @@ def tell_flight_data():
                 operation_modes
             )
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
-            """, (time_sent, transaction_uuid, drone_id, takeoff_time, takeoff_gps_valid, takeoff_gps_lat, takeoff_gps_lon, landing_time, landing_gps_valid, landing_gps_lat, landing_gps_lon, str_operation_modes,)
+            """, (time_sent, time_recorded, transaction_uuid, drone_id, takeoff_time, takeoff_gps_valid, takeoff_gps_lat, takeoff_gps_lon, landing_time, landing_gps_valid, landing_gps_lat, landing_gps_lon, str_operation_modes,)
         )
 
         db.commit()

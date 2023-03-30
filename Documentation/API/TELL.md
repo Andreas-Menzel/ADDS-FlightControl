@@ -277,6 +277,7 @@ The `data_type` is `aircraft_location`.
 | FIELD                    | TYPE    | REQ / OPT | INFORMATION                                            |
 |--------------------------|---------|-----------|--------------------------------------------------------|
 | time_sent                | float   | required  | UNIX timestamp when the dataset was sent from the app. |
+| time_recorded            | float   | required  | UNIX timestamp when the dataset was recorded.          |
 | gps_signal_level         | int     | required  | 0 (no gps signal) - 5 (very good gps signal)           |
 | gps_satellites_connected | int     | required  | Number of gps-satellites connected.                    |
 | gps_valid                | boolean | required  | Whether the drone has a (valid) gps-signal.            |
@@ -297,7 +298,8 @@ The `data_type` is `aircraft_location`.
     "drone_id": "demo_drone",
     "data_type": "aircraft_location",
     "data": {
-        "time_sent": 1673338740,
+        "time_sent": 1673338740.1,
+        "time_recorded": 1673338740.0,
 
         "gps_signal_level": 5,
         "gps_satellites_connected": 12,
@@ -357,6 +359,7 @@ The `data_type` is `aircraft_power`.
 | FIELD                     | TYPE  | REQ / OPT | INFORMATION                                            |
 |---------------------------|-------|-----------|--------------------------------------------------------|
 | time_sent                 | float | required  | UNIX timestamp when the dataset was sent from the app. |
+| time_recorded             | float | required  | UNIX timestamp when the dataset was recorded.          |
 | battery_remaining         | int   | required  | In mAh.                                                |
 | battery_remaining_percent | int   | required  | In %.                                                  |
 | remaining_flight_time     | int   | required  | In seconds.                                            |
@@ -369,7 +372,8 @@ The `data_type` is `aircraft_power`.
     "drone_id": "demo_drone",
     "data_type": "aircraft_power",
     "data": {
-        "time_sent": 1673338740,
+        "time_sent": 1673338740.1,
+        "time_recorded": 1673338740.0,
 
         "battery_remaining": 4500,
         "battery_remaining_percent": 42,
@@ -419,6 +423,7 @@ The `data_type` is `flight_data`.
 | FIELD             | TYPE     | REQ / OPT | INFORMATION                                            |
 |-------------------|----------|-----------|--------------------------------------------------------|
 | time_sent         | float    | required  | UNIX timestamp when the dataset was sent from the app. |
+| time_recorded     | float    | required  | UNIX timestamp when the dataset was recorded.          |
 | takeoff_time      | int      | required  | UNIX timestamp.                                        |
 | takeoff_gps_valid | boolean  | required  | GPS-coordinates valid?                                 |
 | takeoff_gps_lat   | float    | required  | Latitude.                                              |
@@ -436,7 +441,8 @@ The `data_type` is `flight_data`.
 	"drone_id": "demo_drone",
 	"data_type": "flight_data",
 	"data": {
-        "time_sent": 1673338740,
+        "time_sent": 1673338740.1,
+        "time_recorded": 1673338740.0,
 
 		"takeoff_time": 1678264333,
 		"takeoff_gps_valid": "true",

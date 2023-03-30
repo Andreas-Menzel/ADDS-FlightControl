@@ -17,7 +17,8 @@ CREATE TABLE drones (
 CREATE TABLE aircraft_location (
     id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
-    time_sent                   TEXT,
+    time_sent                   FLOAT,
+    time_recorded               FLOAT,
 
     transaction_uuid            TEXT,
     
@@ -50,7 +51,8 @@ END;
 CREATE TABLE aircraft_power (
     id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
-    time_sent                   TEXT,
+    time_sent                   FLOAT,
+    time_recorded               FLOAT,
 
     transaction_uuid            TEXT,
 
@@ -75,6 +77,7 @@ CREATE TABLE flight_data (
     id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
     time_sent                   FLOAT,
+    time_recorded               FLOAT,
 
     transaction_uuid            TEXT,
 

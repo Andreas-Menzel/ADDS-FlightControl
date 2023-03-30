@@ -528,21 +528,31 @@ character.
     "response_data": {
         "demo_drone": {
             "id": "demo_drone",
-            "active": false,
+
             "chain_uuid_mission": "00000000-0000-0000-0000-000000000000",
             "chain_uuid_blackbox": "00000000-0000-0000-0000-000000000000",
-            "latest_time_sent_aircraft_location": 1673338740,
-            "latest_time_sent_aircraft_power": 1673338735,
-            "latest_time_sent_flight_data": 1673338730
+
+            "latest_time_sent_aircraft_location": 1673338740.1,
+            "latest_time_sent_aircraft_power": 1673338735.1,
+            "latest_time_sent_flight_data": 1673338730.1,
+
+            "latest_time_recorded_aircraft_location": 1673338740.0,
+            "latest_time_recorded_aircraft_power": 1673338735.0,
+            "latest_time_recorded_flight_data": 1673338730.0
         },
         "demo_drone_2": {
             "id": "demo_drone_2",
-            "active": false,
+
             "chain_uuid_mission": "00000000-0000-0000-0000-000000000000",
             "chain_uuid_blackbox": "00000000-0000-0000-0000-000000000000",
-            "latest_time_sent_aircraft_location": 1673338740,
-            "latest_time_sent_aircraft_power": 1673338735,
-            "latest_time_sent_flight_data": 1673338730
+
+            "latest_time_sent_aircraft_location": 1673338740.1,
+            "latest_time_sent_aircraft_power": 1673338735.1,
+            "latest_time_sent_flight_data": 1673338730.1,
+
+            "latest_time_recorded_aircraft_location": 1673338740.0,
+            "latest_time_recorded_aircraft_power": 1673338735.0,
+            "latest_time_recorded_flight_data": 1673338730.0
         },
     }
 }
@@ -642,6 +652,7 @@ The `data_type` is `aircraft_location`.
 | FIELD                    | TYPE    | VALUE SET? | INFORMATION                                            |
 |--------------------------|---------|------------|--------------------------------------------------------|
 | time_sent                | float   | always     | UNIX timestamp when the dataset was sent from the app. |
+| time_recorded            | float   | always     | UNIX timestamp when the dataset was recorded.          |
 | transaction_uuid         | string  | always     | UUID of the dataset transaction in the blockchain.     |
 | gps_signal_level         | int     | always     | 0 (no gps signal) - 5 (very good gps signal)           |
 | gps_satellites_connected | int     | always     | Number of gps-satellites connected.                    |
@@ -664,7 +675,8 @@ The `data_type` is `aircraft_location`.
     "errors": [],
     "warnings": [],
     "response_data": {
-        "time_sent": 1673338740,
+        "time_sent": 1673338740.1,
+        "time_recorded": 1673338740.0,
 
         "transaction_uuid": "00000000-0000-0000-000000000000",
 
@@ -782,6 +794,7 @@ The `data_type` is `aircraft_power`.
 | FIELD                     | TYPE   | VALUE SET? | INFORMATION                                            |
 |---------------------------|--------|------------|--------------------------------------------------------|
 | time_sent                 | float  | always     | UNIX timestamp when the dataset was sent from the app. |
+| time_recorded             | float  | always     | UNIX timestamp when the dataset was recorded.          |
 | transaction_uuid          | string | always     | UUID of the dataset transaction in the blockchain.     |
 | battery_remaining         | int    | always     | In mAh.                                                |
 | battery_remaining_percent | int    | always     | In %.                                                  |
@@ -796,7 +809,8 @@ The `data_type` is `aircraft_power`.
     "errors": [],
     "warnings": [],
     "response_data": {
-        "latest_time_sent_aircraft_location": 1673338740,
+        "time_sent": 1673338740.1,
+        "time_recorded": 1673338740.0,
 
         "transaction_uuid": "00000000-0000-0000-000000000000",
 
@@ -904,6 +918,7 @@ The `data_type` is `flight_data`.
 | FIELD             | TYPE     | VALUE SET? | INFORMATION                                            |
 |-------------------|----------|------------|--------------------------------------------------------|
 | time_sent         | float    | always     | UNIX timestamp when the dataset was sent from the app. |
+| time_recorded     | float    | always     | UNIX timestamp when the dataset was recorded.          |
 | transaction_uuid  | string   | always     | UUID of the dataset transaction in the blockchain.     |
 | takeoff_time      | int      | always     | UNIX timestamp.                                        |
 | takeoff_gps_valid | boolean  | always     | GPS-coordinates valid?                                 |
@@ -923,7 +938,8 @@ The `data_type` is `flight_data`.
     "errors": [],
     "warnings": [],
     "response_data": {
-        "latest_time_sent_aircraft_location": 1673338740,
+        "time_sent": 1673338740.1,
+        "time_recorded": 1673338740.0,
 
         "transaction_uuid": "00000000-0000-0000-000000000000",
 

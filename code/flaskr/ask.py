@@ -373,20 +373,23 @@ def ask_drone_list():
             d.chain_uuid_blackbox,
             al.latest_time_sent latest_time_sent_aircraft_location,
             ap.latest_time_sent latest_time_sent_aircraft_power,
-            fd.latest_time_sent latest_time_sent_flight_data
+            fd.latest_time_sent latest_time_sent_flight_data,
+            al.latest_time_recorded latest_time_recorded_aircraft_location,
+            ap.latest_time_recorded latest_time_recorded_aircraft_power,
+            fd.latest_time_recorded latest_time_recorded_flight_data
         FROM drones d
-        INNER JOIN (
-            SELECT drone_id, MAX(time_sent) latest_time_sent
+        LEFT JOIN (
+            SELECT drone_id, MAX(time_sent) latest_time_sent, MAX(time_recorded) latest_time_recorded
             FROM aircraft_location
             GROUP BY drone_id
         ) al ON d.id = al.drone_id
-        INNER JOIN (
-            SELECT drone_id, MAX(time_sent) latest_time_sent
+        LEFT JOIN (
+            SELECT drone_id, MAX(time_sent) latest_time_sent, MAX(time_recorded) latest_time_recorded
             FROM aircraft_power
             GROUP BY drone_id
         ) ap ON d.id = ap.drone_id
-        INNER JOIN (
-            SELECT drone_id, MAX(time_sent) latest_time_sent
+        LEFT JOIN (
+            SELECT drone_id, MAX(time_sent) latest_time_sent, MAX(time_recorded) latest_time_recorded
             FROM flight_data
             GROUP BY drone_id
         ) fd ON d.id = fd.drone_id
@@ -404,6 +407,9 @@ def ask_drone_list():
         response['response_data'][drone['id']]['latest_time_sent_aircraft_location'] = drone['latest_time_sent_aircraft_location']
         response['response_data'][drone['id']]['latest_time_sent_aircraft_power'] = drone['latest_time_sent_aircraft_power']
         response['response_data'][drone['id']]['latest_time_sent_flight_data'] = drone['latest_time_sent_flight_data']
+        response['response_data'][drone['id']]['latest_time_recorded_aircraft_location'] = drone['latest_time_recorded_aircraft_location']
+        response['response_data'][drone['id']]['latest_time_recorded_aircraft_power'] = drone['latest_time_recorded_aircraft_power']
+        response['response_data'][drone['id']]['latest_time_recorded_flight_data'] = drone['latest_time_recorded_flight_data']
 
     return jsonify(response)
 
@@ -555,6 +561,7 @@ def ask_aircraft_location():
     if not db_drone_info is None:
         response['response_data'] = {
             'time_sent': db_drone_info['time_sent'],
+            'time_recorded': db_drone_info['time_recorded'],
 
             'transaction_uuid': db_drone_info['transaction_uuid'],
 
@@ -725,7 +732,8 @@ def ask_aircraft_power():
 
     if not db_aircraft_power_info is None:
         response['response_data'] = {
-            'time_sent': db_drone_info['time_sent'],
+            'time_sent': db_aircraft_power_info['time_sent'],
+            'time_recorded': db_aircraft_power_info['time_recorded'],
 
             'transaction_uuid': db_aircraft_power_info['transaction_uuid'],
 
@@ -884,8 +892,14 @@ def ask_flight_data():
             """, (drone_id, data_id,)).fetchone()
 
     if not db_flight_data_info is None:
+        operation_modes_string = db_flight_data_info['operation_modes']
+        operation_modes = None
+        if not operation_modes_string is None:
+            operation_modes = json.loads(operation_modes_string)
+
         response['response_data'] = {
-            'time_sent': db_drone_info['time_sent'],
+            'time_sent': db_flight_data_info['time_sent'],
+            'time_recorded': db_flight_data_info['time_recorded'],
             
             'transaction_uuid': db_flight_data_info['transaction_uuid'],
 
@@ -899,7 +913,7 @@ def ask_flight_data():
             'landing_gps_lat': db_flight_data_info['landing_gps_lat'],
             'landing_gps_lon': db_flight_data_info['landing_gps_lon'],
 
-            'operation_modes': json.loads(db_flight_data_info['operation_modes'])
+            'operation_modes': operation_modes
         }
 
     return jsonify(response)
