@@ -28,6 +28,7 @@ can be transmitted via GET or POST.
 |--------------------------------------------|-------------------|-----------|--------------------------------------------|
 | drone_id \| intersection_id \| corridor_id | string            | required  | ID of the drone, intersection or corridor. |
 | data_type                                  | string (constant) | required  | The value is specified for each interface. |
+| time_sent                                  | float             | optional  | UNIX timestamp when the request was sent.  |
 | data                                       | dictionary        | optional  | Additional data.                           |
 
 <details><summary>Sample payload without data field.</summary><p>
@@ -47,7 +48,9 @@ can be transmitted via GET or POST.
 {
     "drone_id": "demo_drone",
     "data_type": "aircraft_power",
+    "time_sent": 1673338740.1,
     "data": {
+        "time_recorded": 1673338740,
         "battery_remaining": 4500,
         "battery_remaining_percent": 42,
         "remaining_flight_time": 550,
@@ -145,6 +148,8 @@ will be updated if it already exists; otherwise it will be created.
 #### Request
 
 The `data_type` is `intersection_location`.
+
+The `time_sent` parameter is not needed here.
 
 **Payload - data field (required)**
 
@@ -272,24 +277,25 @@ One can send information about the location of a drone.
 
 The `data_type` is `aircraft_location`.
 
+The `time_sent` parameter is **required** here.
+
 **Payload - data field (required)**
 
-| FIELD                    | TYPE    | REQ / OPT | INFORMATION                                            |
-|--------------------------|---------|-----------|--------------------------------------------------------|
-| time_sent                | float   | required  | UNIX timestamp when the dataset was sent from the app. |
-| time_recorded            | float   | required  | UNIX timestamp when the dataset was recorded.          |
-| gps_signal_level         | int     | required  | 0 (no gps signal) - 5 (very good gps signal)           |
-| gps_satellites_connected | int     | required  | Number of gps-satellites connected.                    |
-| gps_valid                | boolean | required  | Whether the drone has a (valid) gps-signal.            |
-| gps_lat                  | float   | required  | Latitude.                                              |
-| gps_lon                  | float   | required  | Longitude.                                             |
-| altitude                 | float   | required  | Altitude in meters.                                    |
-| velocity_x               | float   | required  | Velocity X in meters / second.                         |
-| velocity_y               | float   | required  | Velocity Y in meters / second.                         |
-| velocity_z               | float   | required  | Velocity Z in meters / second.                         |
-| pitch                    | float   | required  | [-180;180].                                            |
-| yaw                      | float   | required  | [-180;180].                                            |
-| roll                     | float   | required  | [-180;180].                                            |
+| FIELD                    | TYPE    | REQ / OPT | INFORMATION                                   |
+|--------------------------|---------|-----------|-----------------------------------------------|
+| time_recorded            | float   | required  | UNIX timestamp when the dataset was recorded. |
+| gps_signal_level         | int     | required  | 0 (no gps signal) - 5 (very good gps signal)  |
+| gps_satellites_connected | int     | required  | Number of gps-satellites connected.           |
+| gps_valid                | boolean | required  | Whether the drone has a (valid) gps-signal.   |
+| gps_lat                  | float   | required  | Latitude.                                     |
+| gps_lon                  | float   | required  | Longitude.                                    |
+| altitude                 | float   | required  | Altitude in meters.                           |
+| velocity_x               | float   | required  | Velocity X in meters / second.                |
+| velocity_y               | float   | required  | Velocity Y in meters / second.                |
+| velocity_z               | float   | required  | Velocity Z in meters / second.                |
+| pitch                    | float   | required  | [-180;180].                                   |
+| yaw                      | float   | required  | [-180;180].                                   |
+| roll                     | float   | required  | [-180;180].                                   |
 
 <details><summary>Sample payload</summary><p>
 
@@ -297,8 +303,8 @@ The `data_type` is `aircraft_location`.
 {
     "drone_id": "demo_drone",
     "data_type": "aircraft_location",
+    "time_sent": 1673338740.1,
     "data": {
-        "time_sent": 1673338740.1,
         "time_recorded": 1673338740.0,
 
         "gps_signal_level": 5,
@@ -354,16 +360,17 @@ One can send information about the state of charge and range of a drone.
 
 The `data_type` is `aircraft_power`.
 
+The `time_sent` parameter is **required** here.
+
 **Payload - data field (required)**
 
-| FIELD                     | TYPE  | REQ / OPT | INFORMATION                                            |
-|---------------------------|-------|-----------|--------------------------------------------------------|
-| time_sent                 | float | required  | UNIX timestamp when the dataset was sent from the app. |
-| time_recorded             | float | required  | UNIX timestamp when the dataset was recorded.          |
-| battery_remaining         | int   | required  | In mAh.                                                |
-| battery_remaining_percent | int   | required  | In %.                                                  |
-| remaining_flight_time     | int   | required  | In seconds.                                            |
-| remaining_flight_radius   | float | required  | In meters.                                             |
+| FIELD                     | TYPE  | REQ / OPT | INFORMATION                                   |
+|---------------------------|-------|-----------|-----------------------------------------------|
+| time_recorded             | float | required  | UNIX timestamp when the dataset was recorded. |
+| battery_remaining         | int   | required  | In mAh.                                       |
+| battery_remaining_percent | int   | required  | In %.                                         |
+| remaining_flight_time     | int   | required  | In seconds.                                   |
+| remaining_flight_radius   | float | required  | In meters.                                    |
 
 <details><summary>Sample payload</summary><p>
 
@@ -371,8 +378,8 @@ The `data_type` is `aircraft_power`.
 {
     "drone_id": "demo_drone",
     "data_type": "aircraft_power",
+    "time_sent": 1673338740.1,
     "data": {
-        "time_sent": 1673338740.1,
         "time_recorded": 1673338740.0,
 
         "battery_remaining": 4500,
@@ -418,21 +425,22 @@ drone.
 
 The `data_type` is `flight_data`.
 
+The `time_sent` parameter is **required** here.
+
 **Payload - data field (required)**
 
-| FIELD             | TYPE     | REQ / OPT | INFORMATION                                            |
-|-------------------|----------|-----------|--------------------------------------------------------|
-| time_sent         | float    | required  | UNIX timestamp when the dataset was sent from the app. |
-| time_recorded     | float    | required  | UNIX timestamp when the dataset was recorded.          |
-| takeoff_time      | int      | required  | UNIX timestamp.                                        |
-| takeoff_gps_valid | boolean  | required  | GPS-coordinates valid?                                 |
-| takeoff_gps_lat   | float    | required  | Latitude.                                              |
-| takeoff_gps_lon   | float    | required  | Longitude.                                             |
-| landing_time      | int      | required  | UNIX timestamp.                                        |
-| landing_gps_valid | boolean  | required  | GPS-coordinates valid?                                 |
-| landing_gps_lat   | float    | required  | Latitude.                                              |
-| landing_gps_lon   | float    | required  | Longitude.                                             |
-| operation_modes   | [string] | required  | The last X Operation Modes.                            |
+| FIELD             | TYPE     | REQ / OPT | INFORMATION                                   |
+|-------------------|----------|-----------|-----------------------------------------------|
+| time_recorded     | float    | required  | UNIX timestamp when the dataset was recorded. |
+| takeoff_time      | int      | required  | UNIX timestamp.                               |
+| takeoff_gps_valid | boolean  | required  | GPS-coordinates valid?                        |
+| takeoff_gps_lat   | float    | required  | Latitude.                                     |
+| takeoff_gps_lon   | float    | required  | Longitude.                                    |
+| landing_time      | int      | required  | UNIX timestamp.                               |
+| landing_gps_valid | boolean  | required  | GPS-coordinates valid?                        |
+| landing_gps_lat   | float    | required  | Latitude.                                     |
+| landing_gps_lon   | float    | required  | Longitude.                                    |
+| operation_modes   | [string] | required  | The last X Operation Modes.                   |
 
 <details><summary>Sample payload</summary><p>
 
@@ -440,8 +448,8 @@ The `data_type` is `flight_data`.
 {
 	"drone_id": "demo_drone",
 	"data_type": "flight_data",
+    "time_sent": 1673338740.1,
 	"data": {
-        "time_sent": 1673338740.1,
         "time_recorded": 1673338740.0,
 
 		"takeoff_time": 1678264333,
@@ -491,6 +499,8 @@ Before a drone can be used, it has to be registered.
 #### Request
 
 The `data_type` is `register_drone`.
+
+The `time_sent` parameter is not needed here.
 
 **Payload - data field (required)**
 

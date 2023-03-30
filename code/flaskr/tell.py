@@ -36,6 +36,7 @@ def tell_intersection_location():
 
     intersection_id = payload.get('intersection_id')
     data_type = payload.get('data_type')
+    # time_sent is not needed here
     data = payload.get('data')
 
     response = check_argument_not_null(
@@ -128,6 +129,7 @@ def tell_delete_intersection():
     payload = json.loads(payload_as_json_string)
 
     intersection_id = payload.get('intersection_id')
+    # time_sent is not needed here
     data_type = payload.get('data_type')
     # data is not needed here
 
@@ -211,6 +213,7 @@ def tell_corridor_location():
     payload = json.loads(payload_as_json_string)
 
     corridor_id = payload.get('corridor_id')
+    # time_sent is not needed here
     data_type = payload.get('data_type')
     data = payload.get('data')
 
@@ -334,6 +337,7 @@ def tell_delete_corridor():
     payload = json.loads(payload_as_json_string)
 
     corridor_id = payload.get('corridor_id')
+    # time_sent is not needed here
     data_type = payload.get('data_type')
     # data is not needed here
 
@@ -394,10 +398,12 @@ def tell_aircraft_location():
     payload = json.loads(payload_as_json_string)
 
     drone_id = payload.get('drone_id')
+    time_sent = payload.get('time_sent')
     data_type = payload.get('data_type')
     data = payload.get('data')
 
     response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, time_sent, 'time_sent')
     response = check_argument_not_null(response, data_type, 'data_type')
     response = check_argument_not_null(response, data, 'data')
 
@@ -415,7 +421,6 @@ def tell_aircraft_location():
     if not response['executed']:
         return jsonify(response)
 
-    time_sent = data.get('time_sent')
     time_recorded = data.get('time_recorded')
     gps_signal_level = data.get('gps_signal_level')
     gps_satellites_connected = data.get('gps_satellites_connected')
@@ -430,7 +435,6 @@ def tell_aircraft_location():
     yaw = data.get('yaw')
     roll = data.get('roll')
 
-    response = check_argument_not_null(response, time_sent, 'time_sent')
     response = check_argument_not_null(response, time_recorded, 'time_recorded')
     response = check_argument_not_null(
         response, gps_signal_level, 'gps_signal_level')
@@ -566,10 +570,12 @@ def tell_aircraft_power():
     payload = json.loads(payload_as_json_string)
 
     drone_id = payload.get('drone_id')
+    time_sent = payload.get('time_sent')
     data_type = payload.get('data_type')
     data = payload.get('data')
 
     response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, time_sent, 'time_sent')
     response = check_argument_not_null(response, data_type, 'data_type')
     response = check_argument_not_null(response, data, 'data')
 
@@ -587,14 +593,12 @@ def tell_aircraft_power():
     if not response['executed']:
         return jsonify(response)
 
-    time_sent = data.get('time_sent')
     time_recorded = data.get('time_recorded')
     battery_remaining = data.get('battery_remaining')
     battery_remaining_percent = data.get('battery_remaining_percent')
     remaining_flight_time = data.get('remaining_flight_time')
     remaining_flight_radius = data.get('remaining_flight_radius')
 
-    response = check_argument_not_null(response, time_sent, 'time_sent')
     response = check_argument_not_null(response, time_recorded, 'time_recorded')
     response = check_argument_not_null(
         response, battery_remaining, 'battery_remaining')
@@ -702,10 +706,12 @@ def tell_flight_data():
     payload = json.loads(payload_as_json_string)
 
     drone_id = payload.get('drone_id')
+    time_sent = payload.get('time_sent')
     data_type = payload.get('data_type')
     data = payload.get('data')
 
     response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, time_sent, 'time_sent')
     response = check_argument_not_null(response, data_type, 'data_type')
     response = check_argument_not_null(response, data, 'data')
 
@@ -723,7 +729,6 @@ def tell_flight_data():
     if not response['executed']:
         return jsonify(response)
 
-    time_sent = data.get('time_sent')
     time_recorded = data.get('time_recorded')
 
     takeoff_time = data.get('takeoff_time')
@@ -738,7 +743,6 @@ def tell_flight_data():
 
     operation_modes = data.get('operation_modes')
 
-    response = check_argument_not_null(response, time_sent, 'time_sent')
     response = check_argument_not_null(response, time_recorded, 'time_recorded')
     
     response = check_argument_not_null(
@@ -877,6 +881,7 @@ def tell_register_drone():
     payload = json.loads(payload_as_json_string)
 
     drone_id = payload.get('drone_id')
+    # time_sent is not needed here
     data_type = payload.get('data_type')
     data = payload.get('data')
 
