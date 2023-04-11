@@ -69,10 +69,14 @@ def ask_intersection_list():
     response['response_data'] = {}
     for intersection in db_intersection_list:
         response['response_data'][intersection['id']] = {}
-        response['response_data'][intersection['id']]['id'] = intersection['id']
-        response['response_data'][intersection['id']]['gps_lat'] = intersection['gps_lat']
-        response['response_data'][intersection['id']]['gps_lon'] = intersection['gps_lon']
-        response['response_data'][intersection['id']]['altitude'] = intersection['altitude']
+        response['response_data'][intersection['id']
+                                  ]['id'] = intersection['id']
+        response['response_data'][intersection['id']
+                                  ]['gps_lat'] = intersection['gps_lat']
+        response['response_data'][intersection['id']
+                                  ]['gps_lon'] = intersection['gps_lon']
+        response['response_data'][intersection['id']
+                                  ]['altitude'] = intersection['altitude']
 
     return jsonify(response)
 
@@ -198,8 +202,10 @@ def ask_corridor_list():
     for corridor in db_corridor_list:
         response['response_data'][corridor['id']] = {}
         response['response_data'][corridor['id']]['id'] = corridor['id']
-        response['response_data'][corridor['id']]['intersection_a'] = corridor['intersection_a']
-        response['response_data'][corridor['id']]['intersection_b'] = corridor['intersection_b']
+        response['response_data'][corridor['id']
+                                  ]['intersection_a'] = corridor['intersection_a']
+        response['response_data'][corridor['id']
+                                  ]['intersection_b'] = corridor['intersection_b']
 
     return jsonify(response)
 
@@ -317,7 +323,7 @@ def ask_drone_ids():
         ESCAPE '!'
         """, (drone_id,)).fetchall()
 
-    response['response_data'] = { 'drone_ids': [] }
+    response['response_data'] = {'drone_ids': []}
     for drone in db_drone_info:
         response['response_data']['drone_ids'].append(drone['id'])
 
@@ -402,14 +408,22 @@ def ask_drone_list():
     for drone in db_drone_info:
         response['response_data'][drone['id']] = {}
         response['response_data'][drone['id']]['id'] = drone['id']
-        response['response_data'][drone['id']]['chain_uuid_mission'] = drone['chain_uuid_mission']
-        response['response_data'][drone['id']]['chain_uuid_blackbox'] = drone['chain_uuid_blackbox']
-        response['response_data'][drone['id']]['latest_time_sent_aircraft_location'] = drone['latest_time_sent_aircraft_location']
-        response['response_data'][drone['id']]['latest_time_sent_aircraft_power'] = drone['latest_time_sent_aircraft_power']
-        response['response_data'][drone['id']]['latest_time_sent_flight_data'] = drone['latest_time_sent_flight_data']
-        response['response_data'][drone['id']]['latest_time_recorded_aircraft_location'] = drone['latest_time_recorded_aircraft_location']
-        response['response_data'][drone['id']]['latest_time_recorded_aircraft_power'] = drone['latest_time_recorded_aircraft_power']
-        response['response_data'][drone['id']]['latest_time_recorded_flight_data'] = drone['latest_time_recorded_flight_data']
+        response['response_data'][drone['id']
+                                  ]['chain_uuid_mission'] = drone['chain_uuid_mission']
+        response['response_data'][drone['id']
+                                  ]['chain_uuid_blackbox'] = drone['chain_uuid_blackbox']
+        response['response_data'][drone['id']
+                                  ]['latest_time_sent_aircraft_location'] = drone['latest_time_sent_aircraft_location']
+        response['response_data'][drone['id']
+                                  ]['latest_time_sent_aircraft_power'] = drone['latest_time_sent_aircraft_power']
+        response['response_data'][drone['id']
+                                  ]['latest_time_sent_flight_data'] = drone['latest_time_sent_flight_data']
+        response['response_data'][drone['id']
+                                  ]['latest_time_recorded_aircraft_location'] = drone['latest_time_recorded_aircraft_location']
+        response['response_data'][drone['id']
+                                  ]['latest_time_recorded_aircraft_power'] = drone['latest_time_recorded_aircraft_power']
+        response['response_data'][drone['id']
+                                  ]['latest_time_recorded_flight_data'] = drone['latest_time_recorded_flight_data']
 
     return jsonify(response)
 
@@ -465,7 +479,7 @@ def ask_aircraft_location_ids():
     response['response_data'] = {
         'min_id': db_aircraft_location_info['min_id'],
         'max_id': db_aircraft_location_info['max_id']
-        }
+    }
 
     return jsonify(response)
 
@@ -637,7 +651,7 @@ def ask_aircraft_power_ids():
     response['response_data'] = {
         'min_id': db_aircraft_power_info['min_id'],
         'max_id': db_aircraft_power_info['max_id']
-        }
+    }
 
     return jsonify(response)
 
@@ -798,7 +812,7 @@ def ask_flight_data_ids():
     response['response_data'] = {
         'min_id': db_flight_data_info['min_id'],
         'max_id': db_flight_data_info['max_id']
-        }
+    }
 
     return jsonify(response)
 
@@ -900,7 +914,7 @@ def ask_flight_data():
         response['response_data'] = {
             'time_sent': db_flight_data_info['time_sent'],
             'time_recorded': db_flight_data_info['time_recorded'],
-            
+
             'transaction_uuid': db_flight_data_info['transaction_uuid'],
 
             'takeoff_time': db_flight_data_info['takeoff_time'],
@@ -915,5 +929,172 @@ def ask_flight_data():
 
             'operation_modes': operation_modes
         }
+
+    return jsonify(response)
+
+
+@bp.route('request_clearance')
+def ask_request_clearance():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+    response = check_argument_not_null(response, data, 'data')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'request_clearance':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'request_clearance'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # We want to request to fly through the corridor to an intersection
+    corridor_id = data.get('corridor')
+    dest_intersection_id = data.get('dest_intersection')
+
+    response = check_argument_not_null(response, corridor_id, 'corridor')
+    response = check_argument_not_null(
+        response, dest_intersection_id, 'dest_intersection')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if drone with given id exists
+    db_drone_id = db.execute(
+        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if db_drone_id is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Check if corridor with given id exists
+    db_corridor_info = db.execute(
+        'SELECT id FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
+    if db_corridor_info is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Corridor with id "{corridor_id}" not found.',
+            False
+        )
+
+    # Check if intersection with given id exists
+    db_intersection_info = db.execute(
+        'SELECT id FROM intersections WHERE id = ?', (dest_intersection_id,)).fetchone()
+    if db_intersection_info is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Intersection with id "{dest_intersection_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    corridor_already_locked = False
+    intersection_already_locked = False
+
+    # Check if corridor is locked by another drone
+    db_locked_corridor_info = db.execute(
+        'SELECT * FROM locked_corridors WHERE corridor_id = ?', (corridor_id,)).fetchone()
+    if not db_locked_corridor_info is None:
+        print('Cor is locked for ' + db_locked_corridor_info['drone_id'])
+        if not db_locked_corridor_info['drone_id'] == drone_id:
+            corridor_already_locked = True
+
+            response = add_warning_to_response(
+                response,
+                1,
+                'Corridor already locked.'
+            )
+
+    # Check if dest_intersection is locked by another drone
+    db_locked_intersection_info = db.execute(
+        'SELECT * FROM locked_intersections WHERE intersection_id = ?', (dest_intersection_id,)).fetchone()
+    if not db_locked_intersection_info is None:
+        if not db_locked_corridor_info['drone_id'] == drone_id:
+            intersection_already_locked = True
+
+            response = add_warning_to_response(
+                response,
+                1,
+                'Intersection already locked.'
+            )
+
+    if corridor_already_locked or intersection_already_locked:
+        response['response_data'] = {'cleared': False}
+        return jsonify(response)
+
+    # Lock corridor and intersection
+    try:
+        db.execute("""
+            INSERT INTO locked_intersections(
+                intersection_id, drone_id
+            ) VALUES (
+                ?, ?
+            ) ON CONFLICT(intersection_id) DO UPDATE SET
+            intersection_id = ?,
+            drone_id = ?
+            """, (dest_intersection_id, drone_id, dest_intersection_id, drone_id,)
+        )
+
+        db.execute("""
+            INSERT INTO locked_corridors(
+                corridor_id, drone_id
+            ) VALUES (
+                ?, ?
+            ) ON CONFLICT(corridor_id) DO UPDATE SET
+            corridor_id = ?,
+            drone_id = ?
+            """, (corridor_id, drone_id, corridor_id, drone_id,)
+        )
+
+        db.commit()
+
+        response['response_data'] = {'cleared': True}
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
 
     return jsonify(response)

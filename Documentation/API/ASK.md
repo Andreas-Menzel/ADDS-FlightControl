@@ -20,6 +20,7 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
     - [aircraft_power](#aircraft_power)
     - [flight_data_ids](#flight_data_ids)
     - [flight_data](#flight_data)
+    - [request_clearance](#request_clearance)
 
 ## Format of the request payload and response
 
@@ -960,6 +961,85 @@ The `data_type` is `flight_data`.
             "TakeOff",
             "OnGround"
         ]
+    }
+}
+```
+
+</details>
+
+### request_clearance
+
+One can request clearance to fly through a corridor.
+
+#### Request
+
+The `data_type` is `request_clearance`.
+
+**Payload - data field**
+
+| FIELD             | TYPE   | REQ / OPT | INFORMATION                                                       |
+|-------------------|--------|-----------|-------------------------------------------------------------------|
+| corridor          | string | required  | ID of the corridor.                                               |
+| dest_intersection | string | required  | ID of the intersection we will reach when following the corridor. |
+
+**Note:** `dest_intersection` must be connected to the corridor!
+
+<details><summary>Sample payload: Specific dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "request_clearance",
+    "data": {
+        "corridor": "demo_corridor_1",
+        "dest_intersection": "demo_intersection_2"
+    }
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD   | TYPE    | VALUE SET? | INFORMATION                                           |
+|---------|---------|------------|-------------------------------------------------------|
+| cleared | boolean | always     | Is the drone allowed to enter the specified corridor? |
+
+<details><summary>Sample response: granted</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "cleared": true
+    }
+}
+```
+
+</details>
+
+<details><summary>Sample response: denied</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [
+        {
+            "warn_id": 1,
+            "warn_msg": "Corridor already locked."
+        },
+        {
+            "warn_id": 1,
+            "warn_msg": "Intersection already locked."
+        }
+    ],
+    "response_data": {
+        "cleared": false
     }
 }
 ```

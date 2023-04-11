@@ -6,6 +6,9 @@ DROP TABLE IF EXISTS flight_data;
 DROP TABLE IF EXISTS intersections;
 DROP TABLE IF EXISTS corridors;
 
+DROP TABLE IF EXISTS locked_intersections;
+DROP TABLE IF EXISTS locked_corridors;
+
 
 CREATE TABLE drones (
     id                          TEXT    PRIMARY KEY,
@@ -122,6 +125,17 @@ CREATE TABLE corridors (
 );
 
 
+CREATE TABLE locked_intersections (
+    intersection_id     TEXT    PRIMARY KEY,
+    drone_id            TEXT    NOT NULL
+);
+
+CREATE TABLE locked_corridors (
+    corridor_id     TEXT    PRIMARY KEY,
+    drone_id        TEXT    NOT NULL
+);
+
+
 
 INSERT INTO drones (
     id, chain_uuid_mission, chain_uuid_blackbox
@@ -141,7 +155,7 @@ VALUES (
     "1ce103f8-0e9a-4a71-9081-6a69bbc842cf"
 );
 
-/*
+
 INSERT INTO intersections VALUES("EDMR-Landeplatz", "48.048121", "11.653678", 0);
 INSERT INTO intersections VALUES("int_1", "48.047705", "11.653841", 0);
 INSERT INTO intersections VALUES("int_2", "48.047679", "11.652243", 0);
@@ -163,4 +177,4 @@ INSERT INTO corridors VALUES("cor_9", "int_5", "int_7");
 INSERT INTO corridors VALUES("cor_10", "int_1", "int_7");
 INSERT INTO corridors VALUES("cor_11", "int_1", "int_5");
 INSERT INTO corridors VALUES("cor_12", "int_4", "int_7");
-*/
+
