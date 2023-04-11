@@ -1002,17 +1002,6 @@ def ask_request_clearance():
     if not response['executed']:
         return jsonify(response)
 
-    # Check if corridor with given id exists
-    db_corridor_info = db.execute(
-        'SELECT id FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
-    if db_corridor_info is None:
-        response = add_error_to_response(
-            response,
-            1,
-            f'Corridor with id "{corridor_id}" not found.',
-            False
-        )
-
     # Check if intersection with given id exists
     db_intersection_info = db.execute(
         'SELECT id FROM intersections WHERE id = ?', (dest_intersection_id,)).fetchone()
@@ -1021,6 +1010,30 @@ def ask_request_clearance():
             response,
             1,
             f'Intersection with id "{dest_intersection_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Check if corridor with given id exists
+    db_corridor_info = db.execute(
+        'SELECT * FROM corridors WHERE id = ?', (corridor_id,)).fetchone()
+    if db_corridor_info is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Corridor with id "{corridor_id}" not found.',
+            False
+        )
+    elif db_corridor_info['intersection_a'] != dest_intersection_id and db_corridor_info['intersection_b'] != dest_intersection_id:
+        print(db_corridor_info['intersection_a'])
+        print(db_corridor_info['intersection_b'])
+        response = add_error_to_response(
+            response,
+            1,
+            f'Intersection not connected to specified corridor.',
             False
         )
 
