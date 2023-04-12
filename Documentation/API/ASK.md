@@ -20,6 +20,8 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
     - [aircraft_power](#aircraft_power)
     - [flight_data_ids](#flight_data_ids)
     - [flight_data](#flight_data)
+    !- [mission_data_ids](#mission_data_ids)
+    - [mission_data](#mission_data)
     - [request_clearance](#request_clearance)
 
 ## Format of the request payload and response
@@ -961,6 +963,136 @@ The `data_type` is `flight_data`.
             "TakeOff",
             "OnGround"
         ]
+    }
+}
+```
+
+</details>
+
+### mission_data_ids
+
+One can request a list of mission_data dataset ids.
+
+#### Request
+
+The `data_type` is `mission_data_ids`.
+
+<details><summary>Sample payload: Get all mission_data dataset ids</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "mission_data_ids"
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD  | TYPE | VALUE SET? | INFORMATION                                |
+|--------|------|------------|--------------------------------------------|
+| min_id | int  | always     | The minimum id available. Normally 0 or 1. |
+| max_id | int  | always     | The maximum id available                   |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "min_id": 1,
+        "max_id": 42
+    }
+}
+```
+
+</details>
+
+### mission_data
+
+One can request information about the mission state of a drone.
+
+#### Request
+
+The `data_type` is `mission_data`.
+
+**Payload - data field (optional)**
+
+| FIELD   | TYPE | REQ / OPT | INFORMATION           |
+|---------|------|-----------|-----------------------|
+| data_id | int  | required  | ID of the data entry. |
+
+**Note:** *data_id* must be specified when the data-field is specified.
+
+<details><summary>Sample payload: Latest dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "mission_data"
+}
+```
+
+</details>
+
+<details><summary>Sample payload: Specific dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "mission_data",
+    "data": {
+        "data_id": 42
+    }
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD                       | TYPE     | VALUE SET? | INFORMATION                                                                             |
+|-----------------------------|----------|------------|-----------------------------------------------------------------------------------------|
+| time_sent                   | float    | always     | UNIX timestamp when the dataset was sent from the app.                                  |
+| time_recorded               | float    | always     | UNIX timestamp when the dataset was recorded.                                           |
+| transaction_uuid            | string   | always     | UUID of the dataset transaction in the blockchain.                                      |
+| start_intersection          | string   | required   | The first intersection of the **entire** mission.                                       |
+| land_after_mission_finished | boolean  | required   | Land the drone after the **currently uploaded** waypoint mission finished?              |
+| corridors_pending           | [string] | required   | The corridors the app has planned but does not have clearance from Traffic Control yet. |
+| corridors_approved          | [string] | required   | The corridors the app has planned and has clearance from Traffic Control.               |
+| corridors_uploaded          | [string] | required   | The corridors that are currently uploaded to the drone as a waypoint mission.           |
+| corridors_finished          | [string] | required   | The corridors from previous waypoint missions **of the same mission**.                  |
+| last_uploaded_intersection  | string   | required   | The end-intersection of the **currently uploaded** mission.                             |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "time_sent": 1673338740.1,
+        "time_recorded": 1673338740.0,
+
+        "transaction_uuid": "00000000-0000-0000-000000000000",
+
+        "start_intersection": "demo_intersection_1",
+		"land_after_mission_finished": "false",
+
+		"corridors_pending": ["demo_corridor_5", "demo_corridor_6"],
+        "corridors_approved": ["demo_corridor_4"],
+        "corridors_uploaded": ["demo_corridor_2", "demo_corridor_3"],
+        "corridors_finished": ["demo_corridor_1"],
+
+        "last_uploaded_intersection": "demo_intersection_7"
     }
 }
 ```

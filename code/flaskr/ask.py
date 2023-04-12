@@ -873,7 +873,7 @@ def ask_flight_data():
     if not response['executed']:
         return jsonify(response)
 
-    # Get aircraft_power data
+    # Get flight_data data
     db_flight_data_info = None
     if data is None:
         # Get latest entry
@@ -928,6 +928,192 @@ def ask_flight_data():
             'landing_gps_lon': db_flight_data_info['landing_gps_lon'],
 
             'operation_modes': operation_modes
+        }
+
+    return jsonify(response)
+
+
+@bp.route('mission_data_ids')
+def ask_mission_data_ids():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    # data is not needed here
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'mission_data_ids':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'mission_data_ids'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Get flight_data ids
+    db_mission_data_info = db.execute("""
+        SELECT min(id) as min_id, max(id) as max_id
+        FROM mission_data
+        WHERE drone_id = ?
+        """, (drone_id,)).fetchone()
+
+    response['response_data'] = {
+        'min_id': db_mission_data_info['min_id'],
+        'max_id': db_mission_data_info['max_id']
+    }
+
+    return jsonify(response)
+
+
+@bp.route('mission_data')
+def ask_mission_data():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')  # can be None
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'mission_data':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'mission_data'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if drone with given id exists
+    db_drone_id = db.execute(
+        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if db_drone_id is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Get mission_data data
+    db_mission_data_info = None
+    if data is None:
+        # Get latest entry
+        db_mission_data_info = db.execute("""
+            SELECT * FROM mission_data
+            WHERE drone_id = ?
+            ORDER BY id DESC
+            """, (drone_id,)).fetchone()
+    else:
+        # Get specific entry
+        data_id = data.get('data_id')
+
+        response = check_argument_not_null(response, data_id, 'data_id')
+
+        # Return if an error already occured
+        if not response['executed']:
+            return jsonify(response)
+
+        response, data_id = check_argument_type(
+            response, data_id, 'data_id', 'int')
+
+        # Return if an error already occured
+        if not response['executed']:
+            return jsonify(response)
+
+        db_mission_data_info = db.execute("""
+            SELECT * FROM mission_data
+            WHERE drone_id = ?
+                  AND id = ?
+            """, (drone_id, data_id,)).fetchone()
+
+    if not db_mission_data_info is None:
+        corridors_pending_string = db_mission_data_info['corridors_pending']
+        corridors_pending = None
+        if not corridors_pending_string is None:
+            corridors_pending = json.loads(corridors_pending_string)
+
+        corridors_approved_string = db_mission_data_info['corridors_approved']
+        corridors_approved = None
+        if not corridors_approved_string is None:
+            corridors_approved = json.loads(corridors_approved_string)
+        
+        corridors_uploaded_string = db_mission_data_info['corridors_uploaded']
+        corridors_uploaded = None
+        if not corridors_uploaded_string is None:
+            corridors_uploaded = json.loads(corridors_uploaded_string)
+        
+        corridors_finished_string = db_mission_data_info['corridors_finished']
+        #print(corridors_finished_string)
+        corridors_finished = None
+        if not corridors_finished_string is None:
+            corridors_finished = json.loads(corridors_finished_string)
+
+        response['response_data'] = {
+            'time_sent': db_mission_data_info['time_sent'],
+            'time_recorded': db_mission_data_info['time_recorded'],
+
+            'transaction_uuid': db_mission_data_info['transaction_uuid'],
+
+            'start_intersection': db_mission_data_info['start_intersection'],
+            'land_after_mission_finished': strtobool(db_mission_data_info['land_after_mission_finished']),
+
+            'corridors_pending': corridors_pending,
+            'corridors_approved': corridors_approved,
+            'corridors_uploaded': corridors_uploaded,
+            'corridors_finished': corridors_finished,
+
+            'last_uploaded_intersection': db_mission_data_info['last_uploaded_intersection']
         }
 
     return jsonify(response)
