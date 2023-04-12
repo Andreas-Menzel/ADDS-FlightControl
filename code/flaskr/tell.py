@@ -435,7 +435,8 @@ def tell_aircraft_location():
     yaw = data.get('yaw')
     roll = data.get('roll')
 
-    response = check_argument_not_null(response, time_recorded, 'time_recorded')
+    response = check_argument_not_null(
+        response, time_recorded, 'time_recorded')
     response = check_argument_not_null(
         response, gps_signal_level, 'gps_signal_level')
     response = check_argument_not_null(
@@ -599,7 +600,8 @@ def tell_aircraft_power():
     remaining_flight_time = data.get('remaining_flight_time')
     remaining_flight_radius = data.get('remaining_flight_radius')
 
-    response = check_argument_not_null(response, time_recorded, 'time_recorded')
+    response = check_argument_not_null(
+        response, time_recorded, 'time_recorded')
     response = check_argument_not_null(
         response, battery_remaining, 'battery_remaining')
     response = check_argument_not_null(
@@ -743,8 +745,9 @@ def tell_flight_data():
 
     operation_modes = data.get('operation_modes')
 
-    response = check_argument_not_null(response, time_recorded, 'time_recorded')
-    
+    response = check_argument_not_null(
+        response, time_recorded, 'time_recorded')
+
     response = check_argument_not_null(
         response, takeoff_time, 'takeoff_time')
     response = check_argument_not_null(
@@ -981,6 +984,168 @@ def tell_register_drone():
                 chain_uuid_blackbox = ?
             WHERE id = ?
         """, (chain_uuid_mission, chain_uuid_blackbox, drone_id,)
+        )
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
+
+    return jsonify(response)
+
+
+@bp.route('mission_data')
+def tell_mission_data():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    time_sent = payload.get('time_sent')
+    data_type = payload.get('data_type')
+    data = payload.get('data')
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, time_sent, 'time_sent')
+    response = check_argument_not_null(response, data_type, 'data_type')
+    response = check_argument_not_null(response, data, 'data')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'mission_data':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'mission_data'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    time_recorded = data.get('time_recorded')
+
+    start_intersection = data.get('start_intersection')
+    land_after_mission_finished = data.get('land_after_mission_finished')
+
+    corridors_pending = data.get('corridors_pending')
+    corridors_approved = data.get('corridors_approved')
+    corridors_uploaded = data.get('corridors_uploaded')
+    corridors_finished = data.get('corridors_finished')
+
+    last_uploaded_intersection = data.get('last_uploaded_intersection')
+
+    response = check_argument_not_null(
+        response, time_recorded, 'time_recorded')
+
+    response = check_argument_not_null(
+        response, start_intersection, 'start_intersection')
+    response = check_argument_not_null(
+        response, land_after_mission_finished, 'land_after_mission_finished')
+
+    response = check_argument_not_null(
+        response, corridors_pending, 'corridors_pending')
+    response = check_argument_not_null(
+        response, corridors_approved, 'corridors_approved')
+    response = check_argument_not_null(
+        response, corridors_uploaded, 'corridors_uploaded')
+    response = check_argument_not_null(
+        response, corridors_finished, 'corridors_finished')
+
+    response = check_argument_not_null(
+        response, last_uploaded_intersection, 'last_uploaded_intersection')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Convert variables to correct type
+    response, time_sent = check_argument_type(
+        response, time_sent, 'time_sent', 'float')
+    response, time_recorded = check_argument_type(
+        response, time_recorded, 'time_recorded', 'float')
+
+    response, land_after_mission_finished = check_argument_type(
+        response, land_after_mission_finished, 'land_after_mission_finished', 'boolean')
+
+    # TODO: check type of corridors_pending: list of strings (?)
+    # TODO: check type of corridors_approved: list of strings (?)
+    # TODO: check type of corridors_uploaded: list of strings (?)
+    # TODO: check type of corridors_finished: list of strings (?)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if drone with given id exists
+    tmp_db_drone_info = db.execute("""
+        SELECT id, chain_uuid_mission
+        FROM drones
+        WHERE id = ?
+        """, (drone_id,)).fetchone()
+    if tmp_db_drone_info is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Save data in blockchain and get transaction_uuid
+    response, transaction_uuid = save_data_in_blockchain(
+        response, tmp_db_drone_info['chain_uuid_mission'], payload_as_json_string)
+    response['response_data'] = {}
+    response['response_data']['transaction_uuid'] = transaction_uuid
+
+    str_corridors_pending = json.dumps(corridors_pending)
+    str_corridors_approved = json.dumps(corridors_approved)
+    str_corridors_uploaded = json.dumps(corridors_uploaded)
+    str_corridors_finished = json.dumps(corridors_finished)
+    try:
+        db.execute("""
+            INSERT INTO mission_data(
+                time_sent,
+                time_recorded,
+                transaction_uuid,
+                drone_id,
+                start_intersection,
+                land_after_mission_finished,
+                corridors_pending,
+                corridors_approved,
+                corridors_uploaded,
+                corridors_finished,
+                last_uploaded_intersection
+            )
+            VALUES (
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+            )
+            """, (time_sent, time_recorded, transaction_uuid, drone_id,
+                  start_intersection, land_after_mission_finished,
+                  str_corridors_pending, str_corridors_approved, str_corridors_uploaded, str_corridors_finished,
+                  last_uploaded_intersection,)
         )
 
         db.commit()

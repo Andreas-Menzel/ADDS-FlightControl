@@ -16,6 +16,7 @@ These interfaces are accessible via `<server_domain>/api/tell/<interface>`.
     - [aircraft_power](#aircraft_power)
     - [flight_data](#flight_data)
     - [register_drone](#register_drone)
+    - [mission_data](#mission_data)
 
 ## Format of the request payload and response
 
@@ -537,3 +538,77 @@ The `time_sent` parameter is not needed here.
 #### Response
 
 Standard response. The `response_data` field is never set.
+
+### mission_data
+
+One can send information about the mission state of a drone.
+
+#### Request
+
+The `data_type` is `mission_data`.
+
+The `time_sent` parameter is **required** here.
+
+**Payload - data field (required)**
+
+| FIELD                       | TYPE     | REQ / OPT | INFORMATION                                                                             |
+|-----------------------------|----------|-----------|-----------------------------------------------------------------------------------------|
+| time_recorded               | float    | required  | UNIX timestamp when the dataset was recorded.                                           |
+| start_intersection          | string   | required  | The first intersection of the **entire** mission.                                       |
+| land_after_mission_finished | boolean  | required  | Land the drone after the **currently uploaded** waypoint mission finished?              |
+| corridors_pending           | [string] | required  | The corridors the app has planned but does not have clearance from Traffic Control yet. |
+| corridors_approved          | [string] | required  | The corridors the app has planned and has clearance from Traffic Control.               |
+| corridors_uploaded          | [string] | required  | The corridors that are currently uploaded to the drone as a waypoint mission.           |
+| corridors_finished          | [string] | required  | The corridors from previous waypoint missions **of the same mission**.                  |
+| last_uploaded_intersection  | string   | required  | The end-intersection of the **currently uploaded** mission.                             |
+
+**Note:** `land_after_mission_finished` is usually `false` if there are still
+corridors in *pending* and / or *approved*. Otherwise it is usually `true`.
+
+<details><summary>Sample payload</summary><p>
+
+```json
+{
+	"drone_id": "demo_drone",
+	"data_type": "mission_data",
+    "time_sent": 1673338740.1,
+	"data": {
+        "time_recorded": 1673338740.0,
+
+        "start_intersection": "demo_intersection_1",
+		"land_after_mission_finished": "false",
+
+		"corridors_pending": ["demo_corridor_5", "demo_corridor_6"],
+        "corridors_approved": ["demo_corridor_4"],
+        "corridors_uploaded": ["demo_corridor_2", "demo_corridor_3"],
+        "corridors_finished": ["demo_corridor_1"],
+
+        "last_uploaded_intersection": "demo_intersection_7"
+	}
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD            | TYPE   | VALUE SET? | INFORMATION                                        |
+|------------------|--------|------------|----------------------------------------------------|
+| transaction_uuid | string | always     | UUID of the dataset transaction in the blockchain. |
+
+<details><summary>Sample response</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "transaction_uuid": "00000000-0000-0000-000000000000",
+    }
+}
+```
+
+</details>
