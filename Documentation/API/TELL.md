@@ -541,7 +541,9 @@ Standard response. The `response_data` field is never set.
 
 ### mission_data
 
-One can send information about the mission state of a drone.
+One can send information about the mission state of a drone. All corridors and
+intersections that are not needed will be unlocked (*pending*, *approved* and
+*uploaded* are still needed).
 
 #### Request
 

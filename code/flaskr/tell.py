@@ -1156,5 +1156,51 @@ def tell_mission_data():
             'Internal server error: IntegrityError while accessing the database.',
             False
         )
+    
+    all_corridors = corridors_pending + corridors_approved + corridors_uploaded + corridors_finished
+    corridor_ids_to_keep_locked = corridors_pending + corridors_approved + corridors_uploaded
+    
+    tmp_intersections_info = db.execute(f"""
+        SELECT intersections
+        FROM (
+            
+            SELECT intersection_a AS intersections
+            FROM corridors
+            WHERE id IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
+        UNION
+            SELECT intersection_b AS intersections
+            FROM corridors
+            WHERE id IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
+        )
+        """, (*corridor_ids_to_keep_locked, *corridor_ids_to_keep_locked,)).fetchall()
+    
+    intersection_ids_to_keep_locked = []
+    if not tmp_intersections_info is None:
+        intersection_ids_to_keep_locked = [row[0] for row in tmp_intersections_info]
+
+    # Unlock intersections and corridors that are not needed (any more)
+    try:
+        db.execute(f"""
+            DELETE FROM locked_corridors
+            WHERE drone_id = ?
+              AND corridor_id NOT IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
+            """, (drone_id, *corridor_ids_to_keep_locked,)
+        )
+
+        db.execute(f"""
+            DELETE FROM locked_intersections
+            WHERE drone_id = ?
+              AND intersection_id NOT IN ({','.join(['?']*len(intersection_ids_to_keep_locked))})
+            """, (drone_id, *intersection_ids_to_keep_locked,)
+        )
+
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
 
     return jsonify(response)
