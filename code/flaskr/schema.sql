@@ -188,14 +188,14 @@ VALUES (
 );
 
 
-INSERT INTO intersections VALUES("EDMR-Landeplatz", "48.048121", "11.653678", 0);
-INSERT INTO intersections VALUES("int_1", "48.047705", "11.653841", 0);
-INSERT INTO intersections VALUES("int_2", "48.047679", "11.652243", 0);
-INSERT INTO intersections VALUES("int_3", "48.046641", "11.652629", 0);
-INSERT INTO intersections VALUES("int_4", "48.046800", "11.654028", 0);
-INSERT INTO intersections VALUES("int_5", "48.046876", "11.655620", 0);
-INSERT INTO intersections VALUES("int_6", "48.046928", "11.657085", 0);
-INSERT INTO intersections VALUES("int_7", "48.047849", "11.656265", 0);
+INSERT INTO intersections VALUES("EDMR-Landeplatz", "48.048121", "11.653678", 3);
+INSERT INTO intersections VALUES("int_1", "48.047705", "11.653841", 5);
+INSERT INTO intersections VALUES("int_2", "48.047679", "11.652243", 10);
+INSERT INTO intersections VALUES("int_3", "48.046641", "11.652629", 10);
+INSERT INTO intersections VALUES("int_4", "48.046800", "11.654028", 15);
+INSERT INTO intersections VALUES("int_5", "48.046876", "11.655620", 10);
+INSERT INTO intersections VALUES("int_6", "48.046928", "11.657085", 20);
+INSERT INTO intersections VALUES("int_7", "48.047849", "11.656265", 10);
 
 INSERT INTO corridors VALUES("cor_1", "EDMR-Landeplatz", "int_1");
 INSERT INTO corridors VALUES("cor_2", "int_1", "int_2");
