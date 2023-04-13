@@ -1214,8 +1214,6 @@ def ask_request_clearance():
             False
         )
     elif db_corridor_info['intersection_a'] != dest_intersection_id and db_corridor_info['intersection_b'] != dest_intersection_id:
-        print(db_corridor_info['intersection_a'])
-        print(db_corridor_info['intersection_b'])
         response = add_error_to_response(
             response,
             1,
@@ -1257,8 +1255,13 @@ def ask_request_clearance():
                 'Intersection already locked.'
             )
 
+    response['response_data'] = {
+        'corridor': corridor_id,
+        'dest_intersection': dest_intersection_id,
+        'cleared': False
+    }
     if corridor_already_locked or intersection_already_locked:
-        response['response_data'] = {'cleared': False}
+        response['response_data']['cleared'] = False
         return jsonify(response)
 
     # Lock corridor and intersection
@@ -1287,7 +1290,7 @@ def ask_request_clearance():
 
         db.commit()
 
-        response['response_data'] = {'cleared': True}
+        response['response_data']['cleared'] = True
     except db.IntegrityError:
         response = add_error_to_response(
             response,

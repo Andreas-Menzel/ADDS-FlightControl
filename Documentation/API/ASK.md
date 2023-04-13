@@ -1135,9 +1135,11 @@ The `data_type` is `request_clearance`.
 
 **response_data field**
 
-| FIELD   | TYPE    | VALUE SET? | INFORMATION                                           |
-|---------|---------|------------|-------------------------------------------------------|
-| cleared | boolean | always     | Is the drone allowed to enter the specified corridor? |
+| FIELD             | TYPE    | VALUE SET? | INFORMATION                                                                        |
+|-------------------|---------|------------|------------------------------------------------------------------------------------|
+| corridor          | string  | required   | ID of the requested corridor.                                                      |
+| dest_intersection | string  | required   | ID of the requested intersection the drone will reach when following the corridor. |
+| cleared           | boolean | always     | Is the drone allowed to enter the specified corridor?                              |
 
 <details><summary>Sample response: granted</summary><p>
 
@@ -1147,6 +1149,8 @@ The `data_type` is `request_clearance`.
     "errors": [],
     "warnings": [],
     "response_data": {
+        "corridor": "demo_corridor_1",
+        "dest_intersection": "demo_intersection_2",
         "cleared": true
     }
 }
@@ -1171,6 +1175,8 @@ The `data_type` is `request_clearance`.
         }
     ],
     "response_data": {
+        "corridor": "demo_corridor_1",
+        "dest_intersection": "demo_intersection_2",
         "cleared": false
     }
 }
