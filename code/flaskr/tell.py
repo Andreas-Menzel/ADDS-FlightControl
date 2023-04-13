@@ -1043,6 +1043,9 @@ def tell_mission_data():
     time_recorded = data.get('time_recorded')
 
     start_intersection = data.get('start_intersection')
+    last_uploaded_intersection = data.get('last_uploaded_intersection')
+    last_mission_intersection = data.get('last_mission_intersection')
+
     land_after_mission_finished = data.get('land_after_mission_finished')
 
     corridors_pending = data.get('corridors_pending')
@@ -1050,13 +1053,16 @@ def tell_mission_data():
     corridors_uploaded = data.get('corridors_uploaded')
     corridors_finished = data.get('corridors_finished')
 
-    last_uploaded_intersection = data.get('last_uploaded_intersection')
-
     response = check_argument_not_null(
         response, time_recorded, 'time_recorded')
 
     response = check_argument_not_null(
         response, start_intersection, 'start_intersection')
+    response = check_argument_not_null(
+        response, last_uploaded_intersection, 'last_uploaded_intersection')
+    response = check_argument_not_null(
+        response, last_mission_intersection, 'last_mission_intersection')
+
     response = check_argument_not_null(
         response, land_after_mission_finished, 'land_after_mission_finished')
 
@@ -1068,9 +1074,6 @@ def tell_mission_data():
         response, corridors_uploaded, 'corridors_uploaded')
     response = check_argument_not_null(
         response, corridors_finished, 'corridors_finished')
-
-    response = check_argument_not_null(
-        response, last_uploaded_intersection, 'last_uploaded_intersection')
 
     # Return if an error already occured
     if not response['executed']:
@@ -1129,23 +1132,29 @@ def tell_mission_data():
             INSERT INTO mission_data(
                 time_sent,
                 time_recorded,
+
                 transaction_uuid,
                 drone_id,
+
                 start_intersection,
+                last_uploaded_intersection,
+                last_mission_intersection,
+
                 land_after_mission_finished,
+
                 corridors_pending,
                 corridors_approved,
                 corridors_uploaded,
-                corridors_finished,
-                last_uploaded_intersection
+                corridors_finished
             )
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
-            """, (time_sent, time_recorded, transaction_uuid, drone_id,
-                  start_intersection, land_after_mission_finished,
-                  str_corridors_pending, str_corridors_approved, str_corridors_uploaded, str_corridors_finished,
-                  last_uploaded_intersection,)
+            """, (time_sent, time_recorded,
+                  transaction_uuid, drone_id,
+                  start_intersection, last_uploaded_intersection, last_mission_intersection,
+                  land_after_mission_finished,
+                  str_corridors_pending, str_corridors_approved, str_corridors_uploaded, str_corridors_finished,)
         )
 
         db.commit()
@@ -1156,10 +1165,12 @@ def tell_mission_data():
             'Internal server error: IntegrityError while accessing the database.',
             False
         )
-    
-    all_corridors = corridors_pending + corridors_approved + corridors_uploaded + corridors_finished
-    corridor_ids_to_keep_locked = corridors_pending + corridors_approved + corridors_uploaded
-    
+
+    all_corridors = corridors_pending + corridors_approved + \
+        corridors_uploaded + corridors_finished
+    corridor_ids_to_keep_locked = corridors_pending + \
+        corridors_approved + corridors_uploaded
+
     tmp_intersections_info = db.execute(f"""
         SELECT intersections
         FROM (
@@ -1173,10 +1184,11 @@ def tell_mission_data():
             WHERE id IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
         )
         """, (*corridor_ids_to_keep_locked, *corridor_ids_to_keep_locked,)).fetchall()
-    
+
     intersection_ids_to_keep_locked = []
     if not tmp_intersections_info is None:
-        intersection_ids_to_keep_locked = [row[0] for row in tmp_intersections_info]
+        intersection_ids_to_keep_locked = [row[0]
+                                           for row in tmp_intersections_info]
 
     # Unlock intersections and corridors that are not needed (any more)
     try:

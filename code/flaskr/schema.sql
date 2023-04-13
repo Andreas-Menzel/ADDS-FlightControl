@@ -110,18 +110,22 @@ END;
 CREATE TABLE mission_data (
     id                          INTEGER AUTO INCREMENT,
     drone_id                    TEXT NOT NULL,
+
     time_sent                   FLOAT,
     time_recorded               FLOAT,
 
     transaction_uuid            TEXT,
 
     start_intersection          TEXT,
+    last_uploaded_intersection  TEXT,
+
+    last_mission_intersection   TEXT,
+
     land_after_mission_finished TEXT,
     corridors_pending           TEXT,
     corridors_approved          TEXT,
     corridors_uploaded          TEXT,
     corridors_finished          TEXT,
-    last_uploaded_intersection  TEXT,
 
     PRIMARY KEY (id, drone_id)
 );

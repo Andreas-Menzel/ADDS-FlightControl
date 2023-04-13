@@ -1064,12 +1064,13 @@ The `data_type` is `mission_data`.
 | time_recorded               | float    | always     | UNIX timestamp when the dataset was recorded.                                           |
 | transaction_uuid            | string   | always     | UUID of the dataset transaction in the blockchain.                                      |
 | start_intersection          | string   | required   | The first intersection of the **entire** mission.                                       |
+| last_uploaded_intersection  | string   | required   | The end-intersection of the **currently uploaded** mission.                             |
+| last_mission_intersection   | string   | required   | The end-intersection of the **entire** mission.                                         |
 | land_after_mission_finished | boolean  | required   | Land the drone after the **currently uploaded** waypoint mission finished?              |
 | corridors_pending           | [string] | required   | The corridors the app has planned but does not have clearance from Traffic Control yet. |
 | corridors_approved          | [string] | required   | The corridors the app has planned and has clearance from Traffic Control.               |
 | corridors_uploaded          | [string] | required   | The corridors that are currently uploaded to the drone as a waypoint mission.           |
 | corridors_finished          | [string] | required   | The corridors from previous waypoint missions **of the same mission**.                  |
-| last_uploaded_intersection  | string   | required   | The end-intersection of the **currently uploaded** mission.                             |
 
 <details><summary>Sample response</summary><p>
 
@@ -1085,14 +1086,15 @@ The `data_type` is `mission_data`.
         "transaction_uuid": "00000000-0000-0000-000000000000",
 
         "start_intersection": "demo_intersection_1",
-		"land_after_mission_finished": "false",
+        "last_uploaded_intersection": "demo_intersection_4",
+        "last_uploaded_intersection": "demo_intersection_7",
+		
+        "land_after_mission_finished": "false",
 
 		"corridors_pending": ["demo_corridor_5", "demo_corridor_6"],
         "corridors_approved": ["demo_corridor_4"],
         "corridors_uploaded": ["demo_corridor_2", "demo_corridor_3"],
-        "corridors_finished": ["demo_corridor_1"],
-
-        "last_uploaded_intersection": "demo_intersection_7"
+        "corridors_finished": ["demo_corridor_1"]
     }
 }
 ```

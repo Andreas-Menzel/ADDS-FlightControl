@@ -1087,14 +1087,13 @@ def ask_mission_data():
         corridors_approved = None
         if not corridors_approved_string is None:
             corridors_approved = json.loads(corridors_approved_string)
-        
+
         corridors_uploaded_string = db_mission_data_info['corridors_uploaded']
         corridors_uploaded = None
         if not corridors_uploaded_string is None:
             corridors_uploaded = json.loads(corridors_uploaded_string)
-        
+
         corridors_finished_string = db_mission_data_info['corridors_finished']
-        #print(corridors_finished_string)
         corridors_finished = None
         if not corridors_finished_string is None:
             corridors_finished = json.loads(corridors_finished_string)
@@ -1106,14 +1105,15 @@ def ask_mission_data():
             'transaction_uuid': db_mission_data_info['transaction_uuid'],
 
             'start_intersection': db_mission_data_info['start_intersection'],
+            'last_uploaded_intersection': db_mission_data_info['last_uploaded_intersection'],
+            'last_mission_intersection': db_mission_data_info['last_mission_intersection'],
+
             'land_after_mission_finished': strtobool(db_mission_data_info['land_after_mission_finished']),
 
             'corridors_pending': corridors_pending,
             'corridors_approved': corridors_approved,
             'corridors_uploaded': corridors_uploaded,
-            'corridors_finished': corridors_finished,
-
-            'last_uploaded_intersection': db_mission_data_info['last_uploaded_intersection']
+            'corridors_finished': corridors_finished
         }
 
     return jsonify(response)
@@ -1232,7 +1232,6 @@ def ask_request_clearance():
     db_locked_corridor_info = db.execute(
         'SELECT * FROM locked_corridors WHERE corridor_id = ?', (corridor_id,)).fetchone()
     if not db_locked_corridor_info is None:
-        print('Cor is locked for ' + db_locked_corridor_info['drone_id'])
         if not db_locked_corridor_info['drone_id'] == drone_id:
             corridor_already_locked = True
 
