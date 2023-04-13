@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS drones;
 DROP TABLE IF EXISTS aircraft_location;
 DROP TABLE IF EXISTS aircraft_power;
 DROP TABLE IF EXISTS flight_data;
+DROP TABLE IF EXISTS mission_data;
 
 DROP TABLE IF EXISTS intersections;
 DROP TABLE IF EXISTS corridors;
