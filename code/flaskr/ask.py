@@ -8,6 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flaskr.db import get_db
 
 import json
+import math
 
 # Import own files
 from functions_collection import *
@@ -1409,6 +1410,11 @@ def ask_request_flightpath():
     # This SQL query was generously provided by GPT-4 and uses the Haversine
     # formula to calculate the distance between two points on a sphere.
     # (TODO: Check destination < 5m)
+    db.create_function("acos", 1, math.acos)
+    db.create_function("cos", 1, math.cos)
+    db.create_function("sin", 1, math.sin)
+    db.create_function("radians", 1, math.radians)
+
     query = """
         WITH distances AS (
         SELECT
