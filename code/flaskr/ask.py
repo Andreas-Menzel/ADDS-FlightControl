@@ -1299,3 +1299,167 @@ def ask_request_clearance():
         )
 
     return jsonify(response)
+
+
+@bp.route('request_flightpath')
+def ask_request_flightpath():
+    response = get_response_template(response_data=True)
+
+    # Get data formatted as JSON string
+    payload_as_json_string = request.values.get('payload')
+
+    response = check_argument_not_null(
+        response, payload_as_json_string, 'payload')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # TODO: decrypt data
+
+    payload = json.loads(payload_as_json_string)
+
+    drone_id = payload.get('drone_id')
+    data_type = payload.get('data_type')
+    data = payload.get('data')
+
+    response = check_argument_not_null(response, drone_id, 'drone_id')
+    response = check_argument_not_null(response, data_type, 'data_type')
+    response = check_argument_not_null(response, data, 'data')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    if not data_type == 'request_flightpath':
+        response = add_error_to_response(response,
+                                         1,
+                                         "'data_type' must be 'request_flightpath'.",
+                                         False)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    dest_intersection_id = data.get('dest_intersection')
+
+    response = check_argument_not_null(
+        response, dest_intersection_id, 'dest_intersection')
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    db = get_db()
+
+    # Check if drone with given id exists
+    db_drone_id = db.execute(
+        'SELECT id FROM drones WHERE id = ?', (drone_id,)).fetchone()
+    if db_drone_id is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Drone with id "{drone_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Check if intersection with given id exists
+    db_intersection_info = db.execute(
+        'SELECT id FROM intersections WHERE id = ?', (dest_intersection_id,)).fetchone()
+    if db_intersection_info is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Intersection with id "{dest_intersection_id}" not found.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Get (latest) coordinates of the drone
+    # (TODO: Check if last dataset is recent (only a few seconds ago) -
+    # otherwise request it)
+    db_drone_coordinates = db.execute("""
+        SELECT gps_lat, gps_lon
+        FROM aircraft_location
+        WHERE drone_id = ?
+          AND gps_valid = true
+        ORDER BY time_recorded DESC
+        LIMIT 1
+        """, (drone_id,)).fetchone()
+    if db_drone_coordinates is None:
+        response = add_error_to_response(
+            response,
+            1,
+            f'Drone has no recent aircraft_location data.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    # Get nearest intersection
+    # This SQL query was generously provided by GPT-4 and uses the Haversine
+    # formula to calculate the distance between two points on a sphere.
+    # (TODO: Check destination < 5m)
+    query = """
+        WITH distances AS (
+        SELECT
+            id,
+            (
+            6371 * acos(
+                cos(radians(?)) *
+                cos(radians(gps_lat)) *
+                cos(radians(gps_lon) - radians(?)) +
+                sin(radians(?)) *
+                sin(radians(gps_lat))
+            )
+            ) AS distance
+        FROM
+            intersections
+        )
+        SELECT
+        id
+        FROM
+        distances
+        ORDER BY
+        distance ASC
+        LIMIT 1;
+    """
+
+    # Execute the query with the drone's GPS coordinates as parameters
+    cursor = db.execute(
+        query, (db_drone_coordinates['gps_lat'], db_drone_coordinates['gps_lon'], db_drone_coordinates['gps_lat']))
+
+    # Fetch the result and print the nearest intersection id
+    nearest_intersection = cursor.fetchone()
+    if not nearest_intersection:
+        response = add_error_to_response(
+            response,
+            1,
+            f'No (valid) intersection found to be used as start_intersection.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+
+    start_intersection_id = nearest_intersection[0]
+
+    # TODO: Get all corridors not locked by other drones
+    # TODO: Search flightpath
+
+    response['response_data'] = {
+        'start_intersection_id': start_intersection_id,
+        'flightpath': None
+    }
+
+    return jsonify(response)

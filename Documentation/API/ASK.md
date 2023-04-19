@@ -20,9 +20,10 @@ These interfaces are accessible via `<server_domain>/api/ask/<interface>`.
     - [aircraft_power](#aircraft_power)
     - [flight_data_ids](#flight_data_ids)
     - [flight_data](#flight_data)
-    !- [mission_data_ids](#mission_data_ids)
+    - [mission_data_ids](#mission_data_ids)
     - [mission_data](#mission_data)
     - [request_clearance](#request_clearance)
+    - [request_flightpath](#request_flightpath)
 
 ## Format of the request payload and response
 
@@ -1154,6 +1155,99 @@ The `data_type` is `request_clearance`.
         "corridor": "demo_corridor_1",
         "dest_intersection": "demo_intersection_2",
         "cleared": true
+    }
+}
+```
+
+</details>
+
+<details><summary>Sample response: denied</summary><p>
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [
+        {
+            "warn_id": 1,
+            "warn_msg": "Corridor already locked."
+        },
+        {
+            "warn_id": 1,
+            "warn_msg": "Intersection already locked."
+        }
+    ],
+    "response_data": {
+        "corridor": "demo_corridor_1",
+        "dest_intersection": "demo_intersection_2",
+        "cleared": false
+    }
+}
+```
+
+</details>
+
+### request_flightpath
+
+One can request a flightpath to a specific intersection.
+
+In this version a flightpath can only be found, if a sequence of corridors from
+the drone's location to the destination exists with no of the corridors being
+locked by another drone.
+
+#### Request
+
+The `data_type` is `request_flightpath`.
+
+**Payload - data field**
+
+| FIELD             | TYPE   | REQ / OPT | INFORMATION                               |
+|-------------------|--------|-----------|-------------------------------------------|
+| dest_intersection | string | required  | ID of the intersection we want to fly to. |
+
+<details><summary>Sample payload: Specific dataset</summary><p>
+
+```json
+{
+    "drone_id": "demo_drone",
+    "data_type": "request_flightpath",
+    "data": {
+        "dest_intersection": "demo_intersection_5"
+    }
+}
+```
+
+</details>
+
+#### Response
+
+**response_data field**
+
+| FIELD              | TYPE     | VALUE SET? | INFORMATION                          |
+|--------------------|----------|------------|--------------------------------------|
+| start_intersection | string   | required   | ID of the start intersection.        |
+| flightpath         | [string] | required   | IDs of the corridors to fly through. |
+
+**Note:** The `flightpath` contains the corridors in the correct order.
+
+<details><summary>Sample response</summary><p>
+
+**Note:** `response_data` is `null` if no flight path was found.
+
+```json
+{
+    "executed": true,
+    "errors": [],
+    "warnings": [],
+    "response_data": {
+        "start_intersection": "demo_intersection_1",
+        "flightpath": [
+            "demo_corridor_1",
+            "demo_corridor_2",
+            "demo_corridor_3",
+            "demo_corridor_4",
+            "demo_corridor_5"
+        ]
     }
 }
 ```
