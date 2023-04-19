@@ -2,7 +2,7 @@ import requests
 
 # This file holds variables and functions that can / will be used by all modules
 
-cchainlink_url = 'http://adds-demo.an-men.de:8080/'
+cchainlink_url = 'http://adds-demo.an-men.de:2001/'
 
 
 def strtobool(val):

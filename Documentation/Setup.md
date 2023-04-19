@@ -28,7 +28,7 @@ Modify the `cchainlink_url` variable in `/code/functions_collection.py` to the
 URL of your C-Chain Link instance.
 
 ```
-cchainlink_url = 'http://adds-demo.an-men.de:8080/'
+cchainlink_url = 'http://adds-demo.an-men.de:2001/'
 ```
 
 ## Initialize database
