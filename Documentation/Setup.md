@@ -1,15 +1,15 @@
 # Setup
 
-## Install Traffic Control and Dependencies
+## Install Flight Control and Dependencies
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/Andreas-Menzel/ADDS-TrafficControl.git
-cd ADDS-TrafficControl
+git clone https://github.com/Andreas-Menzel/ADDS-FlightControl.git
+cd ADDS-FlightControl
 ```
 
-Make sure you have **Python 3** installed. Traffic Control was tested with
+Make sure you have **Python 3** installed. Flight Control was tested with
 Python 3.7 and higher.
 
 Install the python dependencies:
@@ -20,7 +20,7 @@ pip install -r requirements.txt
 ```
 
 In the future a docker container will be created so that the installation and
-starting of Traffic Control gets even easier.
+starting of Flight Control gets even easier.
 
 ## Modify Config
 
@@ -42,9 +42,9 @@ cd code/
 flask --app flaskr init-db
 ```
 
-## Start Traffic Control
+## Start Flight Control
 
-To start Traffic Control, simply run the following:
+To start Flight Control, simply run the following:
 
 ```bash
 cd code/

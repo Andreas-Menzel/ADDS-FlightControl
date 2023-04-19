@@ -1,5 +1,5 @@
-# ADDS-TrafficControl
-The central part of the Traffic System running on the main server.
+# ADDS-FlightControl
+The central part of the Drone Coordination System running on the main server.
 
 The **documentation** can be found in the `/Documentation` folder!
 

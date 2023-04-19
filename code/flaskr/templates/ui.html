@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADDS-TrafficControl</title>
+    <title>ADDS-FlightControl</title>
     <style>
         * {
             box-sizing: border-box;
         }
+
         body {
             background-color: darkslategray;
         }
+
         #main {
             background-color: aliceblue;
             width: 90%;
@@ -21,20 +24,25 @@
             padding: 10px 20px;
             border-radius: 20px;
         }
+
         table {
             width: 100%;
         }
+
         table tr td {
             padding: 3px 5px;
         }
+
         table tr td:first-of-type {
             width: 0;
         }
+
         input {
             width: 100%;
         }
     </style>
 </head>
+
 <body>
     <div id="main">
 
@@ -48,8 +56,8 @@
                 </a>
             </li>
             <li>
-                <a href="https://github.com/Andreas-Menzel/ADDS-TrafficControl">
-                    This projects' repository (ADDS-TrafficControl)
+                <a href="https://github.com/Andreas-Menzel/ADDS-FlightControl">
+                    This projects' repository (ADDS-FlightControl)
                 </a>
             </li>
         </ul>
@@ -92,7 +100,8 @@
                 </tr>
                 <tr>
                     <td><b>gps_valid:</b></td>
-                    <td style="display:none"><input type="checkbox" name="gps_valid" value="false" checked="checked"></td>
+                    <td style="display:none"><input type="checkbox" name="gps_valid" value="false" checked="checked">
+                    </td>
                     <td><input type="checkbox" name="gps_valid" value="true" checked="checked"></td>
                 </tr>
                 <tr>
@@ -101,7 +110,8 @@
                 </tr>
                 <tr>
                     <td><b>gps_lon:</b></td>
-                    <td><input type="number" name="gps_lon" value="11.654751" step="0.0000001" min="-180" max="180"></td>
+                    <td><input type="number" name="gps_lon" value="11.654751" step="0.0000001" min="-180" max="180">
+                    </td>
                 </tr>
                 <tr>
                     <td><b>altitude:</b></td>
@@ -169,7 +179,8 @@
                 </tr>
                 <tr>
                     <td><b>battery_remaining_percent:</b></td>
-                    <td><input type="number" name="battery_remaining_percent" value="75" step="1" min="0" max="100"></td>
+                    <td><input type="number" name="battery_remaining_percent" value="75" step="1" min="0" max="100">
+                    </td>
                 </tr>
                 <tr>
                     <td><i>remaining_flight_time:</i></td>
@@ -424,4 +435,5 @@
 
     </div>
 </body>
+
 </html>

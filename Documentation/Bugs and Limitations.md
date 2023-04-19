@@ -11,7 +11,7 @@ probably not be able to fix all of them, but I will try nevertheless.
 
 **Probability of occurrence:** very low
 
-Traffic Control uses SQL Triggers to increment the AircraftLocation,
+Flight Control uses SQL Triggers to increment the AircraftLocation,
 AircraftPower and FlightData ids grouped by the drone id. It is *theoretically*
 possible that if two new datasets of the same type with the same drone id
 arrive at the exact same time, that the id of these two new datasets are updated

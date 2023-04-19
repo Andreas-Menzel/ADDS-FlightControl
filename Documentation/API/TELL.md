@@ -1,6 +1,6 @@
 # Documentation - API - ASK
 
-With the TELL interfaces, one can **send information to** Traffic Control.
+With the TELL interfaces, one can **send information to** Flight Control.
 
 These interfaces are accessible via `<server_domain>/api/tell/<interface>`.
 
@@ -22,7 +22,7 @@ These interfaces are accessible via `<server_domain>/api/tell/<interface>`.
 
 ### Request
 
-The **payload** that is sent to Traffic Control is a JSON formatted string. It
+The **payload** that is sent to Flight Control is a JSON formatted string. It
 can be transmitted via GET or POST.
 
 | FIELD                                      | TYPE              | REQ / OPT | INFORMATION                                |
@@ -64,7 +64,7 @@ can be transmitted via GET or POST.
 
 ### Response
 
-The response from Traffic Control is a JSON formatted string.
+The response from Flight Control is a JSON formatted string.
 
 | FIELD         | TYPE       | VALUE SET? | INFORMATION               |
 |---------------|------------|------------|---------------------------|
@@ -130,7 +130,7 @@ If one or more warnings occured, they are added to the warnings list.
     "warnings": [
         {
             "warn_id": 1,
-            "warn_msg": "New Traffic Control version available. Please update!"
+            "warn_msg": "New Flight Control version available. Please update!"
         }
     ]
 }
@@ -553,17 +553,17 @@ The `time_sent` parameter is **required** here.
 
 **Payload - data field (required)**
 
-| FIELD                       | TYPE     | REQ / OPT | INFORMATION                                                                             |
-|-----------------------------|----------|-----------|-----------------------------------------------------------------------------------------|
-| time_recorded               | float    | required  | UNIX timestamp when the dataset was recorded.                                           |
-| start_intersection          | string   | required  | The first intersection of the **entire** mission.                                       |
-| last_uploaded_intersection  | string   | required  | The end-intersection of the **currently uploaded** mission.                             |
-| last_mission_intersection   | string   | required  | The end-intersection of the **entire** mission.                                         |
-| land_after_mission_finished | boolean  | required  | Land the drone after the **currently uploaded** waypoint mission finished?              |
-| corridors_pending           | [string] | required  | The corridors the app has planned but does not have clearance from Traffic Control yet. |
-| corridors_approved          | [string] | required  | The corridors the app has planned and has clearance from Traffic Control.               |
-| corridors_uploaded          | [string] | required  | The corridors that are currently uploaded to the drone as a waypoint mission.           |
-| corridors_finished          | [string] | required  | The corridors from previous waypoint missions **of the same mission**.                  |
+| FIELD                       | TYPE     | REQ / OPT | INFORMATION                                                                            |
+|-----------------------------|----------|-----------|----------------------------------------------------------------------------------------|
+| time_recorded               | float    | required  | UNIX timestamp when the dataset was recorded.                                          |
+| start_intersection          | string   | required  | The first intersection of the **entire** mission.                                      |
+| last_uploaded_intersection  | string   | required  | The end-intersection of the **currently uploaded** mission.                            |
+| last_mission_intersection   | string   | required  | The end-intersection of the **entire** mission.                                        |
+| land_after_mission_finished | boolean  | required  | Land the drone after the **currently uploaded** waypoint mission finished?             |
+| corridors_pending           | [string] | required  | The corridors the app has planned but does not have clearance from Flight Control yet. |
+| corridors_approved          | [string] | required  | The corridors the app has planned and has clearance from Flight Control.               |
+| corridors_uploaded          | [string] | required  | The corridors that are currently uploaded to the drone as a waypoint mission.          |
+| corridors_finished          | [string] | required  | The corridors from previous waypoint missions **of the same mission**.                 |
 
 **Note:** `land_after_mission_finished` is usually `false` if there are still
 corridors in *pending* and / or *approved*. Otherwise it is usually `true`.
