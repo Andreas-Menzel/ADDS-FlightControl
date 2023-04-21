@@ -9,6 +9,7 @@ from flaskr.db import get_db
 
 import json
 import math
+import networkx as nx
 
 # Import own files
 from functions_collection import *
@@ -1457,15 +1458,76 @@ def ask_request_flightpath():
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
-
+    
     start_intersection_id = nearest_intersection[0]
 
-    # TODO: Get all corridors not locked by other drones
-    # TODO: Search flightpath
 
-    response['response_data'] = {
-        'start_intersection_id': start_intersection_id,
-        'flightpath': None
-    }
+
+    G = nx.Graph()
+
+    # Add intersections as nodes
+    for row in db.execute("""
+        SELECT id
+        FROM intersections
+        WHERE id NOT IN (
+            SELECT id
+            FROM locked_intersections
+            WHERE drone_id != ?
+        )
+    """, (drone_id,)):
+        intersection_id = row[0]
+        G.add_node(intersection_id)
+
+    # Add corridors as edges
+    query = """
+    SELECT
+        id,
+        intersection_a,
+        intersection_b
+    FROM
+        corridors
+    WHERE
+        id NOT IN (
+            SELECT corridor_id
+            FROM locked_corridors
+            WHERE drone_id != ?
+        )
+        AND (
+            intersection_a NOT IN (
+                SELECT intersection_id
+                FROM locked_intersections
+                WHERE drone_id != ?
+            )
+        )
+        AND (
+            intersection_b NOT IN (
+                SELECT intersection_id
+                FROM locked_intersections
+                WHERE drone_id != ?
+            )
+        )
+    """
+    cursor = db.execute(query, (drone_id, drone_id, drone_id))
+
+    for row in cursor:
+        corridor_id, intersection_a, intersection_b = row
+        G.add_edge(intersection_a, intersection_b, id=corridor_id)
+
+    # Find the shortest path between the start and dest intersection
+    path_corridors = []
+    try:
+        path_nodes = nx.shortest_path(G, start_intersection_id, dest_intersection_id)
+        path_corridors = [G.edges[path_nodes[i], path_nodes[i + 1]]['id'] for i in range(len(path_nodes) - 1)]
+        
+        response['response_data'] = {
+            'start_intersection': start_intersection_id,
+            'flightpath': path_corridors
+        }
+    except nx.NetworkXNoPath:
+        response = add_warning_to_response(
+            response,
+            1,
+            'No available route found.'
+        )
 
     return jsonify(response)
