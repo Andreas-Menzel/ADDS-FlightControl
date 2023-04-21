@@ -1462,19 +1462,20 @@ def ask_request_flightpath():
     start_intersection_id = nearest_intersection[0]
 
 
-
-    G = nx.Graph()
-
-    # Add intersections as nodes
-    for row in db.execute("""
-        SELECT id
+    db_intersections = db.execute("""
+        SELECT id, gps_lat, gps_lon
         FROM intersections
         WHERE id NOT IN (
             SELECT id
             FROM locked_intersections
             WHERE drone_id != ?
         )
-    """, (drone_id,)):
+    """, (drone_id,)).fetchall()
+
+    G = nx.Graph()
+
+    # Add intersections as nodes
+    for row in db_intersections:
         intersection_id = row[0]
         G.add_node(intersection_id)
 
@@ -1508,10 +1509,27 @@ def ask_request_flightpath():
         )
     """
     cursor = db.execute(query, (drone_id, drone_id, drone_id))
-
+    
     for row in cursor:
         corridor_id, intersection_a, intersection_b = row
-        G.add_edge(intersection_a, intersection_b, id=corridor_id)
+
+        lat_a = None
+        lon_a = None
+
+        lat_b = None
+        lon_b = None
+
+        for intersection in db_intersections:
+            if intersection['id'] == intersection_a:
+                lat_a = intersection['gps_lat']
+                lon_a = intersection['gps_lon']
+            if intersection['id'] == intersection_b:
+                lat_b = intersection['gps_lat']
+                lon_b = intersection['gps_lon']
+
+        distance = haversine_distance(lat_a, lon_a, lat_b, lon_b)
+
+        G.add_edge(intersection_a, intersection_b, id=corridor_id, weight=distance)
 
     # Find the shortest path between the start and dest intersection
     path_corridors = []
