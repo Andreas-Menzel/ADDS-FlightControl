@@ -1247,7 +1247,7 @@ def ask_request_clearance():
     db_locked_intersection_info = db.execute(
         'SELECT * FROM locked_intersections WHERE intersection_id = ?', (dest_intersection_id,)).fetchone()
     if not db_locked_intersection_info is None:
-        if not db_locked_corridor_info['drone_id'] == drone_id:
+        if not db_locked_intersection_info['drone_id'] == drone_id:
             intersection_already_locked = True
 
             response = add_warning_to_response(
