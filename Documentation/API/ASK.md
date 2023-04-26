@@ -230,19 +230,22 @@ key. There can be none, one or multiple `<intersection>` fields in the
             "id": "campus-int-1",
             "altitude": 10,
             "gps_lat": 48.047679,
-            "gps_lon": 11.652243
+            "gps_lon": 11.652243,
+            "locked_by": null
         },
         "campus-int-2": {
             "id": "campus-int-2",
             "altitude": 15,
             "gps_lat": 48.046641,
-            "gps_lon": 11.652629
+            "gps_lon": 11.652629,
+            "locked_by": "demo_drone_1"
         },
         "campus-int-3": {
             "id": "campus-int-3",
             "altitude": 10,
             "gps_lat": 48.0468,
-            "gps_lon": 11.654028
+            "gps_lon": 11.654028,
+            "locked_by": "demo_drone_1"
         }
     }
 }
@@ -354,17 +357,20 @@ There can be none, one or multiple `<corridor>` fields in the
         "campus-cor-1": {
             "id": "campus-cor-1",
             "intersection_a": "campus-int-1",
-            "intersection_b": "campus-int-2"
+            "intersection_b": "campus-int-2",
+            "locked_by": null
         },
         "campus-cor-2": {
             "id": "campus-cor-2",
             "intersection_a": "campus-int-2",
-            "intersection_b": "campus-int-3"
+            "intersection_b": "campus-int-3",
+            "locked_by": "demo_drone_1"
         },
         "campus-cor-3": {
             "id": "campus-cor-3",
             "intersection_a": "campus-int-3",
-            "intersection_b": "campus-int-1"
+            "intersection_b": "campus-int-1",
+            "locked_by": "demo_drone_1"
         }
     }
 }

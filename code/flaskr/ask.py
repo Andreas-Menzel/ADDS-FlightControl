@@ -63,7 +63,12 @@ def ask_intersection_list():
     # Get intersection information
     db_intersection_list = db.execute("""
         SELECT *
-        FROM intersections
+        FROM (
+            SELECT *
+            FROM intersections
+            LEFT JOIN locked_intersections
+              ON intersections.id = locked_intersections.intersection_id
+        )
         WHERE id LIKE ?
         ESCAPE '!'
         """, (intersection_id,)).fetchall()
@@ -79,6 +84,8 @@ def ask_intersection_list():
                                   ]['gps_lon'] = intersection['gps_lon']
         response['response_data'][intersection['id']
                                   ]['altitude'] = intersection['altitude']
+        response['response_data'][intersection['id']
+                                  ]['locked_by'] = intersection['drone_id']
 
     return jsonify(response)
 
@@ -195,7 +202,12 @@ def ask_corridor_list():
     # Get intersection information
     db_corridor_list = db.execute("""
         SELECT *
-        FROM corridors
+        FROM (
+            SELECT *
+            FROM corridors
+            LEFT JOIN locked_corridors
+              ON corridors.id = locked_corridors.corridor_id
+        )
         WHERE id LIKE ?
         ESCAPE '!'
         """, (corridor_id,)).fetchall()
@@ -208,6 +220,8 @@ def ask_corridor_list():
                                   ]['intersection_a'] = corridor['intersection_a']
         response['response_data'][corridor['id']
                                   ]['intersection_b'] = corridor['intersection_b']
+        response['response_data'][corridor['id']
+                                  ]['locked_by'] = corridor['drone_id']
 
     return jsonify(response)
 
