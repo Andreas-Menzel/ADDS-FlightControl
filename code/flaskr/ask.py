@@ -1546,6 +1546,7 @@ def ask_request_flightpath():
         G.add_edge(intersection_a, intersection_b, id=corridor_id, weight=distance)
 
     # Find the shortest path between the start and dest intersection
+    path_nodes = []
     path_corridors = []
     try:
         path_nodes = nx.shortest_path(G, start_intersection_id, dest_intersection_id)
@@ -1561,5 +1562,39 @@ def ask_request_flightpath():
             1,
             'No available route found.'
         )
+    
+    # Lock path
+    try:
+        db.execute("""
+            DELETE FROM locked_corridors
+            WHERE drone_id = ?
+        """, (drone_id,))
+
+        db.execute("""
+            DELETE FROM locked_intersections
+            WHERE drone_id = ?
+        """, (drone_id,))
+
+        for cor in path_corridors:
+            db.execute(f"""
+                INSERT INTO locked_corridors (corridor_id, drone_id)
+                VALUES (?, ?)
+            """, (cor, drone_id))
+        
+        for i_int in path_nodes:
+            db.execute(f"""
+                INSERT INTO locked_intersections (intersection_id, drone_id)
+                VALUES (?, ?)
+            """, (i_int, drone_id))
+        
+        db.commit()
+    except db.IntegrityError:
+        response = add_error_to_response(
+            response,
+            1,
+            'Internal server error: IntegrityError while accessing the database.',
+            False
+        )
+        response['response_data'] = None
 
     return jsonify(response)
