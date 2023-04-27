@@ -1420,6 +1420,26 @@ def ask_request_flightpath():
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
+    
+    # Check if destination intersection is currently locked by other drone
+    db_tmp_locked_dest_int = db.execute("""
+        SELECT *
+        FROM locked_intersections
+        WHERE intersection_id = ?
+          AND drone_id != ?
+    """, (dest_intersection_id, drone_id)).fetchone()
+
+    if not db_tmp_locked_dest_int is None:
+        response = add_error_to_response(
+            response,
+            1,
+            'Destination intersection is already locked by another drone.',
+            False
+        )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
 
     # Get nearest intersection
     # This SQL query was generously provided by GPT-4 and uses the Haversine
