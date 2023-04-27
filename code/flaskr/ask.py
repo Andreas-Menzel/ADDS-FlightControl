@@ -1500,7 +1500,7 @@ def ask_request_flightpath():
         SELECT id, gps_lat, gps_lon
         FROM intersections
         WHERE id NOT IN (
-            SELECT id
+            SELECT intersection_id
             FROM locked_intersections
             WHERE drone_id != ?
         )
