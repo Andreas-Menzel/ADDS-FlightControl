@@ -1,5 +1,6 @@
 import math
 import requests
+import time
 
 # This file holds variables and functions that can / will be used by all modules
 
@@ -32,6 +33,37 @@ def haversine_distance(lat1, lon1, lat2, lon2):
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     return R * c
+
+# This function was provided by GPT-3.5.
+def distance_to_vector(vector_end_a_lat, vector_end_a_lon, vector_end_b_lat, vector_end_b_lon, point_lat, point_lon):
+    # calculate the haversine distance between the point and each endpoint of the vector
+    dist_a = haversine_distance(point_lat, point_lon, vector_end_a_lat, vector_end_a_lon)
+    dist_b = haversine_distance(point_lat, point_lon, vector_end_b_lat, vector_end_b_lon)
+
+    # calculate the vector direction and magnitude
+    dx = vector_end_b_lon - vector_end_a_lon
+    dy = vector_end_b_lat - vector_end_a_lat
+    mag = math.sqrt(dx**2 + dy**2)
+
+    # calculate the projection of the point onto the vector
+    if mag > 0:
+        u = ((point_lon - vector_end_a_lon) * dx + (point_lat - vector_end_a_lat) * dy) / mag**2
+        projection_lon = vector_end_a_lon + u * dx
+        projection_lat = vector_end_a_lat + u * dy
+    else:
+        # vector has zero length, so set projection to one of the endpoints
+        projection_lon, projection_lat = vector_end_a_lon, vector_end_a_lat
+
+    # calculate the haversine distance between the point and the projected point
+    dist_projection = haversine_distance(point_lat, point_lon, projection_lat, projection_lon)
+
+    # if the projected point is outside the range of the vector, use the closest endpoint
+    if u < 0:
+        return dist_a
+    elif u > 1:
+        return dist_b
+    else:
+        return dist_projection
 
 
 def get_response_template(requesting_values=False, response_data=False):
@@ -316,3 +348,63 @@ def create_chain_blackbox(response, drone_id):
         )
     
     return response, chain_uuid
+
+
+last_infrastructure_locks_check = None
+def check_and_update_infrastructure_locks(response, db):
+    last_infrastructure_locks_check = 0
+
+    if time.time() - last_infrastructure_locks_check > 2000:
+        last_infrastructure_locks_check = time.time()
+
+        # Get inactive drones that still lock any infrastructure
+        db_inactive_locking_drones = db.execute("""
+            SELECT drone_id
+            FROM (
+                SELECT drone_id, MAX(time_recorded) as max_time_recorded
+                FROM aircraft_location
+                GROUP BY drone_id
+            )
+            WHERE Datetime(max_time_recorded, 'unixepoch') < Datetime('now', '-10 seconds')
+                AND drone_id IN (
+                    SELECT drone_id
+                    FROM locked_intersections
+                UNION
+                    SELECT drone_id
+                    FROM locked_corridors
+                )
+        """).fetchall()
+
+        # Delete locks from inactive drones
+        try:
+            for drone in db_inactive_locking_drones:
+                db.execute("""
+                    DELETE FROM locked_intersections
+                    WHERE drone_id = ?
+                """, (drone['drone_id'], ))
+
+                db.execute("""
+                    DELETE FROM locked_corridors
+                    WHERE drone_id = ?
+                """, (drone['drone_id'], ))
+            
+            db.commit()
+        except db.IntegrityError:
+            response = add_error_to_response(
+                response,
+                1,
+                'Internal server error: IntegrityError while accessing the database.',
+                False
+            )
+
+        # TODO: Unlock infrastructure of drones currently in a mission
+        db_drone_location = db.execute("""
+            SELECT gps_lat, gps_lon
+            FROM aircraft_location
+            WHERE drone_id = "demo_drone"
+            ORDER BY time_recorded DESC
+        """).fetchone()
+        dist = distance_to_vector(48.047705, 11.653841, 48.047679, 11.652243, db_drone_location['gps_lat'], db_drone_location['gps_lon'])
+        print('Distance demo_drone to cor_2 =', dist)
+    
+    return response

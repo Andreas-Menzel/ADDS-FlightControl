@@ -548,6 +548,8 @@ def tell_aircraft_location():
             'Internal server error: IntegrityError while accessing the database.',
             False
         )
+    
+    response = check_and_update_infrastructure_locks(response, db)
 
     return jsonify(response)
 
@@ -1174,7 +1176,6 @@ def tell_mission_data():
     tmp_intersections_info = db.execute(f"""
         SELECT intersections
         FROM (
-            
             SELECT intersection_a AS intersections
             FROM corridors
             WHERE id IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
@@ -1189,6 +1190,9 @@ def tell_mission_data():
     if not tmp_intersections_info is None:
         intersection_ids_to_keep_locked = [row[0]
                                            for row in tmp_intersections_info]
+    # Do not unlock the last mission intersection. The drone (probably) has
+    # landed => this intersection should still be locked.
+    intersection_ids_to_keep_locked = intersection_ids_to_keep_locked.append(last_mission_intersection)
 
     # Unlock intersections and corridors that are not needed (any more)
     try:
