@@ -350,11 +350,11 @@ def create_chain_blackbox(response, drone_id):
     return response, chain_uuid
 
 
-last_infrastructure_locks_check = None
+last_infrastructure_locks_check = 0
 def check_and_update_infrastructure_locks(response, db):
-    last_infrastructure_locks_check = 0
+    global last_infrastructure_locks_check
 
-    if time.time() - last_infrastructure_locks_check > 2000:
+    if time.time() - last_infrastructure_locks_check > 2:
         last_infrastructure_locks_check = time.time()
 
         # Get inactive drones that still lock any infrastructure
@@ -397,14 +397,97 @@ def check_and_update_infrastructure_locks(response, db):
                 False
             )
 
-        # TODO: Unlock infrastructure of drones currently in a mission
-        db_drone_location = db.execute("""
-            SELECT gps_lat, gps_lon
-            FROM aircraft_location
-            WHERE drone_id = "demo_drone"
-            ORDER BY time_recorded DESC
-        """).fetchone()
-        dist = distance_to_vector(48.047705, 11.653841, 48.047679, 11.652243, db_drone_location['gps_lat'], db_drone_location['gps_lon'])
-        print('Distance demo_drone to cor_2 =', dist)
+        # Unlock infrastructure of drones currently in a mission
+        db_missions = db.execute("""
+            SELECT md.drone_id as drone_id,
+                   md.corridors_pending as corridors_pending,
+                   md.corridors_approved as corridors_approved,
+                   md.corridors_uploaded as corridors_uploaded
+            FROM mission_data as md
+            JOIN (
+                SELECT drone_id, MAX(time_recorded) as max_time_recorded
+                FROM mission_data
+                GROUP BY drone_id
+            ) as latest
+              ON md.drone_id = latest.drone_id
+             AND md.time_recorded = latest.max_time_recorded
+        """).fetchall()
+
+        for mission in db_missions:
+            drone_id = mission['drone_id']
+            corridor_ids_pending = mission['corridors_pending']
+            corridor_ids_approved = mission['corridors_approved']
+            corridor_ids_uploaded = mission['corridors_uploaded']
+
+            corridor_ids_to_keep_locked = corridor_ids_uploaded + corridor_ids_approved + corridor_ids_pending
+
+            db_drone_location = db.execute("""
+                SELECT gps_lat, gps_lon
+                FROM aircraft_location
+                WHERE drone_id = ?
+                ORDER BY time_recorded DESC
+            """, (drone_id,)).fetchone()
+
+            # Go through uploaded in reverse
+            unlock_corridors = False
+            for cor_id in reversed(corridor_ids_uploaded):
+                if not unlock_corridors:
+                    db_cor = db.execute("""
+                        SELECT id, intersection_a, intersection_b
+                        FROM corridors
+                        WHERE id = ?
+                    """, (cor_id,)).fetchone()
+                    # TODO: Check if result is not None
+
+                    db_cor_ints = db.execute("""
+                        SELECT gps_lat, gps_lon
+                        FROM intersections
+                        WHERE id = ?
+                        OR id = ?
+                    """, (db_cor['intersection_a'], db_cor['intersection_b'])).fetchall()
+                    # TODO: Check if result has two datasets (for both intersections)
+
+                    distance_to_corridor = distance_to_vector(db_cor_ints[0]['gps_lat'], db_cor_ints[0]['gps_lon'],
+                                                                db_cor_ints[1]['gps_lat'], db_cor_ints[1]['gps_lon'],
+                                                                db_drone_location['gps_lat'], db_drone_location['gps_lon'])
+
+                    if distance_to_corridor <= 2:
+                        # Drone is currently flying on this corridor. We can
+                        # unlock all previous corridors.
+                        unlock_corridors = True
+                else:
+                    corridor_ids_to_keep_locked.remove(cor_id)
+
+            try:
+                db.execute(f"""
+                    DELETE FROM locked_intersections
+                    WHERE drone_id = ?
+                      AND intersection_id NOT IN (
+                        SELECT intersection_a, intersection_b
+                        FROM (
+                            SELECT *
+                            FROM corridors
+                            WHERE id IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
+                        ) cors
+                        LEFT JOIN intersections
+                        ON intersections.id = cors.intersection_a
+                        OR intersections.id = cors.intersection_b
+                    )
+                """, (drone_id, *corridor_ids_to_keep_locked,))
+
+                db.execute(f"""
+                    DELETE FROM locked_corridors
+                    WHERE drone_id = ?
+                    AND corridor_id NOT IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
+                """, (drone_id, *corridor_ids_to_keep_locked,))
+            except db.IntegrityError:
+                response = add_error_to_response(
+                    response,
+                    1,
+                    'Internal server error: IntegrityError while accessing the database.',
+                    False
+                )
+
+        # TODO: Lock intersections near drones that are not in a mission
     
     return response
