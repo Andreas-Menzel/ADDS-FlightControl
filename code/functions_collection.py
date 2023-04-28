@@ -1,6 +1,7 @@
 import math
 import requests
 import time
+import json
 
 # This file holds variables and functions that can / will be used by all modules
 
@@ -415,9 +416,9 @@ def check_and_update_infrastructure_locks(response, db):
 
         for mission in db_missions:
             drone_id = mission['drone_id']
-            corridor_ids_pending = mission['corridors_pending']
-            corridor_ids_approved = mission['corridors_approved']
-            corridor_ids_uploaded = mission['corridors_uploaded']
+            corridor_ids_pending = json.loads(mission['corridors_pending'])
+            corridor_ids_approved = json.loads(mission['corridors_approved'])
+            corridor_ids_uploaded = json.loads(mission['corridors_uploaded'])
 
             corridor_ids_to_keep_locked = corridor_ids_uploaded + corridor_ids_approved + corridor_ids_pending
 
@@ -431,6 +432,7 @@ def check_and_update_infrastructure_locks(response, db):
             # Go through uploaded in reverse
             unlock_corridors = False
             for cor_id in reversed(corridor_ids_uploaded):
+                print('Corridor', cor_id, 'is part of the route.')
                 if not unlock_corridors:
                     db_cor = db.execute("""
                         SELECT id, intersection_a, intersection_b
@@ -455,23 +457,30 @@ def check_and_update_infrastructure_locks(response, db):
                         # Drone is currently flying on this corridor. We can
                         # unlock all previous corridors.
                         unlock_corridors = True
+                        print('Drone is near corridor', cor_id, '... Deleting previous corridors.')
                 else:
+                    print('Deleting corridor', cor_id)
                     corridor_ids_to_keep_locked.remove(cor_id)
 
             try:
                 db.execute(f"""
+                    WITH cors as (
+                        SELECT *
+                        FROM corridors
+                        WHERE id IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
+                    )
                     DELETE FROM locked_intersections
                     WHERE drone_id = ?
                       AND intersection_id NOT IN (
-                        SELECT intersection_a, intersection_b
-                        FROM (
-                            SELECT *
-                            FROM corridors
-                            WHERE id IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
-                        ) cors
-                        LEFT JOIN intersections
-                        ON intersections.id = cors.intersection_a
-                        OR intersections.id = cors.intersection_b
+                            SELECT intersection_a
+                            FROM cors
+                            LEFT JOIN intersections
+                            ON intersections.id = cors.intersection_a
+                        UNION
+                            SELECT intersection_b
+                            FROM cors
+                            LEFT JOIN intersections
+                            ON intersections.id = cors.intersection_b
                     )
                 """, (drone_id, *corridor_ids_to_keep_locked,))
 
