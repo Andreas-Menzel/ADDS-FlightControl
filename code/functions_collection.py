@@ -432,7 +432,6 @@ def check_and_update_infrastructure_locks(response, db):
             # Go through uploaded in reverse
             unlock_corridors = False
             for cor_id in reversed(corridor_ids_uploaded):
-                print('Corridor', cor_id, 'is part of the route.')
                 if not unlock_corridors:
                     db_cor = db.execute("""
                         SELECT id, intersection_a, intersection_b
@@ -457,9 +456,7 @@ def check_and_update_infrastructure_locks(response, db):
                         # Drone is currently flying on this corridor. We can
                         # unlock all previous corridors.
                         unlock_corridors = True
-                        print('Drone is near corridor', cor_id, '... Deleting previous corridors.')
                 else:
-                    print('Deleting corridor', cor_id)
                     corridor_ids_to_keep_locked.remove(cor_id)
 
             try:
@@ -489,6 +486,8 @@ def check_and_update_infrastructure_locks(response, db):
                     WHERE drone_id = ?
                     AND corridor_id NOT IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
                 """, (drone_id, *corridor_ids_to_keep_locked,))
+
+                db.commit()
             except db.IntegrityError:
                 response = add_error_to_response(
                     response,
