@@ -416,9 +416,22 @@ def check_and_update_infrastructure_locks(response, db):
 
         for mission in db_missions:
             drone_id = mission['drone_id']
-            corridor_ids_pending = json.loads(mission['corridors_pending'])
-            corridor_ids_approved = json.loads(mission['corridors_approved'])
-            corridor_ids_uploaded = json.loads(mission['corridors_uploaded'])
+
+            tmp_corridors_pending = mission['corridors_pending']
+            if tmp_corridors_pending is None:
+                tmp_corridors_pending = '[]'
+
+            tmp_corridors_approved = mission['corridors_approved']
+            if tmp_corridors_approved is None:
+                tmp_corridors_approved = '[]'
+
+            tmp_corridors_uploaded = mission['corridors_uploaded']
+            if tmp_corridors_uploaded is None:
+                tmp_corridors_uploaded = '[]'
+
+            corridor_ids_pending = json.loads(tmp_corridors_pending)
+            corridor_ids_approved = json.loads(tmp_corridors_approved)
+            corridor_ids_uploaded = json.loads(tmp_corridors_uploaded)
 
             corridor_ids_to_keep_locked = corridor_ids_uploaded + corridor_ids_approved + corridor_ids_pending
 
@@ -461,6 +474,12 @@ def check_and_update_infrastructure_locks(response, db):
 
             try:
                 db.execute(f"""
+                    DELETE FROM locked_corridors
+                    WHERE drone_id = ?
+                    AND corridor_id NOT IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
+                """, (drone_id, *corridor_ids_to_keep_locked,))
+
+                db.execute(f"""
                     WITH cors as (
                         SELECT *
                         FROM corridors
@@ -479,12 +498,6 @@ def check_and_update_infrastructure_locks(response, db):
                             LEFT JOIN intersections
                             ON intersections.id = cors.intersection_b
                     )
-                """, (drone_id, *corridor_ids_to_keep_locked,))
-
-                db.execute(f"""
-                    DELETE FROM locked_corridors
-                    WHERE drone_id = ?
-                    AND corridor_id NOT IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
                 """, (drone_id, *corridor_ids_to_keep_locked,))
 
                 db.commit()

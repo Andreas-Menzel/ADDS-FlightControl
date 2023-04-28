@@ -1607,6 +1607,13 @@ def ask_request_flightpath():
                 VALUES (?, ?)
             """, (i_int, drone_id))
         
+        # Save path to mission_data of drone. This is needed, so that the other
+        # services will not unlock this path.
+        db.execute("""
+            INSERT INTO mission_data (drone_id, time_recorded, corridors_pending)
+            VALUES (?, ?, ?)
+        """, (drone_id, time.time(), json.dumps(path_corridors)))
+        
         db.commit()
     except db.IntegrityError:
         response = add_error_to_response(
@@ -1616,5 +1623,5 @@ def ask_request_flightpath():
             False
         )
         response['response_data'] = None
-
+    
     return jsonify(response)
