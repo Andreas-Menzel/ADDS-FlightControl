@@ -1192,7 +1192,7 @@ def tell_mission_data():
                                            for row in tmp_intersections_info]
     # Do not unlock the last mission intersection. The drone (probably) has
     # landed => this intersection should still be locked.
-    intersection_ids_to_keep_locked = intersection_ids_to_keep_locked.append(last_mission_intersection)
+    intersection_ids_to_keep_locked.append(last_mission_intersection)
 
     # Unlock intersections and corridors that are not needed (any more)
     try:
