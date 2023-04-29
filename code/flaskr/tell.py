@@ -1173,27 +1173,6 @@ def tell_mission_data():
     corridor_ids_to_keep_locked = corridors_pending + \
         corridors_approved + corridors_uploaded
 
-    tmp_intersections_info = db.execute(f"""
-        SELECT intersections
-        FROM (
-            SELECT intersection_a AS intersections
-            FROM corridors
-            WHERE id IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
-        UNION
-            SELECT intersection_b AS intersections
-            FROM corridors
-            WHERE id IN ({','.join(['?']*len(corridor_ids_to_keep_locked))})
-        )
-        """, (*corridor_ids_to_keep_locked, *corridor_ids_to_keep_locked,)).fetchall()
-
-    intersection_ids_to_keep_locked = []
-    if not tmp_intersections_info is None:
-        intersection_ids_to_keep_locked = [row[0]
-                                           for row in tmp_intersections_info]
-    # Do not unlock the last mission intersection. The drone (probably) has
-    # landed => this intersection should still be locked.
-    intersection_ids_to_keep_locked.append(last_mission_intersection)
-
     # Unlock intersections and corridors that are not needed (any more)
     try:
         db.execute(f"""
@@ -1203,12 +1182,29 @@ def tell_mission_data():
             """, (drone_id, *corridor_ids_to_keep_locked,)
         )
 
-        db.execute(f"""
+        # Unlock all intersections not currently used in the mission (except the
+        # last mission intersection)
+        db.execute("""
+            WITH cors_used as (
+                SELECT corridors.id, corridors.intersection_a, corridors.intersection_b
+                FROM locked_corridors
+                LEFT JOIN corridors
+                    ON locked_corridors.corridor_id = corridors.id
+                WHERE drone_id = ?
+            )
             DELETE FROM locked_intersections
             WHERE drone_id = ?
-              AND intersection_id NOT IN ({','.join(['?']*len(intersection_ids_to_keep_locked))})
-            """, (drone_id, *intersection_ids_to_keep_locked,)
-        )
+            AND intersection_id NOT IN (
+                SELECT intersection_a
+                FROM cors_used
+                WHERE drone_id = ?
+            UNION
+                SELECT intersection_b
+                FROM cors_used
+                WHERE drone_id = ?
+            )
+            AND intersection_id != ?
+        """, (drone_id, drone_id, drone_id, drone_id, last_mission_intersection))
 
         db.commit()
     except db.IntegrityError:
