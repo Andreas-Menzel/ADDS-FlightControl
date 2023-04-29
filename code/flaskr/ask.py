@@ -87,6 +87,8 @@ def ask_intersection_list():
         response['response_data'][intersection['id']
                                   ]['locked_by'] = intersection['drone_id']
 
+    response = check_and_update_infrastructure_locks(response, db)
+
     return jsonify(response)
 
 
@@ -222,6 +224,8 @@ def ask_corridor_list():
                                   ]['intersection_b'] = corridor['intersection_b']
         response['response_data'][corridor['id']
                                   ]['locked_by'] = corridor['drone_id']
+
+    response = check_and_update_infrastructure_locks(response, db)
 
     return jsonify(response)
 
@@ -1240,6 +1244,12 @@ def ask_request_clearance():
     # Return if an error already occured
     if not response['executed']:
         return jsonify(response)
+    
+    response = check_and_update_infrastructure_locks(response, db)
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
 
     corridor_already_locked = False
     intersection_already_locked = False
@@ -1416,6 +1426,12 @@ def ask_request_flightpath():
             f'Drone has no recent aircraft_location data.',
             False
         )
+
+    # Return if an error already occured
+    if not response['executed']:
+        return jsonify(response)
+    
+    response = check_and_update_infrastructure_locks(response, db)
 
     # Return if an error already occured
     if not response['executed']:
@@ -1606,13 +1622,6 @@ def ask_request_flightpath():
                 INSERT INTO locked_intersections (intersection_id, drone_id)
                 VALUES (?, ?)
             """, (i_int, drone_id))
-        
-        # Save path to mission_data of drone. This is needed, so that the other
-        # services will not unlock this path.
-        db.execute("""
-            INSERT INTO mission_data (drone_id, time_recorded, corridors_pending)
-            VALUES (?, ?, ?)
-        """, (drone_id, time.time(), json.dumps(path_corridors)))
         
         db.commit()
     except db.IntegrityError:
