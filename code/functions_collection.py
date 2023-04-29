@@ -470,19 +470,25 @@ def check_and_update_infrastructure_locks(response, db):
                 """, (drone_id, *corridor_ids_to_unlock,))
 
                 db.execute("""
-                    WITH ints_used as (
-                            SELECT intersection_a
-                            FROM locked_corridors
-                            WHERE drone_id = ?
-                        UNION
-                            SELECT intersection_b
-                            FROM locked_corridors
-                            WHERE drone_id = ?
+                    WITH cors_used as (
+                        SELECT corridors.id, corridors.intersection_a, corridors.intersection_b
+                        FROM locked_corridors
+                        LEFT JOIN corridors
+                          ON locked_corridors.corridor_id = corridors.id
+                        WHERE drone_id = ?
                     )
                     DELETE FROM locked_intersections
                     WHERE drone_id = ?
-                      AND intersection_id NOT IN ints_used
-                """, (drone_id, drone_id, drone_id))
+                      AND intersection_id NOT IN (
+                            SELECT intersection_a
+                            FROM cors_used
+                            WHERE drone_id = ?
+                        UNION
+                            SELECT intersection_b
+                            FROM cors_used
+                            WHERE drone_id = ?
+                    )
+                """, (drone_id, drone_id, drone_id, drone_id))
 
                 db.commit()
             except db.IntegrityError:
