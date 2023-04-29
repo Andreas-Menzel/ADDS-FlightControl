@@ -417,6 +417,8 @@ def check_and_update_infrastructure_locks(response, db):
         for mission in db_missions:
             drone_id = mission['drone_id']
 
+            last_mission_intersection = mission['last_mission_intersection']
+
             tmp_corridors_uploaded = mission['corridors_uploaded']
             if tmp_corridors_uploaded is None:
                 tmp_corridors_uploaded = '[]'
@@ -479,16 +481,17 @@ def check_and_update_infrastructure_locks(response, db):
                     )
                     DELETE FROM locked_intersections
                     WHERE drone_id = ?
-                      AND intersection_id NOT IN (
-                            SELECT intersection_a
-                            FROM cors_used
-                            WHERE drone_id = ?
-                        UNION
-                            SELECT intersection_b
-                            FROM cors_used
-                            WHERE drone_id = ?
+                    AND intersection_id NOT IN (
+                        SELECT intersection_a
+                        FROM cors_used
+                        WHERE drone_id = ?
+                    UNION
+                        SELECT intersection_b
+                        FROM cors_used
+                        WHERE drone_id = ?
                     )
-                """, (drone_id, drone_id, drone_id, drone_id))
+                    AND intersection_id != ?
+                """, (drone_id, drone_id, drone_id, drone_id, last_mission_intersection))
 
                 db.commit()
             except db.IntegrityError:
