@@ -403,7 +403,8 @@ def check_and_update_infrastructure_locks(response, db):
             SELECT md.drone_id as drone_id,
                    md.corridors_pending as corridors_pending,
                    md.corridors_approved as corridors_approved,
-                   md.corridors_uploaded as corridors_uploaded
+                   md.corridors_uploaded as corridors_uploaded,
+                   md.last_mission_intersection as last_mission_intersection
             FROM mission_data as md
             JOIN (
                 SELECT drone_id, MAX(time_recorded) as max_time_recorded
