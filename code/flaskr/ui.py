@@ -18,7 +18,7 @@ bp = Blueprint('ui', __name__, url_prefix='/ui')
 
 @bp.route('/')
 def send_commands():
-    return render_template('ui.html')
+    return show_infrastructure()
 
 
 @bp.route('/show_infrastructure')
@@ -65,8 +65,16 @@ def show_infrastructure():
     db_drones = db.execute('SELECT * FROM drones').fetchall()
     for drone in db_drones:
         drone_id = drone["id"]
-        lat = drone['gps_lat']
-        lon = drone['gps_lon']
+        
+        aircraft_location = db.execute("""
+            SELECT gps_lat, gps_lon
+            FROM aircraft_location
+            WHERE drone_id = ?
+            ORDER BY time_recorded DESC
+        """, (drone_id,)).fetchone()
+        
+        lat = aircraft_location['gps_lat']
+        lon = aircraft_location['gps_lon']
 
         try:
             lat = float(lat)
@@ -86,46 +94,5 @@ def show_infrastructure():
             tooltip=f'<b>{drone_id}</b>',
             color='orange'
         ).add_to(folium_map)
-
-    return folium_map._repr_html_()
-
-
-@bp.route('/show_flightpath')
-def show_flightplan():
-    start_coords = (48.047341, 11.654751)
-    folium_map = folium.Map(location=start_coords, zoom_start=18)
-
-    db = get_db()
-
-    db_locations = db.execute('SELECT * FROM aircraft_location WHERE drone_id = "demo_drone"').fetchall()
-    lat_old = 0
-    lon_old = 0
-    for location in db_locations:
-        lat_new = location['gps_lat']
-        lon_new = location['gps_lon']
-        gps_valid = strtobool(location['gps_valid'])
-
-        # Check if has changed and is valid
-        if lat_old == lat_new and lon_old == lon_new:
-            continue
-        if not gps_valid:
-            continue
-
-        # Draw line if we have two coordinates
-        if not (lat_old == 0 and lon_old == 0):
-            folium.PolyLine(
-                [
-                    [lat_old, lon_old],
-                    [lat_new, lon_new]
-                ],
-                color='red',
-                weight=5,
-                opacity=1
-                #popup=f'<b>{corridor["id"]}</b>',
-                #tooltip=f'<b>{corridor["id"]}</b>'
-            ).add_to(folium_map)
-
-        lat_old = lat_new
-        lon_old = lon_new
 
     return folium_map._repr_html_()
