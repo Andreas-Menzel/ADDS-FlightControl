@@ -89,13 +89,13 @@ def tell_intersection_location():
             INSERT INTO intersections(
                 id, gps_lat, gps_lon, altitude
             ) VALUES (
-                ?, ?, ?, ?
+                ?, ?, ?, ?, ?
             )
             ON CONFLICT(id) DO UPDATE SET
             gps_lat = ?,
             gps_lon = ?,
             altitude = ?
-            """, (intersection_id, gps_lat, gps_lon, altitude, gps_lat, gps_lon, altitude,)
+            """, (intersection_id, gps_lat, gps_lon, altitude, gps_lat, gps_lon, altitude)
         )
 
         db.commit()
@@ -386,6 +386,10 @@ def tell_aircraft_location():
     # Get data formatted as JSON string
     payload_as_json_string = request.values.get('payload')
 
+    # TODO: Check signature
+    # TODO: Save json-string with signature?
+    payload_signature = request.values.get('signature')
+
     response = check_argument_not_null(
         response, payload_as_json_string, 'payload')
 
@@ -532,12 +536,13 @@ def tell_aircraft_location():
                 velocity_z,
                 pitch,
                 yaw,
-                roll
+                roll,
+                app_signature
             )
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
-            """, (time_sent, time_recorded, transaction_uuid, drone_id, gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll,)
+            """, (time_sent, time_recorded, transaction_uuid, drone_id, gps_signal_level, gps_satellites_connected, gps_valid, gps_lat, gps_lon, altitude, velocity_x, velocity_y, velocity_z, pitch, yaw, roll, payload_signature)
         )
 
         db.commit()
@@ -560,6 +565,10 @@ def tell_aircraft_power():
 
     # Get data formatted as JSON string
     payload_as_json_string = request.values.get('payload')
+
+    # TODO: Check signature
+    # TODO: Save json-string with signature?
+    payload_signature = request.values.get('signature')
 
     response = check_argument_not_null(
         response, payload_as_json_string, 'payload')
@@ -671,12 +680,13 @@ def tell_aircraft_power():
                 battery_remaining,
                 battery_remaining_percent,
                 remaining_flight_time,
-                remaining_flight_radius
+                remaining_flight_radius,
+                app_signature
             )
             VALUES (
                 ?, ?, ?, ?, ?, ?, ?, ?
             )
-            """, (time_sent, time_recorded, transaction_uuid, drone_id, battery_remaining, battery_remaining_percent, remaining_flight_time, remaining_flight_radius,)
+            """, (time_sent, time_recorded, transaction_uuid, drone_id, battery_remaining, battery_remaining_percent, remaining_flight_time, remaining_flight_radius, payload_signature)
         )
 
         db.commit()
@@ -697,6 +707,10 @@ def tell_flight_data():
 
     # Get data formatted as JSON string
     payload_as_json_string = request.values.get('payload')
+
+    # TODO: Check signature
+    # TODO: Save json-string with signature?
+    payload_signature = request.values.get('signature')
 
     response = check_argument_not_null(
         response, payload_as_json_string, 'payload')
@@ -847,12 +861,13 @@ def tell_flight_data():
                 landing_gps_valid,
                 landing_gps_lat,
                 landing_gps_lon,
-                operation_modes
+                operation_modes,
+                app_signature
             )
             VALUES (
-                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
             )
-            """, (time_sent, time_recorded, transaction_uuid, drone_id, takeoff_time, takeoff_gps_valid, takeoff_gps_lat, takeoff_gps_lon, landing_time, landing_gps_valid, landing_gps_lat, landing_gps_lon, str_operation_modes,)
+            """, (time_sent, time_recorded, transaction_uuid, drone_id, takeoff_time, takeoff_gps_valid, takeoff_gps_lat, takeoff_gps_lon, landing_time, landing_gps_valid, landing_gps_lat, landing_gps_lon, str_operation_modes, payload_signature)
         )
 
         db.commit()

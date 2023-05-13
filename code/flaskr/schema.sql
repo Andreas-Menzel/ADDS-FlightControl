@@ -40,6 +40,8 @@ CREATE TABLE aircraft_location (
     yaw                         FLOAT,
     roll                        FLOAT,
 
+    app_signature               TEXT,
+
     PRIMARY KEY (id, drone_id)
 );
 
@@ -65,6 +67,8 @@ CREATE TABLE aircraft_power (
 
     remaining_flight_time       INTEGER,
     remaining_flight_radius     FLOAT,
+
+    app_signature               TEXT,
 
     PRIMARY KEY (id, drone_id)
 );
@@ -97,6 +101,8 @@ CREATE TABLE flight_data (
 
     operation_modes             TEXT,
 
+    app_signature               TEXT,
+
     PRIMARY KEY (id, drone_id)
 );
 
@@ -127,6 +133,8 @@ CREATE TABLE mission_data (
     corridors_approved          TEXT,
     corridors_uploaded          TEXT,
     corridors_finished          TEXT,
+
+    app_signature               TEXT,
 
     PRIMARY KEY (id, drone_id)
 );
