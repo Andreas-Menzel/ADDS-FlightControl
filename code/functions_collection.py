@@ -2,6 +2,8 @@ import math
 import requests
 import time
 import json
+import hashlib
+import hmac
 
 # This file holds variables and functions that can / will be used by all modules
 
@@ -135,8 +137,19 @@ def check_argument_type(response, argument, argument_name, data_type, err_id=-1)
     return response, argument
 
 
+def sign_string(message):
+    key = 'secret_key'
+
+    key = key.encode('utf-8')
+    message = message.encode('utf-8')
+    signature = hmac.new(key, message, hashlib.sha256).hexdigest()
+    return signature
+
+
 def save_data_in_blockchain(response, chain_uuid, payload):
     transaction_uuid = None
+
+    signature = sign_string(payload)
 
     if chain_uuid is None or chain_uuid == '':
         response = add_error_to_response(
@@ -152,7 +165,8 @@ def save_data_in_blockchain(response, chain_uuid, payload):
         cchainlink_response = requests.get(
             cchainlink_url + 'book_data?'
             + 'chain_uuid=' + chain_uuid
-            + '&payload=' + payload)
+            + '&payload=' + payload
+            + '&signature=' + signature)
     except:
         response = add_error_to_response(
             response,
